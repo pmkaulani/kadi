@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-brand-purple: #6B4EFF;
+  --color-brand-purple-hover: #583BD9;
+  --color-brand-gold: #F5B942;
+  --color-charcoal: #1A1A2E;
+  --color-slate: #64748B;
+  --color-mist: #F1F5F9;
+  --color-white: #FFFFFF;
+
+  --color-event-rose: #E85D75;
+  --color-event-coral: #FF6B6B;
+  --color-event-sage: #7A8B7A;
+
+  --color-status-success: #15803D;
+  --color-status-warning: #92400E;
+  --color-status-error: #B91C1C;
+  --color-status-info: #1D4ED8;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background-color: var(--color-mist);
+    color: var(--color-charcoal);
+    min-height: 100vh;
+  }
+}
+
+/* 3D Envelope and Paper Transform Primitives */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-1500 {
+  perspective: 1500px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Custom Paper Textures & Subdued Lighting */
+.bg-paper-grain {
+  background-color: #FAFAF7;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.bg-liner-floral {
+  background: radial-gradient(circle at 50% 50%, #fdf2f4 0%, #fae1e6 100%);
+  background-image: radial-gradient(#e85d7522 1.5px, transparent 1.5px), radial-gradient(#f5b94222 1.5px, #fdf2f4 1.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+.bg-liner-geometric {
+  background: #1a1a2e;
+  background-image: linear-gradient(30deg, #272744 12%, transparent 12.5%, transparent 87%, #272744 87.5%, #272744),
+  linear-gradient(150deg, #272744 12%, transparent 12.5%, transparent 87%, #272744 87.5%, #272744),
+  linear-gradient(30deg, #272744 12%, transparent 12.5%, transparent 87%, #272744 87.5%, #272744),
+  linear-gradient(150deg, #272744 12%, transparent 12.5%, transparent 87%, #272744 87.5%, #272744),
+  linear-gradient(60deg, #f5b94215 25%, transparent 25.5%, transparent 75%, #f5b94215 75%, #f5b94215),
+  linear-gradient(60deg, #f5b94215 25%, transparent 25.5%, transparent 75%, #f5b94215 75%, #f5b94215);
+  background-size: 40px 70px;
+  background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;
+}
+
+.bg-liner-gold-foil {
+  background: linear-gradient(135deg, #fdfbf7 0%, #f5edd6 40%, #e5d3a5 70%, #d4af37 100%);
+}
+
+.bg-liner-botanical {
+  background: linear-gradient(135deg, #f2f5f2 0%, #e2eae2 50%, #ccd8cc 100%);
+}
