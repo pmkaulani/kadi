@@ -4,105 +4,60 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { ChevronDown, ArrowRight } from 'lucide-react';
+import { ChevronDown, ArrowUpRight } from 'lucide-react';
 
 const FAQS = [
-  {
-    q: 'Do guests need to download an app or create a Kadi account?',
-    a: 'No. Guests simply open the secure web link you share with them on any smartphone or computer browser. The animation runs instantly, and they can RSVP in seconds without signing up.',
-  },
-  {
-    q: 'Can I invite a family or couple together under one link?',
-    a: 'Yes. Kadi uses a household and attendee model. You can invite "The Wanjiku Family" or "Dr. Peter & Guest", specify the maximum allowed headcount (e.g. 2, 4, or 5), and guests RSVP for their party with individual dietary requirements.',
-  },
-  {
-    q: 'How does WhatsApp sharing work?',
-    a: 'You can tap "Share to WhatsApp" from your host dashboard, which automatically opens WhatsApp on your phone with a friendly personalized message and your invitation link ready to send to your contacts.',
-  },
-  {
-    q: 'Can guests send M-Pesa gifts directly to me?',
-    a: 'Yes. In your design editor, you can provide your own M-Pesa Paybill, Till Number (Buy Goods), or phone number with clear reference instructions. Kadi displays convenient copy-to-clipboard buttons so guests send gifts directly to your own account with zero intermediary deductions.',
-  },
-  {
-    q: 'What if an elderly guest has a slow internet connection or prefers no animation?',
-    a: 'Kadi features an immediate "Skip to Details" button on the envelope, and automatically honors device settings for reduced motion (`prefers-reduced-motion`). Essential date, time, venue, and RSVP details are immediately accessible regardless of network speed.',
-  },
-  {
-    q: 'Can I edit the event details after sending out the invitations?',
-    a: 'Yes. Any time you update the date, time, venue, or schedule in your dashboard, the changes are instantly reflected on your live invitation link. Your guests will always see the current published information.',
-  },
-  {
-    q: 'How does Kadi protect guest data under the Kenya Data Protection Act?',
-    a: 'We adhere strictly to KDPA 2019. Guest contact numbers are used strictly for delivering the host’s invitation. We do not sell data, use contacts for marketing, or expose guest lists to other guests.',
-  },
+  { q: 'Do guests need an account or an app?', a: 'The planned guest experience opens in a mobile browser from a shared invitation link. Guests should not need to create a Kadi account just to read the invitation or respond.' },
+  { q: 'Can I invite a couple or a whole household?', a: 'Yes. The platform is designed to support an invited household and its individual attendees. Hosts can set a permitted party size, while each attendee can provide their own attendance and relevant meal details.' },
+  { q: 'How does WhatsApp sharing work?', a: 'The first release is designed around a share action that opens the host’s own WhatsApp app with a prepared message and invitation link. Automated business messaging is a separate feature and will require the appropriate account, recipient permission and approved templates.' },
+  { q: 'Can guests send gifts through M-Pesa?', a: 'The initial design allows hosts to display their own M-Pesa Paybill, Till or phone-number instructions. Automated collection or payouts are not assumed to be active and require separate provider and regulatory checks.' },
+  { q: 'What if a guest has a slow connection or prefers no animation?', a: 'The invitation is intended to keep the important event details accessible even when animation is skipped or reduced. The implementation must support reduced-motion preferences and a clear way to go straight to the details.' },
+  { q: 'Can I update event details after sharing the invitation?', a: 'Published invitation links are intended to show the current event details. Changes should be saved and reflected on the live invitation without requiring hosts to send a new image.' },
+  { q: 'How will guest data be protected?', a: 'Kadi is being designed around data minimisation, access controls, limited-purpose processing, retention rules and appropriate consent records. Privacy copy and operational compliance must be reviewed before a public launch.' },
 ];
 
 export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="kadi-page min-h-screen flex flex-col">
       <PublicNavbar />
-
-      <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <Badge variant="purple" size="sm">
-            Questions & Answers
-          </Badge>
-          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-brand-charcoal mt-3">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-sm text-brand-slate mt-3 leading-relaxed">
-            Everything you need to know about creating, sharing, and managing invitations on Kadi.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {FAQS.map((faq, index) => {
-            const isOpen = openIndex === index;
-            return (
-              <div
-                key={index}
-                className="rounded-2xl border border-slate-200/80 bg-brand-mist/50 overflow-hidden transition-all"
-              >
-                <button
-                  onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-serif font-bold text-base sm:text-lg text-brand-charcoal hover:text-brand-purple transition-colors"
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown
-                    className={`w-5 h-5 flex-shrink-0 text-brand-slate transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-brand-purple' : ''
-                    }`}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 text-xs sm:text-sm text-brand-slate leading-relaxed border-t border-slate-200/40 pt-3">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-16 p-8 rounded-3xl bg-brand-mist border border-slate-200 text-center">
-          <h2 className="text-xl font-serif font-bold text-brand-charcoal">Have more questions?</h2>
-          <p className="text-xs text-brand-slate mt-2 max-w-md mx-auto">
-            Our support team in Nairobi is ready to help with your event planning and template customizations.
-          </p>
-          <div className="mt-5 flex justify-center gap-3">
-            <Link href="/contact">
-              <Button size="sm" variant="primary">
-                Contact Support
-              </Button>
-            </Link>
+      <main className="flex-1">
+        <section className="bg-[#EDE5D9] py-16 md:py-24">
+          <div className="kadi-container grid md:grid-cols-12 gap-8 items-end">
+            <div className="md:col-span-8">
+              <div className="flex items-center gap-3 mb-6"><span className="kadi-ornament" /><p className="kadi-eyebrow text-[#934638]">A few useful answers</p></div>
+              <h1 className="kadi-display text-6xl sm:text-7xl md:text-[6.5rem]">Good to <em className="text-[#934638]">know.</em></h1>
+            </div>
+            <p className="md:col-span-4 text-sm text-[#756F64] leading-7 max-w-sm mb-2">How Kadi invitations work, how guests respond, and what to expect from the platform.</p>
           </div>
-        </div>
-      </main>
+        </section>
 
+        <section className="bg-[#F6F2EA] py-12 md:py-20">
+          <div className="kadi-container grid md:grid-cols-12 gap-10 md:gap-16">
+            <div className="md:col-span-3">
+              <p className="kadi-eyebrow text-[#934638] mb-4">Common questions</p>
+              <p className="font-serif text-2xl leading-snug">A little clarity before the occasion.</p>
+            </div>
+            <div className="md:col-span-8 md:col-start-5 border-t border-[rgba(39,38,32,.2)]">
+              {FAQS.map((faq, index) => {
+                const isOpen = openIndex === index;
+                return <article key={faq.q} className="border-b border-[rgba(39,38,32,.17)]">
+                  <button type="button" onClick={() => setOpenIndex(isOpen ? null : index)} aria-expanded={isOpen} className="w-full py-5 md:py-6 flex items-start gap-5 text-left group">
+                    <span className="font-serif italic text-[#B99A62] text-sm pt-1">{String(index + 1).padStart(2, '0')}</span>
+                    <span className="flex-1 font-serif text-xl sm:text-2xl leading-snug tracking-[-.02em] group-hover:text-[#934638] transition-colors">{faq.q}</span>
+                    <ChevronDown size={19} strokeWidth={1.5} className={`shrink-0 mt-1 text-[#934638] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isOpen && <div className="pl-9 sm:pl-10 pr-4 pb-6 text-sm text-[#756F64] leading-7 max-w-2xl">{faq.a}</div>}
+                </article>;
+              })}
+              <div className="py-8 mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div><p className="font-serif text-2xl">Still wondering about something?</p><p className="text-sm text-[#756F64] mt-2">Send us a note and tell us what you need.</p></div>
+                <Link href="/contact" className="kadi-link inline-flex items-center gap-2 text-sm self-start">Get in touch <ArrowUpRight size={15} /></Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
       <PublicFooter />
     </div>
   );

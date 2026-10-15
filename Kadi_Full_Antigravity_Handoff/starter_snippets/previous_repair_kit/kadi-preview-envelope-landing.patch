@@ -1,0 +1,2841 @@
+diff --git a/src/app/app/events/[eventId]/page.tsx b/src/app/app/events/[eventId]/page.tsx
+index 0f286ff..cfd3141 100644
+--- a/src/app/app/events/[eventId]/page.tsx
++++ b/src/app/app/events/[eventId]/page.tsx
+@@ -1,5 +1,7 @@
+ 'use client';
+ 
++import type { EventDesignEntity } from '@/lib/db/types';
++
+ import React, { useState } from 'react';
+ import { useParams, useRouter } from 'next/navigation';
+ import Link from 'next/link';
+@@ -8,6 +10,7 @@ import { GuestService } from '@/lib/services/guest-service';
+ import { RSVPService } from '@/lib/services/rsvp-service';
+ import { getTemplateById } from '@/lib/templates/catalogue';
+ import { EnvelopeRenderer } from '@/components/animation/EnvelopeRenderer';
++import { InvitationSectionsRenderer } from '@/components/invitations/InvitationSectionsRenderer';
+ import { Button } from '@/components/ui/Button';
+ import { Input } from '@/components/ui/Input';
+ import { Badge } from '@/components/ui/Badge';
+@@ -40,22 +43,6 @@ import {
+   ChevronDown,
+   Layers,
+ } from 'lucide-react';
+-import { ScheduleSection } from '@/components/invitations/ScheduleSection';
+-import { VenueSection } from '@/components/invitations/VenueSection';
+-import { CeremonyReceptionSection } from '@/components/invitations/CeremonyReceptionSection';
+-import { StorySection } from '@/components/invitations/StorySection';
+-import { GallerySection } from '@/components/invitations/GallerySection';
+-import { FAQSection } from '@/components/invitations/FAQSection';
+-import { BirthdayAboutSection } from '@/components/invitations/BirthdayAboutSection';
+-import { BirthdayActivitiesSection } from '@/components/invitations/BirthdayActivitiesSection';
+-import { MemorialObituarySection } from '@/components/invitations/MemorialObituarySection';
+-import { MemorialServiceSection } from '@/components/invitations/MemorialServiceSection';
+-import { MemorialTributesCandlesSection } from '@/components/invitations/MemorialTributesCandlesSection';
+-import { MemorialLivestreamSection } from '@/components/invitations/MemorialLivestreamSection';
+-import { CondolencesSection } from '@/components/invitations/CondolencesSection';
+-import { RSVPSection } from '@/components/invitations/RSVPSection';
+-import { RegistrySection } from '@/components/invitations/RegistrySection';
+-import { ClosingSection } from '@/components/invitations/ClosingSection';
+ 
+ type TabType = 'overview' | 'guests' | 'rsvps' | 'design' | 'share' | 'contributions';
+ 
+@@ -109,6 +96,9 @@ export default function EventCommandCenterPage() {
+   const [editorLiner, setEditorLiner] = useState(design?.linerId || 'gold-foil');
+   const [editorSealMonogram, setEditorSealMonogram] = useState(design?.sealMonogram || 'K&W');
+   const [editorSealColor, setEditorSealColor] = useState(design?.sealColor || '#D4AF37');
++  const [editorFontFamily, setEditorFontFamily] = useState(design?.fontFamily || 'Playfair Display');
++  const [editorEnvelopeStyle, setEditorEnvelopeStyle] = useState<NonNullable<EventDesignEntity['envelopeStyle']>>(design?.envelopeStyle || 'classic-fold');
++  const [editorLetterStyle, setEditorLetterStyle] = useState<NonNullable<EventDesignEntity['letterStyle']>>(design?.letterStyle || 'printed-letter');
+   const [editorEnvelopeColor, setEditorEnvelopeColor] = useState(
+     design?.palette?.envelope || '#252042'
+   );
+@@ -218,6 +208,9 @@ export default function EventCommandCenterPage() {
+       linerId: editorLiner,
+       sealMonogram: editorSealMonogram,
+       sealColor: editorSealColor,
++      fontFamily: editorFontFamily,
++      envelopeStyle: editorEnvelopeStyle,
++      letterStyle: editorLetterStyle,
+       visibleSections: editorSections,
+       sectionOrder: editorSections,
+       palette: {
+@@ -831,6 +824,41 @@ export default function EventCommandCenterPage() {
+                     ))}
+                   </div>
+                 </div>
++
++                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
++                  <div>
++                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-brand-slate mb-2">Heading Typeface</label>
++                    <select value={editorFontFamily} onChange={(e) => setEditorFontFamily(e.target.value)} className="w-full min-h-10 rounded-md border border-[rgba(39,38,32,.15)] bg-white px-3 text-sm text-brand-charcoal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#934638]">
++                      <option value="Playfair Display">Playfair Display</option>
++                      <option value="Cormorant Garamond">Cormorant Garamond</option>
++                      <option value="Inter">Inter · modern</option>
++                      <option value="IM Fell English">IM Fell English · heritage</option>
++                    </select>
++                  </div>
++                  <div>
++                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-brand-slate mb-2">Envelope Construction</label>
++                    <select value={editorEnvelopeStyle} onChange={(e) => setEditorEnvelopeStyle(e.target.value as NonNullable<EventDesignEntity['envelopeStyle']>)} className="w-full min-h-10 rounded-md border border-[rgba(39,38,32,.15)] bg-white px-3 text-sm text-brand-charcoal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#934638]">
++                      <option value="classic-fold">Classic fold</option>
++                      <option value="pocket-fold">Pocket sleeve</option>
++                      <option value="scalloped-edge">Scalloped edge</option>
++                      <option value="minimal">Minimal / modern</option>
++                    </select>
++                  </div>
++                  <div className="sm:col-span-2">
++                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-brand-slate mb-2">Invitation Letter</label>
++                    <div className="grid grid-cols-3 gap-2">
++                      {([
++                        ['printed-letter', 'Printed'],
++                        ['handwritten-letter', 'Handwritten'],
++                        ['folded-card', 'Folded card'],
++                      ] as const).map(([value, label]) => (
++                        <button key={value} type="button" onClick={() => setEditorLetterStyle(value)} aria-pressed={editorLetterStyle === value} className={`min-h-10 rounded-md border px-2 text-xs transition-colors ${editorLetterStyle === value ? 'border-[#934638] bg-[#934638]/10 text-[#934638]' : 'border-[rgba(39,38,32,.15)] bg-white text-brand-charcoal hover:bg-[#FBF8F1]'}`}>
++                          {label}
++                        </button>
++                      ))}
++                    </div>
++                  </div>
++                </div>
+               </div>
+ 
+               {/* Invitation Sections & Order Management */}
+@@ -1021,164 +1049,31 @@ export default function EventCommandCenterPage() {
+                   }}
+                   guestName="Guest Preview"
+                   isDemo={true}
++                  design={{
++                    ...(design || {}),
++                    eventId,
++                    linerId: editorLiner,
++                    sealMonogram: editorSealMonogram,
++                    sealColor: editorSealColor,
++                    fontFamily: editorFontFamily,
++                    envelopeStyle: editorEnvelopeStyle,
++                    letterStyle: editorLetterStyle,
++                    palette: {
++                      primary: design?.palette?.primary || template.palette.primary,
++                      secondary: design?.palette?.secondary || template.palette.secondary,
++                      accent: design?.palette?.accent || template.palette.accent,
++                      envelope: editorEnvelopeColor,
++                      flap: editorEnvelopeColor,
++                      cardBackground: design?.palette?.cardBackground || template.palette.cardBackground,
++                    },
++                  }}
+                 >
+-                  {/* Dynamic sections rendered in preview according to host customization */}
+-                  {editorSections.map((key) => {
+-                    switch (key) {
+-                      case 'story':
+-                        if (!event.ourStoryMilestones || event.ourStoryMilestones.length === 0) return null;
+-                        return <StorySection key="preview-story" milestones={event.ourStoryMilestones} />;
+-                      case 'ceremony':
+-                        if (event.ceremonyDetails || event.receptionDetails) {
+-                          return (
+-                            <CeremonyReceptionSection
+-                              key="preview-ceremony"
+-                              ceremony={event.ceremonyDetails}
+-                              reception={event.receptionDetails}
+-                              eventTitle={event.title}
+-                              eventDate={event.date}
+-                            />
+-                          );
+-                        }
+-                        return (
+-                          <VenueSection
+-                            key="preview-venue"
+-                            venue={event.venue}
+-                            address={event.address}
+-                            city={event.city}
+-                            directionsNote={event.directionsNote}
+-                            googleMapsUrl={event.googleMapsUrl}
+-                            calendarData={{
+-                              title: event.title,
+-                              description: `Invitation to ${event.title}`,
+-                              location: `${event.venue}, ${event.city}`,
+-                              startDate: event.date,
+-                              endDate: event.date,
+-                            }}
+-                          />
+-                        );
+-                      case 'venue':
+-                        return (
+-                          <VenueSection
+-                            key="preview-venue"
+-                            venue={event.venue}
+-                            address={event.address}
+-                            city={event.city}
+-                            directionsNote={event.directionsNote}
+-                            googleMapsUrl={event.googleMapsUrl}
+-                            calendarData={{
+-                              title: event.title,
+-                              description: `Invitation to ${event.title}`,
+-                              location: `${event.venue}, ${event.city}`,
+-                              startDate: event.date,
+-                              endDate: event.date,
+-                            }}
+-                          />
+-                        );
+-                      case 'schedule':
+-                        return <ScheduleSection key="preview-schedule" items={event.programmeSchedule} />;
+-                      case 'about':
+-                        return (
+-                          <BirthdayAboutSection
+-                            key="preview-about"
+-                            celebrantName={event.celebrants}
+-                            milestoneAge={event.milestoneAge}
+-                            bio={event.birthdayAbout?.bio || event.story}
+-                            facts={event.birthdayAbout?.facts}
+-                            heading={event.birthdayAbout?.heading}
+-                            heroImage={event.heroImage}
+-                          />
+-                        );
+-                      case 'activities':
+-                        return (
+-                          <BirthdayActivitiesSection
+-                            key="preview-activities"
+-                            activities={event.birthdayActivities}
+-                            menu={event.birthdayMenu}
+-                          />
+-                        );
+-                      case 'obituary':
+-                        return (
+-                          <MemorialObituarySection
+-                            key="preview-obituary"
+-                            honoreeName={event.celebrants}
+-                            biography={event.memorialObituary?.biography || event.story || ''}
+-                            birthDate={event.memorialObituary?.birthDate}
+-                            deathDate={event.memorialObituary?.deathDate}
+-                            epitaph={event.memorialObituary?.epitaph}
+-                          />
+-                        );
+-                      case 'services':
+-                        return (
+-                          <MemorialServiceSection
+-                            key="preview-services"
+-                            services={event.memorialServices}
+-                            orderOfService={event.memorialOrderOfService}
+-                          />
+-                        );
+-                      case 'livestream':
+-                        return (
+-                          <MemorialLivestreamSection
+-                            key="preview-livestream"
+-                            livestreamUrl={event.livestreamUrl}
+-                            livestreamStatus={event.livestreamStatus}
+-                            honoreeName={event.celebrants}
+-                          />
+-                        );
+-                      case 'candles':
+-                        return (
+-                          <MemorialTributesCandlesSection
+-                            key="preview-candles"
+-                            honoreeName={event.celebrants}
+-                            initialCandlesCount={event.virtualCandlesCount}
+-                          />
+-                        );
+-                      case 'condolences':
+-                        return <CondolencesSection key="preview-condolences" honoreeName={event.celebrants} />;
+-                      case 'gallery':
+-                        if (!event.galleryImages || event.galleryImages.length === 0) return null;
+-                        return <GallerySection key="preview-gallery" images={event.galleryImages} celebrants={event.celebrants} />;
+-                      case 'faq':
+-                        return <FAQSection key="preview-faq" items={event.faqItems} />;
+-                      case 'registry':
+-                        if (!event.mpesaNumber) return null;
+-                        return (
+-                          <RegistrySection
+-                            key="preview-registry"
+-                            mpesaType={event.mpesaType}
+-                            mpesaNumber={event.mpesaNumber}
+-                            recipientName={event.mpesaRecipient}
+-                            accountReference={event.mpesaReference}
+-                          />
+-                        );
+-                      case 'rsvp':
+-                        return (
+-                          <RSVPSection
+-                            key="preview-rsvp"
+-                            eventId={event.id}
+-                            deadline={event.rsvpDeadline}
+-                            defaultGuestName="Guest Preview"
+-                            allowedPlusOnes={1}
+-                          />
+-                        );
+-                      case 'closing':
+-                        return (
+-                          <ClosingSection
+-                            key="preview-closing"
+-                            celebrants={event.celebrants}
+-                            calendarData={{
+-                              title: event.title,
+-                              description: `Invitation to ${event.title}`,
+-                              location: `${event.venue}, ${event.city}`,
+-                              startDate: event.date,
+-                              endDate: event.date,
+-                            }}
+-                          />
+-                        );
+-                      default:
+-                        return null;
+-                    }
+-                  })}
++                  <InvitationSectionsRenderer
++                    event={event}
++                    sectionKeys={editorSections}
++                    guestName="Guest Preview"
++                    previewMode
++                  />
+                 </EnvelopeRenderer>
+               </div>
+             </div>
+diff --git a/src/app/app/events/new/page.tsx b/src/app/app/events/new/page.tsx
+index 89764b2..e4ffb28 100644
+--- a/src/app/app/events/new/page.tsx
++++ b/src/app/app/events/new/page.tsx
+@@ -3,9 +3,14 @@
+ import React, { useState, Suspense } from 'react';
+ import { useRouter, useSearchParams } from 'next/navigation';
+ import Link from 'next/link';
++import Image from 'next/image';
+ import { EventService } from '@/lib/services/event-service';
+ import { TEMPLATES } from '@/lib/templates/catalogue';
+ import { EventCategory } from '@/lib/templates/types';
++import type { EventDesignEntity } from '@/lib/db/types';
++import { DEFAULT_TEMPLATE_BY_CATEGORY, EVENT_CATEGORY_LABELS } from '@/lib/events/categories';
++import { getDefaultInvitationSections } from '@/lib/events/default-invitation-sections';
++import { DraftInvitationPreview } from '@/components/invitations/DraftInvitationPreview';
+ import { Input } from '@/components/ui/Input';
+ import {
+   ArrowLeft,
+@@ -15,8 +20,13 @@ import {
+   Layers,
+   Sparkles,
+   X,
++  Monitor,
++  Smartphone,
++  RotateCcw,
+ } from 'lucide-react';
+ 
++const TEMPLATE_PICKER_CATEGORIES = ['all', ...Array.from(new Set(TEMPLATES.map((template) => template.category)))];
++
+ const SWATCHES = [
+   { id: 'terracotta', color: '#934638', label: 'Terracotta' },
+   { id: 'gold', color: '#B99A62', label: 'Antique Gold' },
+@@ -30,30 +40,40 @@ function NewEventWizardContent() {
+   const searchParams = useSearchParams();
+   const templateParam = searchParams.get('templateId') || searchParams.get('template');
+   const matchedTemplate = TEMPLATES.find((t) => t.id === templateParam);
+-  const initialTemplateId = matchedTemplate?.id || 'sage-botanical';
+-
+-  // Stepper: 1: Details, 2: Design, 3: Guests, 4: RSVP, 5: Publish
++  const initialCategory = (matchedTemplate?.category as EventCategory) || 'wedding';
++  // Resolve a real catalogue template before initializing controls; old placeholder IDs drifted out of the catalogue.
++  const starterTemplate = matchedTemplate
++    || TEMPLATES.find((t) => t.id === DEFAULT_TEMPLATE_BY_CATEGORY[initialCategory])
++    || TEMPLATES.find((t) => t.category === initialCategory)
++    || TEMPLATES[0];
++  const initialTemplateId = starterTemplate.id;
++  const initialSwatch = SWATCHES.find((swatch) => swatch.color.toLowerCase() === starterTemplate.palette.primary.toLowerCase())?.id
++    || (initialCategory === 'graduation' ? 'gold' : initialCategory === 'memorial' || initialCategory === 'funeral' || initialCategory === 'housewarming' ? 'sage' : initialCategory === 'birthday' ? 'velvet' : initialCategory === 'corporate' ? 'charcoal' : 'terracotta');
++
++  // Stepper: 1: Details, 2: Design, 3: Guests, 4: RSVP, 5: Review
+   const [activeStep, setActiveStep] = useState<number>(2);
+   const [mobileView, setMobileView] = useState<'edit' | 'preview'>('edit');
+   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+   const [pickerCategory, setPickerCategory] = useState<string>('all');
++  const [previewGuest, setPreviewGuest] = useState('Mr. & Mrs. Kamau');
++  const [previewDevice, setPreviewDevice] = useState<'iphone' | 'android' | 'desktop'>('iphone');
++  const [previewReplayKey, setPreviewReplayKey] = useState(0);
++  const [previewShareNotice, setPreviewShareNotice] = useState(false);
+ 
+-  const [category, setCategory] = useState<EventCategory>(
+-    (matchedTemplate?.category as EventCategory) || 'wedding'
+-  );
++  const [category, setCategory] = useState<EventCategory>(initialCategory);
+   const [selectedTemplateId, setSelectedTemplateId] = useState(initialTemplateId);
+-  const [activeColor, setActiveColor] = useState(SWATCHES[0].id);
+-  const [selectedFont, setSelectedFont] = useState('Playfair Display');
++  const [activeColor, setActiveColor] = useState(initialSwatch);
++  const [selectedFont, setSelectedFont] = useState(starterTemplate.fonts.heading === 'sans' ? 'Inter' : starterTemplate.fonts.heading === 'display' ? 'Cormorant Garamond' : 'Playfair Display');
+   const [envelopeStyle, setEnvelopeStyle] = useState('Classic Fold');
+   const [letterStyle, setLetterStyle] = useState('Printed Letter');
+ 
+-  const [title, setTitle] = useState(matchedTemplate?.sampleData.title || 'Wedding Celebration');
+-  const [hosts, setHosts] = useState(matchedTemplate?.sampleData.hosts || 'Together with their families');
+-  const [celebrants, setCelebrants] = useState(matchedTemplate?.sampleData.celebrants || 'Wanjiku & Otieno');
+-  const [date, setDate] = useState(matchedTemplate?.sampleData.date || 'Saturday, 12 December 2026');
+-  const [time, setTime] = useState(matchedTemplate?.sampleData.time || '2:00 PM EAT');
+-  const [venue, setVenue] = useState(matchedTemplate?.sampleData.venue || 'Nairobi Chapel, Ngong Road');
+-  const [city, setCity] = useState(matchedTemplate?.sampleData.city || 'Nairobi, Kenya');
++  const [title, setTitle] = useState(starterTemplate.sampleData.title);
++  const [hosts, setHosts] = useState(starterTemplate.sampleData.hosts);
++  const [celebrants, setCelebrants] = useState(starterTemplate.sampleData.celebrants);
++  const [date, setDate] = useState(starterTemplate.sampleData.date);
++  const [time, setTime] = useState(starterTemplate.sampleData.time);
++  const [venue, setVenue] = useState(starterTemplate.sampleData.venue);
++  const [city, setCity] = useState(starterTemplate.sampleData.city);
+   const [rsvpDeadline, setRsvpDeadline] = useState('1 December 2026');
+   const [dressCode, setDressCode] = useState('Formal Traditional / Black Tie');
+   const [isSubmitting, setIsSubmitting] = useState(false);
+@@ -61,7 +81,36 @@ function NewEventWizardContent() {
+   const selectedTemplate =
+     TEMPLATES.find((t) => t.id === selectedTemplateId) ||
+     TEMPLATES.find((t) => t.category === category) ||
+-    TEMPLATES[0];
++    starterTemplate;
++  const selectedSwatch = SWATCHES.find((swatch) => swatch.id === activeColor) || SWATCHES[0];
++  const normalizedEnvelopeStyle: NonNullable<EventDesignEntity['envelopeStyle']> =
++    envelopeStyle === 'Pocket Fold' ? 'pocket-fold' : envelopeStyle === 'Scalloped Edge' ? 'scalloped-edge' : 'classic-fold';
++  const normalizedLetterStyle: NonNullable<EventDesignEntity['letterStyle']> =
++    letterStyle === 'Handwritten Letter' ? 'handwritten-letter' : letterStyle === 'Folded Card' ? 'folded-card' : 'printed-letter';
++  const draftDesign: Partial<EventDesignEntity> = {
++    motionPreset: selectedTemplate.motionPreset,
++    palette: {
++      primary: selectedSwatch.color,
++      secondary: selectedTemplate.palette.secondary,
++      accent: selectedSwatch.color,
++      envelope: selectedSwatch.color,
++      flap: selectedSwatch.color,
++      cardBackground: selectedTemplate.palette.cardBackground,
++    },
++    linerId: selectedTemplate.liner.id,
++    sealShape: selectedTemplate.seal.shape === 'oval' ? 'circle' : selectedTemplate.seal.shape,
++    sealMonogram: selectedTemplate.seal.monogram || 'K',
++    sealColor: selectedTemplate.seal.color,
++    visibleSections: selectedTemplate.supportedSections,
++    fontFamily: selectedFont,
++    envelopeStyle: normalizedEnvelopeStyle,
++    letterStyle: normalizedLetterStyle,
++  };
++  const previewValues = {
++    title, hosts, celebrants, date, time, venue, city,
++    heroImage: selectedTemplate.sampleData.heroImage,
++    rsvpDeadline, dressCode,
++  };
+ 
+   const handleSelectTemplate = (tmpl: (typeof TEMPLATES)[0]) => {
+     setSelectedTemplateId(tmpl.id);
+@@ -73,6 +122,13 @@ function NewEventWizardContent() {
+     setDate(tmpl.sampleData.date);
+     setTime(tmpl.sampleData.time);
+     setCity(tmpl.sampleData.city);
++    const matchedSwatch = SWATCHES.find((swatch) => swatch.color.toLowerCase() === tmpl.palette.primary.toLowerCase());
++    const occasionSwatch = tmpl.category === 'graduation' ? 'gold' : tmpl.category === 'memorial' || tmpl.category === 'funeral' || tmpl.category === 'housewarming' ? 'sage' : tmpl.category === 'birthday' ? 'velvet' : tmpl.category === 'corporate' ? 'charcoal' : 'terracotta';
++    setActiveColor(matchedSwatch?.id || occasionSwatch);
++    setSelectedFont(tmpl.fonts.heading === 'sans' ? 'Inter' : tmpl.fonts.heading === 'display' ? 'Cormorant Garamond' : 'Playfair Display');
++    setEnvelopeStyle('Classic Fold');
++    setLetterStyle('Printed Letter');
++    setPreviewReplayKey((value) => value + 1);
+     setTemplatePickerOpen(false);
+   };
+ 
+@@ -93,6 +149,14 @@ function NewEventWizardContent() {
+         dressCode: dressCode || undefined,
+         heroImage: selectedTemplate.sampleData.heroImage,
+       });
++      // Persist the design choices too. Previously the user could customize these controls,
++      // but only the event text was saved, so the studio reset to the template defaults.
++      EventService.updateDesign(newEvent.id, {
++        ...draftDesign,
++        eventId: newEvent.id,
++        visibleSections: getDefaultInvitationSections(category),
++        sectionOrder: getDefaultInvitationSections(category),
++      });
+       router.push(`/app/events/${newEvent.id}`);
+     } catch (error) {
+       alert(error instanceof Error ? error.message : 'Could not create the invitation');
+@@ -215,90 +279,75 @@ function NewEventWizardContent() {
+           </div>
+         </aside>
+ 
+-        {/* Center Column (5 cols): Live Phone / Card Preview */}
+-        <section className={`lg:col-span-5 flex flex-col items-center ${mobileView === 'preview' ? 'flex' : 'hidden lg:flex'}`}>
+-          <div className="w-full mb-3 text-center sm:text-left">
+-            <h3 className="font-serif text-lg text-[#272620] font-medium">Design</h3>
+-            <p className="text-xs text-[#756F64]">Choose a template and customise your invitation.</p>
+-          </div>
+-
+-          {/* Interactive Mobile / Stationery Preview Card */}
+-          <div className="w-full max-w-[340px] aspect-[9/16] max-h-[580px] bg-[#1a1412] rounded-3xl p-3 shadow-2xl border-4 border-[#302824] relative overflow-hidden flex flex-col justify-between">
+-            {/* Top Speaker notch */}
+-            <div className="w-20 h-3.5 bg-[#302824] rounded-full mx-auto mb-2 shrink-0" />
+-
+-            {/* Inner Phone Screen */}
+-            <div className="relative flex-1 rounded-2xl overflow-hidden bg-[#2D211A] flex flex-col items-center justify-center p-5 text-center text-[#FBF6ED]">
+-              {/* Envelope / Poster Art */}
+-              <div className="absolute inset-0 z-0">
+-                <img
+-                  src={selectedTemplate.sampleData.heroImage || '/kadi/category-botanical.webp'}
+-                  alt="Template background"
+-                  className="w-full h-full object-cover filter brightness-[0.72] contrast-105"
+-                />
+-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/50" />
+-              </div>
+-
+-              {/* Stationery Content Overlay */}
+-              <div className="relative z-10 space-y-3 w-full border border-amber-200/30 p-4 rounded-lg bg-black/30 backdrop-blur-[2px]">
+-                <p className="text-[8px] uppercase tracking-[0.25em] text-amber-200/80">
+-                  {hosts}
+-                </p>
+-                <div className="w-6 h-px bg-amber-200/40 mx-auto" />
+-                <h4 className="font-serif text-2xl text-amber-100 font-medium tracking-tight">
+-                  {celebrants}
+-                </h4>
+-                <p className="text-[10px] text-amber-200/90 font-serif italic">
+-                  {title}
+-                </p>
+-                <div className="pt-2 border-t border-amber-200/20 text-[9px] uppercase tracking-wider text-amber-100/80 space-y-0.5">
+-                  <p>{date}</p>
+-                  <p className="text-[8px] text-amber-200/70">{venue}</p>
+-                </div>
++        {/* Center Column: actual guest invitation component, not a separate poster mockup */}
++        <section className={`lg:col-span-5 flex flex-col items-center min-w-0 ${mobileView === 'preview' ? 'flex' : 'hidden lg:flex'}`}>
++          <div className="w-full mb-3 flex flex-col gap-3">
++            <div className="flex items-start justify-between gap-3">
++              <div>
++                <h3 className="font-serif text-lg text-[#272620] font-medium">Live guest preview</h3>
++                <p className="text-xs text-[#756F64]">Every detail, colour and stationery choice updates here.</p>
+               </div>
+-
+-              {/* Bottom Cue */}
+-              <div className="relative z-10 mt-4 flex items-center gap-1.5 text-[9px] uppercase tracking-widest text-amber-200/75">
+-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+-                <span>Scroll to open invitation</span>
++              <button
++                type="button"
++                onClick={() => setPreviewReplayKey((value) => value + 1)}
++                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[rgba(39,38,32,.18)] bg-white px-3 text-xs font-medium text-[#272620] hover:bg-[#FAF4EB] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#934638]"
++                aria-label="Restart envelope opening animation"
++              >
++                <RotateCcw size={14} /> Replay
++              </button>
++            </div>
++            <div className="flex flex-wrap items-center gap-2">
++              <label className="flex min-h-9 items-center gap-2 rounded-full border border-[rgba(39,38,32,.14)] bg-white px-3 text-xs text-[#6D6558]">
++                <span>Preview as</span>
++                <select value={previewGuest} onChange={(e) => setPreviewGuest(e.target.value)} className="max-w-[150px] bg-transparent font-medium text-[#272620] outline-none">
++                  <option>Mr. & Mrs. Kamau</option>
++                  <option>Sarah Kamau</option>
++                  <option>David Mwangi</option>
++                  <option>Wanjiku Otieno & Family</option>
++                </select>
++              </label>
++              <div className="inline-flex rounded-full border border-[rgba(39,38,32,.14)] bg-white p-1" aria-label="Preview device">
++                <button type="button" onClick={() => setPreviewDevice('iphone')} aria-pressed={previewDevice === 'iphone'} className={`grid h-8 w-8 place-items-center rounded-full ${previewDevice === 'iphone' ? 'bg-[#272620] text-white' : 'text-[#6D6558] hover:bg-[#F4EFE6]'}`} title="iPhone preview"><Smartphone size={14} /></button>
++                <button type="button" onClick={() => setPreviewDevice('android')} aria-pressed={previewDevice === 'android'} className={`grid h-8 w-8 place-items-center rounded-full ${previewDevice === 'android' ? 'bg-[#272620] text-white' : 'text-[#6D6558] hover:bg-[#F4EFE6]'}`} title="Android preview"><Smartphone size={14} /></button>
++                <button type="button" onClick={() => setPreviewDevice('desktop')} aria-pressed={previewDevice === 'desktop'} className={`grid h-8 w-8 place-items-center rounded-full ${previewDevice === 'desktop' ? 'bg-[#272620] text-white' : 'text-[#6D6558] hover:bg-[#F4EFE6]'}`} title="Desktop preview"><Monitor size={14} /></button>
+               </div>
++              <button
++                type="button"
++                onClick={() => setPreviewShareNotice(true)}
++                className="ml-auto inline-flex min-h-9 items-center rounded-full px-3 text-xs font-medium text-[#794a32] hover:bg-[#F4EDE2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#934638]"
++                title="Save the draft before sharing a private feedback link"
++              >
++                Share preview link
++              </button>
+             </div>
+-
+-            {/* Home indicator bar */}
+-            <div className="w-24 h-1 bg-white/40 rounded-full mx-auto mt-2 shrink-0" />
++            {previewShareNotice && (
++              <div className="flex items-start justify-between gap-3 rounded-lg border border-[#DCCCB6] bg-[#FAF4EB] px-3 py-2.5 text-xs text-[#6D6558]" role="status">
++                <span>Save this draft first to create a private feedback link. This preview is currently local to the editor.</span>
++                <button type="button" onClick={() => setPreviewShareNotice(false)} aria-label="Dismiss preview link note"><X size={14} /></button>
++              </div>
++            )}
+           </div>
+ 
+-          {/* Template Thumbnails Carousel below preview */}
+-          <div className="w-full max-w-[340px] mt-4">
++          <div className={`kadi-live-preview-device kadi-live-preview-device--${previewDevice}`}>
++            <div className="kadi-live-preview-viewport">
++              <DraftInvitationPreview
++                template={selectedTemplate}
++                values={previewValues}
++                design={draftDesign}
++                guestName={previewGuest}
++                restartKey={previewReplayKey}
++              />
++            </div>
++          </div>
++          <div className="w-full max-w-[560px] mt-4">
+             <div className="flex items-center justify-between mb-1.5 px-0.5">
+               <span className="text-[11px] font-medium text-[#756F64]">Templates ({TEMPLATES.length})</span>
+-              <button
+-                type="button"
+-                onClick={() => setTemplatePickerOpen(true)}
+-                className="text-[11px] font-medium text-[#934638] hover:underline flex items-center gap-1"
+-              >
+-                <Sparkles size={11} />
+-                <span>Browse all</span>
+-              </button>
++              <button type="button" onClick={() => setTemplatePickerOpen(true)} className="text-[11px] font-medium text-[#934638] hover:underline flex items-center gap-1"><Sparkles size={11} /><span>Browse all</span></button>
+             </div>
+             <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+               {TEMPLATES.map((tmpl) => (
+-                <button
+-                  key={tmpl.id}
+-                  type="button"
+-                  onClick={() => handleSelectTemplate(tmpl)}
+-                  className={`w-14 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition-all relative group ${
+-                    selectedTemplateId === tmpl.id
+-                      ? 'border-[#934638] ring-2 ring-[#934638]/40 scale-105 shadow-md'
+-                      : 'border-black/10 opacity-70 hover:opacity-100'
+-                  }`}
+-                  title={`${tmpl.name} (${tmpl.category})`}
+-                >
+-                  <img
+-                    src={tmpl.sampleData.heroImage}
+-                    alt={tmpl.name}
+-                    className="w-full h-full object-cover"
+-                  />
++                <button key={tmpl.id} type="button" onClick={() => handleSelectTemplate(tmpl)} className={`w-14 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition-all relative group ${selectedTemplateId === tmpl.id ? 'border-[#934638] ring-2 ring-[#934638]/40 scale-105 shadow-md' : 'border-black/10 opacity-70 hover:opacity-100'}`} title={`${tmpl.name} (${tmpl.category})`}>
++                  <Image src={tmpl.sampleData.heroImage} alt={tmpl.name} fill sizes="56px" className="object-cover" loading="lazy" />
+                 </button>
+               ))}
+             </div>
+@@ -518,7 +567,7 @@ function NewEventWizardContent() {
+       <div className="sticky bottom-0 z-20 bg-[#FBF8F1] border-t border-[rgba(39,38,32,0.14)] py-4 px-6 mt-8 flex items-center justify-between gap-4">
+         <div className="flex items-center gap-2 text-xs text-emerald-800 font-medium">
+           <Check size={14} strokeWidth={2.5} />
+-          <span>All changes saved</span>
++          <span>Preview updates live · draft saves when you continue</span>
+         </div>
+ 
+         <div className="flex items-center gap-3">
+@@ -549,7 +598,7 @@ function NewEventWizardContent() {
+               className="kadi-button !min-h-[38px] !px-6 !py-2 !bg-[#934638] hover:!bg-[#73352B] text-xs font-medium disabled:opacity-60"
+             >
+               <Sparkles size={14} />
+-              <span>{isSubmitting ? 'Creating Invitation...' : 'Launch Invitation Studio'}</span>
++              <span>{isSubmitting ? 'Creating draft...' : 'Create Draft & Open Studio'}</span>
+             </button>
+           )}
+         </div>
+@@ -577,18 +626,19 @@ function NewEventWizardContent() {
+ 
+             {/* Category Filter Pills */}
+             <div className="px-6 py-3 border-b border-[rgba(39,38,32,0.08)] bg-white/60 flex items-center gap-2 overflow-x-auto shrink-0 scrollbar-none">
+-              {['all', 'wedding', 'birthday', 'memorial', 'baby-shower', 'graduation', 'housewarming', 'corporate'].map((cat) => (
++              {TEMPLATE_PICKER_CATEGORIES.map((cat) => (
+                 <button
+                   key={cat}
+                   type="button"
+                   onClick={() => setPickerCategory(cat)}
+-                  className={`px-3 py-1 rounded-full text-xs font-medium capitalize whitespace-nowrap transition-colors ${
++                  aria-pressed={pickerCategory === cat}
++                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#934638] ${
+                     pickerCategory === cat
+-                      ? 'bg-[#794a32] text-white shadow-sm'
++                      ? 'bg-[#794a32] text-white'
+                       : 'bg-white border border-[rgba(39,38,32,0.12)] text-[#6D6558] hover:text-[#272620]'
+                   }`}
+                 >
+-                  {cat.replace('-', ' ')}
++                  {cat === 'all' ? 'All occasions' : EVENT_CATEGORY_LABELS[cat as EventCategory] || cat.replace('-', ' ')}
+                 </button>
+               ))}
+             </div>
+@@ -609,10 +659,14 @@ function NewEventWizardContent() {
+                     }`}
+                   >
+                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#2D211A]">
+-                      <img
++                      <Image
+                         src={tmpl.sampleData.heroImage}
+                         alt={tmpl.name}
+-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
++                        fill
++                        sizes="(max-width: 640px) 44vw, (max-width: 1024px) 26vw, 180px"
++                        className="object-cover group-hover:scale-105 transition-transform duration-300"
++                        loading="lazy"
++                        quality={78}
+                       />
+                       {isSelected && (
+                         <div className="absolute top-2 right-2 px-2 py-0.5 bg-[#934638] text-white text-[10px] font-semibold rounded-full flex items-center gap-1 shadow">
+diff --git a/src/app/e/[slug]/page.tsx b/src/app/e/[slug]/page.tsx
+index 73eef12..4a8491a 100644
+--- a/src/app/e/[slug]/page.tsx
++++ b/src/app/e/[slug]/page.tsx
+@@ -7,22 +7,8 @@ import { EventService } from '@/lib/services/event-service';
+ import { GuestService } from '@/lib/services/guest-service';
+ import { getTemplateById } from '@/lib/templates/catalogue';
+ import { EnvelopeRenderer } from '@/components/animation/EnvelopeRenderer';
+-import { ScheduleSection } from '@/components/invitations/ScheduleSection';
+-import { VenueSection } from '@/components/invitations/VenueSection';
+-import { CeremonyReceptionSection } from '@/components/invitations/CeremonyReceptionSection';
+-import { StorySection } from '@/components/invitations/StorySection';
+-import { GallerySection } from '@/components/invitations/GallerySection';
+-import { FAQSection } from '@/components/invitations/FAQSection';
+-import { BirthdayAboutSection } from '@/components/invitations/BirthdayAboutSection';
+-import { BirthdayActivitiesSection } from '@/components/invitations/BirthdayActivitiesSection';
+-import { MemorialObituarySection } from '@/components/invitations/MemorialObituarySection';
+-import { MemorialServiceSection } from '@/components/invitations/MemorialServiceSection';
+-import { MemorialTributesCandlesSection } from '@/components/invitations/MemorialTributesCandlesSection';
+-import { MemorialLivestreamSection } from '@/components/invitations/MemorialLivestreamSection';
+-import { CondolencesSection } from '@/components/invitations/CondolencesSection';
+-import { RSVPSection } from '@/components/invitations/RSVPSection';
+-import { RegistrySection } from '@/components/invitations/RegistrySection';
+-import { ClosingSection } from '@/components/invitations/ClosingSection';
++import { InvitationSectionsRenderer } from '@/components/invitations/InvitationSectionsRenderer';
++import { getDefaultInvitationSections } from '@/lib/events/default-invitation-sections';
+ import { InvitationThemeScope } from '@/components/invitations/InvitationThemeScope';
+ import { Button } from '@/components/ui/Button';
+ 
+@@ -38,7 +24,9 @@ function GuestInvitationContent() {
+   const template = getTemplateById(event?.templateId || 'savannah-twilight');
+   const design = event ? EventService.getEventDesign(event.id) : undefined;
+ 
+-  if (!event || !template) {
++  // Never expose draft or archived invitations through the public guest URL.
++  // Host drafts use the authenticated editor preview until a private preview token exists.
++  if (!event || event.status !== 'published' || !template) {
+     return (
+       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-brand-mist text-center">
+         <h1 className="text-2xl font-serif font-bold text-brand-charcoal">
+@@ -54,218 +42,11 @@ function GuestInvitationContent() {
+     );
+   }
+ 
+-  // Determine active section order
+-  const defaultSectionsByCategory: Record<string, string[]> = {
+-    wedding: ['story', 'ceremony', 'schedule', 'gallery', 'faq', 'registry', 'rsvp', 'closing'],
+-    birthday: ['about', 'activities', 'schedule', 'gallery', 'rsvp', 'faq', 'registry', 'closing'],
+-    memorial: ['obituary', 'services', 'livestream', 'candles', 'condolences', 'rsvp', 'registry', 'closing'],
+-    funeral: ['obituary', 'services', 'livestream', 'candles', 'condolences', 'rsvp', 'closing'],
+-    housewarming: ['venue', 'schedule', 'story', 'gallery', 'faq', 'rsvp', 'closing'],
+-    graduation: ['ceremony', 'schedule', 'story', 'gallery', 'faq', 'registry', 'rsvp', 'closing'],
+-    corporate: ['schedule', 'venue', 'faq', 'rsvp', 'closing'],
+-    anniversary: ['story', 'ceremony', 'schedule', 'gallery', 'rsvp', 'closing'],
+-    'baby-shower': ['about', 'activities', 'registry', 'rsvp', 'closing'],
+-    holiday: ['activities', 'schedule', 'rsvp', 'closing'],
+-  };
+-
++  // Section order and render implementation are shared with the editor preview.
+   const activeSectionKeys =
+     design?.sectionOrder ||
+     design?.visibleSections ||
+-    defaultSectionsByCategory[event.category] || [
+-      'venue',
+-      'schedule',
+-      'gallery',
+-      'faq',
+-      'registry',
+-      'rsvp',
+-      'closing',
+-    ];
+-
+-  // Map section keys to actual rendered components
+-  const renderSection = (key: string) => {
+-    switch (key) {
+-      case 'story':
+-        if (!event.ourStoryMilestones || event.ourStoryMilestones.length === 0) return null;
+-        return <StorySection key="story" milestones={event.ourStoryMilestones} />;
+-
+-      case 'ceremony':
+-        if (event.ceremonyDetails || event.receptionDetails) {
+-          return (
+-            <CeremonyReceptionSection
+-              key="ceremony"
+-              ceremony={event.ceremonyDetails}
+-              reception={event.receptionDetails}
+-              eventTitle={event.title}
+-              eventDate={event.date}
+-            />
+-          );
+-        }
+-        return (
+-          <VenueSection
+-            key="venue"
+-            venue={event.venue}
+-            address={event.address}
+-            city={event.city}
+-            directionsNote={event.directionsNote}
+-            googleMapsUrl={event.googleMapsUrl}
+-            calendarData={{
+-              title: event.title,
+-              description: `Invitation to ${event.title}`,
+-              location: `${event.venue}, ${event.city}`,
+-              startDate: event.date,
+-              endDate: event.date,
+-            }}
+-          />
+-        );
+-
+-      case 'venue':
+-        return (
+-          <VenueSection
+-            key="venue"
+-            venue={event.venue}
+-            address={event.address}
+-            city={event.city}
+-            directionsNote={event.directionsNote}
+-            googleMapsUrl={event.googleMapsUrl}
+-            calendarData={{
+-              title: event.title,
+-              description: `Invitation to ${event.title}`,
+-              location: `${event.venue}, ${event.city}`,
+-              startDate: event.date,
+-              endDate: event.date,
+-            }}
+-          />
+-        );
+-
+-      case 'schedule':
+-        return <ScheduleSection key="schedule" items={event.programmeSchedule} />;
+-
+-      case 'about':
+-        return (
+-          <BirthdayAboutSection
+-            key="about"
+-            celebrantName={event.celebrants}
+-            milestoneAge={event.milestoneAge}
+-            bio={event.birthdayAbout?.bio || event.story}
+-            facts={event.birthdayAbout?.facts}
+-            heading={event.birthdayAbout?.heading}
+-            heroImage={event.heroImage}
+-          />
+-        );
+-
+-      case 'activities':
+-        return (
+-          <BirthdayActivitiesSection
+-            key="activities"
+-            activities={event.birthdayActivities}
+-            menu={event.birthdayMenu}
+-          />
+-        );
+-
+-      case 'obituary':
+-        return (
+-          <MemorialObituarySection
+-            key="obituary"
+-            honoreeName={event.celebrants}
+-            biography={event.memorialObituary?.biography || event.story || ''}
+-            birthDate={event.memorialObituary?.birthDate}
+-            deathDate={event.memorialObituary?.deathDate}
+-            epitaph={event.memorialObituary?.epitaph}
+-          />
+-        );
+-
+-      case 'services':
+-        return (
+-          <MemorialServiceSection
+-            key="services"
+-            services={event.memorialServices}
+-            orderOfService={event.memorialOrderOfService}
+-          />
+-        );
+-
+-      case 'livestream':
+-        return (
+-          <MemorialLivestreamSection
+-            key="livestream"
+-            livestreamUrl={event.livestreamUrl}
+-            livestreamStatus={event.livestreamStatus}
+-            honoreeName={event.celebrants}
+-          />
+-        );
+-
+-      case 'candles':
+-        return (
+-          <MemorialTributesCandlesSection
+-            key="candles"
+-            honoreeName={event.celebrants}
+-            initialCandlesCount={event.virtualCandlesCount}
+-          />
+-        );
+-
+-      case 'condolences':
+-        return <CondolencesSection key="condolences" honoreeName={event.celebrants} />;
+-
+-      case 'gallery':
+-        if (!event.galleryImages || event.galleryImages.length === 0) return null;
+-        return (
+-          <GallerySection
+-            key="gallery"
+-            images={event.galleryImages}
+-            celebrants={event.celebrants}
+-          />
+-        );
+-
+-      case 'faq':
+-        return <FAQSection key="faq" items={event.faqItems} />;
+-
+-      case 'registry':
+-        if (!event.mpesaNumber) return null;
+-        return (
+-          <RegistrySection
+-            key="registry"
+-            mpesaType={event.mpesaType}
+-            mpesaNumber={event.mpesaNumber}
+-            recipientName={event.mpesaRecipient}
+-            accountReference={event.mpesaReference}
+-          />
+-        );
+-
+-      case 'rsvp':
+-        return (
+-          <RSVPSection
+-            key="rsvp"
+-            eventId={event.id}
+-            deadline={event.rsvpDeadline}
+-            guestToken={token}
+-            defaultGuestName={guestHousehold?.displayName}
+-            allowedPlusOnes={guestHousehold?.allowedPlusOnes ?? 1}
+-          />
+-        );
+-
+-      case 'closing':
+-        return (
+-          <ClosingSection
+-            key="closing"
+-            celebrants={event.celebrants}
+-            closingNote={
+-              event.category === 'memorial'
+-                ? '“Held forever in our hearts, until we meet again.”'
+-                : undefined
+-            }
+-            calendarData={{
+-              title: event.title,
+-              description: `Invitation to ${event.title}`,
+-              location: `${event.venue}, ${event.city}`,
+-              startDate: event.date,
+-              endDate: event.date,
+-            }}
+-          />
+-        );
+-
+-      default:
+-        return null;
+-    }
+-  };
++    getDefaultInvitationSections(event.category);
+ 
+   return (
+     <InvitationThemeScope template={template} className="min-h-screen flex flex-col">
+@@ -288,10 +69,11 @@ function GuestInvitationContent() {
+           },
+         }}
+         guestName={guestHousehold?.displayName}
++        design={design}
+         audioUrl={event.audioUrl}
+         initialPhase={phaseParam || undefined}
+       >
+-        {activeSectionKeys.map(renderSection)}
++        <InvitationSectionsRenderer event={event} sectionKeys={activeSectionKeys} guestToken={token} guestName={guestHousehold?.displayName} />
+       </EnvelopeRenderer>
+     </InvitationThemeScope>
+   );
+diff --git a/src/app/globals.css b/src/app/globals.css
+index 1247bca..2f4c378 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -1973,3 +1973,595 @@
+   }
+ }
+ 
++
++/* --------------------------------------------------------------------------
++   KADI visual repair: responsive live guest preview and category-led stationery
++   Kept at the end so the repaired preview wins over legacy invitation rules.
++   -------------------------------------------------------------------------- */
++.kadi-live-preview-device {
++  width: min(100%, 393px);
++  margin-inline: auto;
++  padding: 9px;
++  border: 1px solid #242421;
++  border-radius: 36px;
++  background: #141513;
++  box-shadow: 0 18px 42px rgba(20, 18, 14, .18), inset 0 0 0 1px rgba(255,255,255,.08);
++  transition: width 240ms cubic-bezier(.32,.72,0,1), border-radius 240ms cubic-bezier(.32,.72,0,1);
++}
++.kadi-live-preview-device--android { border-radius: 26px; padding: 7px; }
++.kadi-live-preview-device--desktop { width: 100%; padding: 5px; border-radius: 15px; }
++.kadi-live-preview-viewport {
++  height: min(70svh, 740px);
++  min-height: 540px;
++  border-radius: 27px;
++  overflow: auto;
++  overscroll-behavior: contain;
++  background: #111;
++  scrollbar-color: rgba(255,255,255,.28) transparent;
++  scrollbar-width: thin;
++}
++.kadi-live-preview-device--android .kadi-live-preview-viewport { border-radius: 19px; }
++.kadi-live-preview-device--desktop .kadi-live-preview-viewport { height: min(72svh, 800px); min-height: 580px; border-radius: 10px; }
++.kadi-draft-preview.iv-world { min-height: 0; width: 100%; max-width: 100%; overflow: visible; }
++.kadi-draft-preview .iv-opening-stage {
++  min-height: clamp(560px, 70svh, 720px);
++  padding: 76px 14px 36px;
++}
++.kadi-draft-preview .iv-control-rail { padding: 14px 15px; }
++.kadi-draft-preview .iv-opening-copy { margin-bottom: 21px; max-width: 380px; }
++.kadi-draft-preview .iv-opening-title { font-size: clamp(23px, 4.5vw, 36px); }
++.kadi-draft-preview .iv-envelope-hitarea { width: min(310px, 86%); aspect-ratio: 1.48; }
++.kadi-draft-preview .iv-opening-status,
++.kadi-draft-preview .iv-open-instruction { margin-top: 18px; }
++.kadi-draft-preview .iv-opening-footer { display: none; }
++.kadi-draft-preview .iv-occasion-cover { min-height: 600px; padding: 52px 20px; }
++.kadi-draft-preview .iv-love-cover,
++.kadi-draft-preview .iv-garden-cover,
++.kadi-draft-preview .iv-memorial-cover,
++.kadi-draft-preview .iv-gifts-cover,
++.kadi-draft-preview .iv-disco-cover { padding-top: 48px; }
++.kadi-draft-preview .iv-love-cover__photo { height: clamp(200px, 38svh, 360px); }
++.kadi-draft-preview .iv-draft-preview__welcome,
++.kadi-draft-preview__welcome {
++  padding: 42px 20px;
++  text-align: center;
++  color: var(--iv-ink, #29211f);
++  background: var(--iv-paper, #fff9ef);
++  border-top: 1px solid var(--iv-line, rgba(53,39,33,.18));
++}
++.kadi-draft-preview__welcome h2 { margin: 10px auto; max-width: 650px; font: 500 clamp(28px, 4vw, 44px)/1.05 var(--iv-font-heading, Georgia, serif); letter-spacing: -.04em; }
++.kadi-draft-preview__welcome p { margin: 7px 0 0; font-size: 12px; line-height: 1.6; }
++.kadi-draft-preview__eyebrow { font-size: 9px !important; text-transform: uppercase; letter-spacing: .2em; opacity: .7; }
++
++/* Make the editor's selected palette, typeface, liner and styles affect the real envelope. */
++.iv-world[data-custom-design="true"] .iv-envelope-back {
++  background: var(--iv-envelope-color);
++  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 4px), radial-gradient(ellipse at 25% 10%, rgba(255,255,255,.13), transparent 45%);
++  border-color: var(--iv-gold);
++  box-shadow: inset 0 0 0 3px rgba(20,5,8,.13), inset 0 0 0 4px color-mix(in srgb, var(--iv-gold) 35%, transparent);
++}
++.iv-world[data-custom-design="true"] .iv-envelope-back-border { border-color: color-mix(in srgb, var(--iv-gold) 55%, transparent); }
++.iv-world[data-custom-design="true"] .iv-envelope-pocket { background: var(--iv-envelope-color); border-color: var(--iv-gold); }
++.iv-world[data-custom-design="true"] .iv-pocket-fold { background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 4px); }
++.iv-world[data-custom-design="true"] .iv-pocket-fold--left { background: var(--iv-envelope-grad-left); }
++.iv-world[data-custom-design="true"] .iv-pocket-fold--right { background: var(--iv-envelope-grad-right); }
++.iv-world[data-custom-design="true"] .iv-pocket-fold--bottom { background: var(--iv-envelope-grad-bottom); }
++.iv-world[data-custom-design="true"] .iv-pocket-gold-rule { background: linear-gradient(90deg, transparent, var(--iv-gold), transparent); }
++.iv-world[data-custom-design="true"] .iv-pocket-fleuron { color: var(--iv-gold); }
++.iv-world[data-custom-design="true"] .iv-flap-outer-polygon { background: var(--iv-flap-color); }
++.iv-world[data-custom-design="true"] .iv-flap-gold-frame { border-color: color-mix(in srgb, var(--iv-gold) 72%, transparent); }
++.iv-world[data-custom-design="true"] .iv-envelope-liner,
++.iv-world[data-custom-design="true"] .iv-flap-inner-liner { background: var(--iv-liner); background-image: var(--iv-liner-pattern, none); }
++.iv-world[data-custom-design="true"] .iv-card-preview { background-color: var(--iv-paper); border-color: var(--iv-card-line); }
++.iv-world[data-custom-design="true"] .iv-letter-inner-border { border-color: var(--iv-card-line); }
++.iv-world[data-custom-design="true"] .iv-letter-corner,
++.iv-world[data-custom-design="true"] .iv-pocket-gold-rule { border-color: var(--iv-gold); }
++.iv-world[data-custom-design="true"] .iv-crest-monogram,
++.iv-world[data-custom-design="true"] .iv-wax-imprint { color: var(--iv-gold); }
++.iv-world[data-custom-design="true"] .iv-victorian-seal {
++  background: radial-gradient(circle at 31% 23%, rgba(255,210,177,.65), transparent 21%), radial-gradient(circle at 65% 75%, rgba(15,0,0,.8), transparent 38%), radial-gradient(circle at 42% 36%, color-mix(in srgb, var(--iv-seal-color) 84%, white), var(--iv-seal-color) 62%, color-mix(in srgb, var(--iv-seal-color) 45%, black));
++}
++.iv-world[data-custom-design="true"] .iv-opening-title,
++.iv-world[data-custom-design="true"] .iv-card-preview,
++.iv-world[data-custom-design="true"] .iv-crest-monogram,
++.iv-world[data-custom-design="true"] .iv-letter-names,
++.iv-world[data-custom-design="true"] .iv-letter-hosts,
++.iv-world[data-custom-design="true"] .iv-letter-request,
++.iv-world[data-custom-design="true"] .iv-invitation h1,
++.iv-world[data-custom-design="true"] .iv-invitation h2 { font-family: var(--iv-font-heading, var(--font-playfair), Georgia, serif); }
++.iv-world[data-custom-design="true"] .iv-envelope-pocket { clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%); }
++.iv-world[data-envelope-style="pocket-fold"] .iv-envelope-back { border-radius: 8px; }
++.iv-world[data-envelope-style="pocket-fold"] .iv-envelope-pocket { clip-path: none; border-radius: 3px 3px 9px 9px; inset: 7% 0 0; }
++.iv-world[data-envelope-style="pocket-fold"] .iv-pocket-fold,
++.iv-world[data-envelope-style="pocket-fold"] .iv-pocket-gold-rule,
++.iv-world[data-envelope-style="pocket-fold"] .iv-pocket-fleuron { display: none; }
++.iv-world[data-envelope-style="pocket-fold"] .iv-envelope-flap-face--outer { clip-path: polygon(0 0, 100% 0, 100% 83%, 50% 100%, 0 83%); }
++.iv-world[data-envelope-style="scalloped-edge"] .iv-envelope-back { border-radius: 12px 12px 20px 20px; }
++.iv-world[data-envelope-style="scalloped-edge"] .iv-envelope-pocket { border-radius: 12px 12px 22px 22px; }
++.iv-world[data-envelope-style="minimal"] .iv-envelope-back { border: 1px solid rgba(255,255,255,.2); box-shadow: none; background-image: linear-gradient(135deg, rgba(255,255,255,.08), transparent 50%); }
++.iv-world[data-envelope-style="minimal"] .iv-envelope-back-border,
++.iv-world[data-envelope-style="minimal"] .iv-pocket-gold-rule,
++.iv-world[data-envelope-style="minimal"] .iv-pocket-fleuron,
++.iv-world[data-envelope-style="minimal"] .iv-flap-gold-frame,
++.iv-world[data-envelope-style="minimal"] .iv-flap-filigree-border,
++.iv-world[data-envelope-style="minimal"] .iv-letter-corner,
++.iv-world[data-envelope-style="minimal"] .iv-crest-laurel,
++.iv-world[data-envelope-style="minimal"] .iv-letter-bottom-flourish { display: none; }
++.iv-world[data-envelope-style="minimal"] .iv-envelope-pocket { border: 0; box-shadow: inset 0 4px 12px rgba(0,0,0,.09); }
++.iv-world[data-letter-style="handwritten-letter"] .iv-card-preview,
++.iv-world[data-letter-style="handwritten-letter"] .iv-letter-names,
++.iv-world[data-letter-style="handwritten-letter"] .iv-letter-request { font-family: var(--font-great-vibes), "Brush Script MT", cursive; font-weight: 400; }
++.iv-world[data-letter-style="folded-card"] .iv-card-preview { border-radius: 7px; box-shadow: 0 10px 28px rgba(18,8,6,.28), inset -5px 0 0 rgba(105,86,62,.07); }
++.iv-world[data-letter-style="folded-card"] .iv-letter-inner-border { border-style: double; }
++.iv-world[data-seal-shape="diamond"] .iv-victorian-seal { border-radius: 8px; clip-path: polygon(50% 0, 94% 50%, 50% 100%, 6% 50%); }
++.iv-world[data-seal-shape="shield"] .iv-victorian-seal { border-radius: 18px 18px 45% 45%; clip-path: polygon(8% 0,92% 0,100% 48%,50% 100%,0 48%); }
++.iv-world[data-seal-shape="oval"] .iv-victorian-seal { border-radius: 50% / 40%; }
++.iv-world[data-liner-style="african-print"] .iv-liner-ornament { display: none; }
++.iv-world[data-liner-style="minimal"] .iv-liner-ornament { opacity: .15; }
++
++/* Distinct non-wedding visual worlds. Decorative romance is never the default for every category. */
++.iv-world--graduation { --iv-ink:#17253a; --iv-paper:#fbfaf6; --iv-muted:#697789; --iv-accent:#d1a84e; --iv-line:rgba(30,48,72,.18); --iv-liner:linear-gradient(135deg,#14243b,#304761); --iv-envelope-color:#14243b; --iv-flap-color:#203751; --iv-seal-color:#c49b43; background:#101b2b; color:#f5f0e5; }
++.iv-world--graduation .iv-opening-stage { background:radial-gradient(ellipse at 50% 42%,#263d57,#101b2b 72%); }
++.iv-world--graduation .iv-envelope-back-border,
++.iv-world--graduation .iv-flap-gold-frame,
++.iv-world--graduation .iv-flap-filigree-border,
++.iv-world--graduation .iv-letter-corner,
++.iv-world--graduation .iv-crest-laurel { display:none; }
++.iv-world--graduation .iv-envelope-back { border:1px solid rgba(209,168,78,.55); box-shadow:inset 0 0 0 1px rgba(255,255,255,.07); }
++.iv-world--graduation .iv-occasion-cover { background:#f3f0e7; color:#17253a; }
++.iv-world--graduation .iv-occasion-cover__copy h1 { font-family:var(--font-inter),Inter,sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-.065em; }
++.iv-world--housewarming { --iv-ink:#35473c; --iv-paper:#f8f5ed; --iv-muted:#748174; --iv-accent:#bd7655; --iv-line:rgba(53,71,60,.18); --iv-liner:linear-gradient(135deg,#e8eee3,#c7d5c3); --iv-envelope-color:#637a65; --iv-flap-color:#536951; --iv-seal-color:#bf7956; background:#edf0e7; color:#35473c; }
++.iv-world--housewarming .iv-opening-stage { background:radial-gradient(ellipse at 50% 42%,#f8f5ed,#e8eee3); }
++.iv-world--housewarming .iv-opening-title { color:#35473c; text-shadow:none; }
++.iv-world--housewarming .iv-envelope-back-border,
++.iv-world--housewarming .iv-flap-filigree-border,
++.iv-world--housewarming .iv-flap-gold-frame,
++.iv-world--housewarming .iv-letter-corner,
++.iv-world--housewarming .iv-crest-laurel { display:none; }
++.iv-world--housewarming .iv-occasion-cover { background:#e8eee3; color:#35473c; }
++.iv-world--corporate { --iv-ink:#1e2528; --iv-paper:#f7f7f4; --iv-muted:#737c80; --iv-accent:#377d82; --iv-line:rgba(30,37,40,.15); --iv-liner:#e5eceb; --iv-envelope-color:#20282c; --iv-flap-color:#2d3a3d; --iv-seal-color:#377d82; background:#1e2528; color:#f7f7f4; }
++.iv-world--corporate .iv-opening-stage { background:#1e2528; }
++.iv-world--corporate .iv-opening-title { font-family:var(--font-inter),Inter,sans-serif; font-weight:650; letter-spacing:-.04em; text-shadow:none; }
++.iv-world--corporate .iv-envelope-back-border,
++.iv-world--corporate .iv-flap-filigree-border,
++.iv-world--corporate .iv-flap-gold-frame,
++.iv-world--corporate .iv-pocket-fleuron,
++.iv-world--corporate .iv-letter-corner,
++.iv-world--corporate .iv-crest-laurel { display:none; }
++.iv-world--corporate .iv-envelope-back { border-color:rgba(255,255,255,.22); box-shadow:none; }
++.iv-world--corporate .iv-occasion-cover { background:#f7f7f4; color:#1e2528; }
++.iv-world--corporate .iv-occasion-cover__copy h1 { font-family:var(--font-inter),Inter,sans-serif; font-weight:750; letter-spacing:-.055em; }
++.iv-world--holiday-celebration { --iv-ink:#263c31; --iv-paper:#f7f4eb; --iv-muted:#78877a; --iv-accent:#b45145; --iv-line:rgba(38,60,49,.2); --iv-liner:#d5e1d5; --iv-envelope-color:#1e4939; --iv-flap-color:#173b2e; --iv-seal-color:#b45145; background:#17352b; color:#f8f3e7; }
++.iv-world--holiday-celebration .iv-opening-stage { background:radial-gradient(ellipse at 50% 40%,#285442,#17352b 70%); }
++.iv-world--holiday-celebration .iv-envelope-back-border,
++.iv-world--holiday-celebration .iv-flap-filigree-border,
++.iv-world--holiday-celebration .iv-flap-gold-frame,
++.iv-world--holiday-celebration .iv-letter-corner { display:none; }
++.iv-world--holiday-celebration .iv-occasion-cover { background:#e4e9df; color:#263c31; }
++.iv-world--modern-editorial { --iv-ink:#242726; --iv-paper:#fbfaf6; --iv-muted:#777b77; --iv-accent:#7e8b7d; --iv-line:rgba(36,39,38,.15); --iv-liner:#eeeae0; --iv-envelope-color:#d8d5cc; --iv-flap-color:#c6c4bb; --iv-seal-color:#5b655c; background:#eeeae0; color:#242726; }
++.iv-world--modern-editorial .iv-opening-stage { background:#eeeae0; }
++.iv-world--modern-editorial .iv-opening-title { color:#242726; text-shadow:none; }
++.iv-world--modern-editorial .iv-open-instruction,
++.iv-world--modern-editorial .iv-tap-caption { color:#555d56; }
++.iv-world--modern-editorial .iv-envelope-back-border,
++.iv-world--modern-editorial .iv-flap-filigree-border,
++.iv-world--modern-editorial .iv-flap-gold-frame,
++.iv-world--modern-editorial .iv-pocket-fleuron,
++.iv-world--modern-editorial .iv-letter-corner,
++.iv-world--modern-editorial .iv-crest-laurel { display:none; }
++.iv-world--modern-editorial .iv-envelope-back { border-color:rgba(36,39,38,.16); box-shadow:none; }
++.iv-world--modern-editorial .iv-occasion-cover { background:#f7f6f1; color:#242726; }
++.iv-world--modern-editorial .iv-occasion-cover__copy h1 { font-family:var(--font-inter),Inter,sans-serif; font-weight:700; letter-spacing:-.06em; }
++
++.iv-occasion-cover { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:clamp(20px,5vw,76px); align-items:center; padding:clamp(48px,8vw,112px) clamp(22px,8vw,110px); min-height:clamp(580px,80svh,860px); overflow:hidden; }
++.iv-occasion-cover__copy { max-width:620px; position:relative; z-index:1; }
++.iv-occasion-cover__copy h1 { margin:18px 0; font-family:var(--font-playfair),Georgia,serif; font-size:clamp(38px,6.7vw,80px); font-weight:500; line-height:.98; letter-spacing:-.065em; overflow-wrap:anywhere; }
++.iv-occasion-cover__names { margin:14px 0 22px; font-size:clamp(14px,1.6vw,19px); line-height:1.5; }
++.iv-occasion-cover__meta { display:flex; flex-wrap:wrap; gap:8px 16px; font-size:11px; line-height:1.6; opacity:.8; }
++.iv-occasion-cover__link { display:inline-flex; align-items:center; gap:8px; margin-top:27px; padding:12px 0 8px; border-bottom:1px solid currentColor; color:inherit; font-size:10px; letter-spacing:.13em; text-decoration:none; text-transform:uppercase; }
++.iv-occasion-cover__image { position:relative; min-width:0; aspect-ratio:4/5; max-height:660px; overflow:hidden; background:var(--iv-liner,#e9e3d7); }
++.iv-occasion-cover__image img { display:block; width:100%; height:100%; object-fit:cover; object-position:center 42%; }
++.iv-occasion-cover--graduation .iv-occasion-cover__image { border:8px solid #d1a84e; box-shadow:14px 14px 0 #17253a; }
++.iv-occasion-cover--housewarming .iv-occasion-cover__image { border-radius:48% 48% 5px 5px; }
++.iv-occasion-cover--corporate .iv-occasion-cover__image { aspect-ratio:1/1; border-radius:3px; }
++.iv-occasion-cover--holiday-celebration .iv-occasion-cover__image { border-radius:48% 48% 4px 4px; }
++.iv-occasion-cover--modern-editorial .iv-occasion-cover__image { border-radius:2px; }
++@media (max-width: 700px) {
++  .kadi-live-preview-device { width: min(100%, 393px); }
++  .kadi-live-preview-viewport { height: 68svh; min-height: 500px; }
++  .kadi-live-preview-device--desktop .kadi-live-preview-viewport { height: 68svh; min-height: 520px; }
++  .kadi-draft-preview .iv-opening-stage { min-height: 560px; padding: 75px 12px 30px; }
++  .kadi-draft-preview .iv-envelope-hitarea { width: min(285px, 88%); }
++  .iv-occasion-cover { grid-template-columns:1fr; min-height:0; gap:24px; padding:55px 22px 60px; }
++  .iv-occasion-cover__copy h1 { font-size:clamp(37px,11vw,58px); }
++  .iv-occasion-cover__image { width:min(100%, 440px); aspect-ratio:4/3; max-height:none; margin-inline:auto; }
++  .iv-occasion-cover--graduation .iv-occasion-cover__image { width:calc(100% - 14px); }
++}
++@media (max-height: 680px) and (min-width: 701px) {
++  .kadi-draft-preview .iv-opening-stage { min-height: 520px; padding-block: 66px 24px; }
++  .kadi-draft-preview .iv-opening-copy { margin-bottom: 14px; }
++  .kadi-draft-preview .iv-envelope-hitarea { width: min(270px, 78%); }
++}
++@media (prefers-reduced-motion: reduce) {
++  .kadi-live-preview-device { transition:none; }
++  .iv-occasion-cover__image img { transition:none; }
++}
++
++/* ==========================================================================
++   KADI LANDING PAGE — extended, editorial product story (not wedding-only)
++   ========================================================================== */
++.kr-occasion-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; }
++.kr-occasion { display: flex; flex-direction: column; background: #fffdf9; border-radius: 3px; overflow: hidden; }
++.kr-occasion__link { display: flex; flex-direction: column; height: 100%; }
++.kr-occasion__image-wrap { border-radius: 2px; margin: 10px 10px 0; height: clamp(135px, 13vw, 190px); }
++.kr-occasion__body { display: flex; flex-direction: column; flex: 1; padding: 15px 13px 17px; }
++.kr-occasion__body p { flex: 1; min-height: 0; }
++.kr-occasion__action { margin-top: auto; }
++
++.kr-featured { padding: clamp(42px, 6vw, 84px) 0; background: #eee4d9; color: #24211d; }
++.kr-featured__heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 26px; }
++.kr-featured__heading h2, .kr-hosts__intro h2, .kr-kenya__copy h2, .kr-faq__heading h2 { margin: 7px 0 12px; font-family: var(--font-playfair), Georgia, serif; font-size: clamp(30px, 3.5vw, 48px); font-weight: 400; letter-spacing: -.05em; line-height: 1.05; }
++.kr-featured__heading > div > p:last-child { max-width: 540px; margin: 0; color: #70665a; font-size: 13px; line-height: 1.7; }
++.kr-text-link { display: inline-flex; align-items: center; gap: 8px; color: #3b3027; font-size: 12px; text-decoration: none; border-bottom: 1px solid rgba(59,48,39,.3); padding-bottom: 5px; white-space: nowrap; transition: gap .2s ease, color .2s ease; }
++.kr-text-link:hover { gap: 12px; color: var(--kr-clay); }
++.kr-featured__rail { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
++.kr-featured__item { min-width: 0; background: #fbf8f2; border: 1px solid rgba(65,52,39,.12); transition: transform .25s ease, border-color .25s ease; transition-delay: var(--kr-delay, 0ms); }
++.kr-featured__item:hover { transform: translateY(-3px); border-color: rgba(147,70,56,.4); }
++.kr-featured__visual { display: block; position: relative; overflow: hidden; aspect-ratio: 4 / 3; background: #d8d0c5; color: inherit; }
++.kr-featured__visual img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.32,.72,0,1); }
++.kr-featured__item:hover .kr-featured__visual img { transform: scale(1.035); }
++.kr-featured__category { position: absolute; left: 12px; bottom: 12px; display: inline-flex; background: rgba(250,247,240,.94); border: 1px solid rgba(39,38,32,.12); padding: 6px 9px; color: #44382e; font-size: 10px; letter-spacing: .04em; }
++.kr-featured__meta { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px; }
++.kr-featured__meta h3 { margin: 0; font-family: var(--font-playfair), Georgia, serif; font-size: 19px; line-height: 1.2; font-weight: 400; }
++.kr-featured__meta p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 6px 0 0; color: #756a5e; font-size: 11px; line-height: 1.5; }
++.kr-featured__use { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(48,39,30,.25); color: #33291f; text-decoration: none; transition: background .2s ease, color .2s ease, transform .2s ease; }
++.kr-featured__use:hover { background: #29231e; color: #fff8ed; transform: translateX(2px); }
++
++.kr-hosts { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(38px, 8vw, 120px); padding: clamp(48px, 7vw, 98px) max(24px, calc((100vw - var(--kr-content)) / 2)); background: #fbf8f1; color: #25221e; }
++.kr-hosts__intro { max-width: 560px; align-self: center; }
++.kr-hosts__intro h2 em, .kr-kenya__copy h2 em { color: var(--kr-clay); font-weight: 400; }
++.kr-hosts__intro > p:not(.kr-eyebrow) { max-width: 530px; margin: 0 0 24px; color: #70675c; font-size: 13px; line-height: 1.85; }
++.kr-hosts__features { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); align-content: center; gap: 12px; }
++.kr-hosts__features article { display: flex; align-items: flex-start; gap: 12px; min-height: 132px; padding: 19px 16px; background: #fffdf9; border: 1px solid rgba(61,49,37,.12); }
++.kr-hosts__icon { display: grid; flex: 0 0 36px; width: 36px; height: 36px; place-items: center; border: 1px solid rgba(147,70,56,.24); border-radius: 50%; color: #824436; }
++.kr-hosts__features h3 { margin: 1px 0 6px; font-family: var(--font-playfair), Georgia, serif; font-size: 17px; line-height: 1.2; font-weight: 400; }
++.kr-hosts__features p { margin: 0; color: #746a5f; font-size: 11px; line-height: 1.65; }
++
++.kr-kenya { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); align-items: stretch; background: #e7d7ca; color: #28231f; }
++.kr-kenya__image { position: relative; min-height: 400px; overflow: hidden; background: #d7c5b5; }
++.kr-kenya__image img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
++.kr-kenya__copy { align-self: center; max-width: 680px; padding: clamp(32px, 6.5vw, 92px); }
++.kr-kenya__copy > p:not(.kr-eyebrow) { max-width: 520px; margin: 0 0 20px; color: #665b51; font-size: 13px; line-height: 1.85; }
++.kr-kenya__copy ul { display: grid; gap: 12px; list-style: none; margin: 0 0 25px; padding: 0; }
++.kr-kenya__copy li { display: flex; align-items: flex-start; gap: 10px; color: #4b443c; font-size: 12px; line-height: 1.55; }
++.kr-kenya__copy li svg { flex: 0 0 auto; margin-top: 1px; color: #59735a; }
++
++.kr-faq { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(32px, 7vw, 100px); max-width: calc(var(--kr-content) + 80px); margin-inline: auto; padding: clamp(48px, 7vw, 88px) 40px; background: #fcf8f0; color: #27231f; }
++.kr-faq__heading { align-self: start; position: sticky; top: 28px; }
++.kr-faq__list details { border-bottom: 1px solid rgba(66,51,37,.18); }
++.kr-faq__list details:first-child { border-top: 1px solid rgba(66,51,37,.18); }
++.kr-faq__list summary { position: relative; list-style: none; cursor: pointer; padding: 19px 36px 19px 0; font-family: var(--font-playfair), Georgia, serif; font-size: 17px; line-height: 1.35; }
++.kr-faq__list summary::-webkit-details-marker { display: none; }
++.kr-faq__list summary::after { content: '+'; position: absolute; top: 16px; right: 2px; color: #814838; font-family: var(--font-inter), Inter, sans-serif; font-size: 22px; font-weight: 300; }
++.kr-faq__list details[open] summary::after { content: '−'; }
++.kr-faq__list details p { max-width: 620px; margin: -3px 28px 20px 0; color: #72685d; font-size: 12px; line-height: 1.8; }
++
++@media (min-width: 1500px) {
++  .kr-occasion-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }
++  .kr-featured__rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
++}
++@media (max-width: 1024px) {
++  .kr-occasion-rail { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
++  .kr-occasion__body { padding: 12px 8px 14px; }
++  .kr-occasion__body h3 { font-size: 17px; }
++  .kr-featured__rail { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
++  .kr-hosts { grid-template-columns: 1fr; gap: 32px; padding-inline: 28px; }
++  .kr-hosts__intro { max-width: 700px; }
++  .kr-kenya__copy { padding: 36px; }
++}
++@media (max-width: 680px) {
++  .kr-occasion-rail { grid-auto-columns: minmax(0, 1fr); grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0,1fr)); overflow: visible; padding: 0; margin: 0; gap: 10px; }
++  .kr-occasion { scroll-snap-align: unset; }
++  .kr-occasion__image-wrap { height: auto; aspect-ratio: 1.12 / 1; margin: 7px 7px 0; border-radius: 2px; }
++  .kr-occasion__body { padding: 10px 8px 12px; }
++  .kr-occasion__body h3 { font-size: 16px; }
++  .kr-occasion__body p { font-size: 10px; line-height: 1.5; }
++  .kr-occasion__action { font-size: 9px; }
++  .kr-featured { padding: 38px 0 42px; }
++  .kr-featured__heading { align-items: flex-start; flex-direction: column; gap: 12px; margin-bottom: 18px; }
++  .kr-featured__heading h2, .kr-hosts__intro h2, .kr-kenya__copy h2, .kr-faq__heading h2 { font-size: 32px; }
++  .kr-featured__heading > div > p:last-child { font-size: 12px; }
++  .kr-featured__rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 78%); grid-template-columns: none; overflow-x: auto; overflow-y: hidden; gap: 12px; margin-inline: -16px; padding: 0 16px 8px; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; overscroll-behavior-x: contain; scrollbar-width: none; }
++  .kr-featured__rail::-webkit-scrollbar { display: none; }
++  .kr-featured__item { scroll-snap-align: start; }
++  .kr-featured__meta { padding: 13px; }
++  .kr-featured__meta h3 { font-size: 18px; }
++  .kr-hosts { padding: 42px 20px 46px; gap: 26px; }
++  .kr-hosts__features { grid-template-columns: 1fr; gap: 9px; }
++  .kr-hosts__features article { min-height: unset; padding: 15px; }
++  .kr-kenya { grid-template-columns: 1fr; }
++  .kr-kenya__image { min-height: 0; height: auto; aspect-ratio: 4 / 3; }
++  .kr-kenya__copy { padding: 35px 22px 42px; }
++  .kr-faq { grid-template-columns: 1fr; gap: 18px; padding: 43px 20px 50px; }
++  .kr-faq__heading { position: static; }
++  .kr-faq__list summary { font-size: 16px; padding-block: 17px; }
++  .kr-faq__list details p { font-size: 12px; }
++}
++@media (max-width: 360px) {
++  .kr-occasion-rail { gap: 7px; }
++  .kr-occasion__body h3 { font-size: 14px; }
++  .kr-occasion__body p { font-size: 9px; }
++  .kr-featured__rail { grid-auto-columns: minmax(0, 86%); }
++  .kr-hosts__features article { gap: 9px; }
++  .kr-kenya__copy { padding-inline: 18px; }
++}
++@media (prefers-reduced-motion: reduce) {
++  .kr-featured__item, .kr-featured__visual img, .kr-featured__use, .kr-text-link { transition: none !important; }
++  .kr-featured__item:hover, .kr-featured__use:hover { transform: none; }
++}
++/*
++  KADI shared app design system.
++  Merge these tokens and component classes into src/app/globals.css.
++  Do not delete existing invitation-specific styles; those control guest-facing themes.
++*/
++
++:root {
++  color-scheme: light;
++
++  /* Surfaces / text */
++  --kd-canvas: #FAFAF7;
++  --kd-surface: #FFFFFF;
++  --kd-surface-2: #F2F1EC;
++  --kd-surface-3: #EAE9E3;
++  --kd-ink: #1D1D1F;
++  --kd-ink-2: #3A3A3C;
++  --kd-muted: #6E6E73;
++  --kd-muted-2: #8E8E93;
++  --kd-line: rgba(60, 60, 67, 0.16);
++  --kd-line-strong: rgba(60, 60, 67, 0.28);
++
++  /* Kadi brand accent. Keep warm and restrained; occasion colours belong to templates. */
++  --kd-accent: #794A32;
++  --kd-accent-hover: #603924;
++  --kd-accent-pressed: #4F2E20;
++  --kd-accent-soft: #F3E9E2;
++  --kd-focus: #B99A62;
++  --kd-success: #2F6D4E;
++  --kd-warning: #8A5A12;
++  --kd-danger: #B42318;
++
++  /* 4px base scale */
++  --kd-space-1: 4px;
++  --kd-space-2: 8px;
++  --kd-space-3: 12px;
++  --kd-space-4: 16px;
++  --kd-space-6: 24px;
++  --kd-space-8: 32px;
++  --kd-space-12: 48px;
++  --kd-space-16: 64px;
++
++  /* Four radii only: controls, cards, panels, pills */
++  --kd-radius-control: 12px;
++  --kd-radius-card: 16px;
++  --kd-radius-panel: 24px;
++  --kd-radius-pill: 999px;
++
++  /* Soft elevation; keep most panels border-led, not shadow-led */
++  --kd-shadow-card: 0 1px 3px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.045);
++  --kd-shadow-popover: 0 12px 36px rgba(0,0,0,.14);
++  --kd-shadow-phone: 0 22px 70px rgba(0,0,0,.22);
++
++  /* Typography: native SF on Apple platforms, Inter fallback elsewhere */
++  --kd-font-ui: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
++  --kd-font-display: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
++  --kd-text-xs: 12px;
++  --kd-text-sm: 14px;
++  --kd-text-base: 16px;
++  --kd-text-lg: 18px;
++  --kd-text-xl: 22px;
++  --kd-text-2xl: 28px;
++  --kd-text-3xl: clamp(32px, 3vw, 44px);
++  --kd-leading-tight: 1.12;
++  --kd-leading-body: 1.5;
++
++  /* Motion */
++  --kd-ease: cubic-bezier(.32, .72, 0, 1);
++  --kd-duration-fast: 140ms;
++  --kd-duration-normal: 240ms;
++  --kd-duration-slow: 360ms;
++
++  --kd-content-max: 1440px;
++  --kd-page-gutter: clamp(16px, 3vw, 40px);
++  --kd-topbar-height: 64px;
++}
++
++[data-theme="dark"] {
++  color-scheme: dark;
++  --kd-canvas: #000000;
++  --kd-surface: #1C1C1E;
++  --kd-surface-2: #2C2C2E;
++  --kd-surface-3: #3A3A3C;
++  --kd-ink: #F5F5F7;
++  --kd-ink-2: #E5E5EA;
++  --kd-muted: #AEAEB2;
++  --kd-muted-2: #8E8E93;
++  --kd-line: rgba(235, 235, 245, .14);
++  --kd-line-strong: rgba(235, 235, 245, .26);
++  --kd-accent-soft: #33251F;
++  --kd-shadow-card: 0 1px 3px rgba(0,0,0,.18), 0 8px 24px rgba(0,0,0,.12);
++}
++
++.kd-app-surface {
++  background: var(--kd-canvas);
++  color: var(--kd-ink);
++  font-family: var(--kd-font-ui);
++  font-size: var(--kd-text-base);
++  line-height: var(--kd-leading-body);
++  -webkit-font-smoothing: antialiased;
++  text-rendering: optimizeLegibility;
++}
++
++.kd-page {
++  width: min(100%, var(--kd-content-max));
++  margin-inline: auto;
++  padding-inline: var(--kd-page-gutter);
++}
++
++.kd-panel {
++  min-width: 0;
++  background: var(--kd-surface);
++  border: 1px solid var(--kd-line);
++  border-radius: var(--kd-radius-card);
++  box-shadow: var(--kd-shadow-card);
++}
++
++.kd-divider { border-color: var(--kd-line); }
++
++.kd-button {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  gap: 8px;
++  min-height: 44px;
++  padding: 0 18px;
++  border: 1px solid var(--kd-line-strong);
++  border-radius: var(--kd-radius-pill);
++  background: var(--kd-surface);
++  color: var(--kd-ink);
++  font: 600 var(--kd-text-sm)/1 var(--kd-font-ui);
++  letter-spacing: -.01em;
++  cursor: pointer;
++  transition: background var(--kd-duration-fast) var(--kd-ease),
++    border-color var(--kd-duration-fast) var(--kd-ease),
++    color var(--kd-duration-fast) var(--kd-ease),
++    transform var(--kd-duration-fast) var(--kd-ease);
++}
++.kd-button:hover { background: var(--kd-surface-2); }
++.kd-button:active { transform: scale(.975); }
++.kd-button:focus-visible,
++.kd-input:focus-visible,
++.kd-select:focus-visible,
++.kd-link:focus-visible {
++  outline: 3px solid color-mix(in srgb, var(--kd-focus) 72%, transparent);
++  outline-offset: 2px;
++}
++.kd-button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
++.kd-button--primary { color: #fff; background: var(--kd-accent); border-color: var(--kd-accent); }
++.kd-button--primary:hover { background: var(--kd-accent-hover); border-color: var(--kd-accent-hover); }
++.kd-button--primary:active { background: var(--kd-accent-pressed); }
++.kd-button--quiet { background: transparent; border-color: transparent; }
++.kd-button--small { min-height: 36px; padding-inline: 12px; font-size: var(--kd-text-xs); }
++
++.kd-field { display: grid; gap: 6px; min-width: 0; }
++.kd-label { color: var(--kd-ink-2); font-size: var(--kd-text-sm); font-weight: 600; }
++.kd-help { color: var(--kd-muted); font-size: var(--kd-text-xs); line-height: 1.45; }
++.kd-input,
++.kd-select,
++.kd-textarea {
++  display: block;
++  width: 100%;
++  min-width: 0;
++  min-height: 44px;
++  padding: 10px 12px;
++  border: 1px solid var(--kd-line-strong);
++  border-radius: var(--kd-radius-control);
++  background: var(--kd-surface);
++  color: var(--kd-ink);
++  font: 400 var(--kd-text-sm)/1.4 var(--kd-font-ui);
++  transition: border-color var(--kd-duration-fast) var(--kd-ease), box-shadow var(--kd-duration-fast) var(--kd-ease);
++}
++.kd-textarea { min-height: 88px; resize: vertical; }
++.kd-input:hover, .kd-select:hover, .kd-textarea:hover { border-color: var(--kd-muted-2); }
++.kd-input:focus, .kd-select:focus, .kd-textarea:focus { border-color: var(--kd-accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--kd-accent) 13%, transparent); }
++
++.kd-kicker { color: var(--kd-muted); font-size: 11px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
++.kd-page-title { margin: 0; font-size: var(--kd-text-2xl); font-weight: 650; letter-spacing: -.04em; line-height: var(--kd-leading-tight); }
++.kd-muted { color: var(--kd-muted); }
++.kd-status { display: inline-flex; align-items: center; gap: 7px; color: var(--kd-muted); font-size: var(--kd-text-xs); }
++.kd-status__dot { width: 7px; height: 7px; flex: none; border-radius: 999px; background: var(--kd-muted-2); }
++.kd-status[data-state="saving"] .kd-status__dot { background: var(--kd-warning); }
++.kd-status[data-state="saved"] .kd-status__dot { background: var(--kd-success); }
++.kd-status[data-state="error"] .kd-status__dot { background: var(--kd-danger); }
++
++@media (prefers-reduced-motion: reduce) {
++  *, *::before, *::after {
++    scroll-behavior: auto !important;
++    animation-duration: .01ms !important;
++    animation-iteration-count: 1 !important;
++    transition-duration: .01ms !important;
++  }
++}
++
++/* Kadi Studio split-screen live preview styles */
++.kd-studio { min-height: 100%; padding: 24px; }
++.kd-studio__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin: 0 auto 24px; max-width: 1600px; }
++.kd-studio__header-copy { min-width: 0; }
++.kd-studio__subheading { margin: 8px 0 0; font-size: 14px; }
++.kd-studio__header-actions { display: flex; align-items: center; justify-content: flex-end; min-height: 44px; }
++.kd-studio__body { display: grid; grid-template-columns: minmax(320px, 410px) minmax(0, 1fr); gap: 24px; max-width: 1600px; margin-inline: auto; align-items: start; }
++.kd-studio__controls { min-width: 0; background: var(--kd-surface); border: 1px solid var(--kd-line); border-radius: var(--kd-radius-card); overflow: clip; }
++.kd-studio__accordion { border-bottom: 1px solid var(--kd-line); }
++.kd-studio__accordion:last-child { border-bottom: 0; }
++.kd-studio__accordion > summary { display: flex; min-height: 54px; align-items: center; justify-content: space-between; padding: 0 18px; cursor: pointer; list-style: none; font-weight: 650; font-size: 14px; letter-spacing: -.015em; }
++.kd-studio__accordion > summary::-webkit-details-marker { display: none; }
++.kd-studio__accordion > summary::after { content: '+'; font-size: 20px; font-weight: 400; color: var(--kd-muted); }
++.kd-studio__accordion[open] > summary::after { content: '−'; }
++.kd-studio__fields { display: grid; gap: 14px; padding: 2px 18px 20px; }
++.kd-studio__field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
++.kd-studio__field-row--colors { grid-template-columns: repeat(4, minmax(0, 1fr)); }
++.kd-color-input { width: 100%; height: 42px; padding: 3px; border: 1px solid var(--kd-line); border-radius: var(--kd-radius-control); background: var(--kd-surface); cursor: pointer; }
++.kd-studio__section-list { padding: 0 18px 18px; }
++.kd-studio__section-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 42px; border-bottom: 1px solid var(--kd-line); }
++.kd-studio__section-row:last-child { border-bottom: 0; }
++.kd-studio__section-row.is-inactive { color: var(--kd-muted); }
++.kd-studio__section-label { display: flex; align-items: center; gap: 9px; font-size: 13px; cursor: pointer; }
++.kd-studio__section-label input { accent-color: var(--kd-accent); width: 16px; height: 16px; }
++.kd-studio__section-reorder { display: inline-flex; gap: 4px; }
++.kd-icon-button { display: inline-grid; place-items: center; width: 30px; height: 30px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--kd-muted); cursor: pointer; }
++.kd-icon-button:hover:not(:disabled) { background: var(--kd-surface-2); color: var(--kd-ink); }
++.kd-icon-button:disabled { opacity: .3; cursor: not-allowed; }
++.kd-studio__preview-column { min-width: 0; position: sticky; top: 16px; }
++.kd-studio__preview-toolbar { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
++.kd-studio__guest-picker { min-width: min(230px, 100%); flex: 1; }
++.kd-studio__toolbar-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
++.kd-studio__device-switch { display: flex; width: fit-content; max-width: 100%; gap: 3px; padding: 4px; border: 1px solid var(--kd-line); border-radius: var(--kd-radius-pill); background: var(--kd-surface-2); margin-bottom: 14px; }
++.kd-studio__device-switch button { display: inline-flex; justify-content: center; align-items: center; min-height: 34px; gap: 7px; padding: 0 12px; border: 0; border-radius: var(--kd-radius-pill); background: transparent; color: var(--kd-muted); font: 600 12px/1 var(--kd-font-ui); cursor: pointer; }
++.kd-studio__device-switch button.is-active { color: var(--kd-ink); background: var(--kd-surface); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
++.kd-studio__stage { display: flex; align-items: flex-start; justify-content: center; min-width: 0; min-height: 420px; padding: 18px; border: 1px solid var(--kd-line); border-radius: var(--kd-radius-panel); background: var(--kd-surface-2); overflow: hidden; }
++.kd-studio__device { flex: none; overflow: hidden; background: #000; border: 7px solid #18181A; box-shadow: var(--kd-shadow-phone); }
++.kd-studio__device--iphone { height: min(852px, calc(100dvh - 260px)); width: auto; aspect-ratio: 393 / 852; border-radius: 44px; padding: 4px; }
++.kd-studio__device--android { height: min(915px, calc(100dvh - 260px)); width: auto; aspect-ratio: 412 / 915; border-radius: 32px; padding: 4px; }
++.kd-studio__device--desktop { width: 100%; height: min(800px, calc(100dvh - 260px)); border-width: 4px; border-radius: 14px; padding: 0; }
++.kd-studio__viewport { width: 100%; height: 100%; overflow: auto; overscroll-behavior: contain; background: var(--kd-surface); border-radius: inherit; scrollbar-width: thin; scrollbar-color: rgba(110,110,115,.4) transparent; }
++.kd-studio__viewport > * { min-height: 100%; }
++.kd-studio__notice { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; padding: 12px 14px; background: var(--kd-surface); border: 1px solid var(--kd-line); border-radius: var(--kd-radius-control); color: var(--kd-ink-2); font-size: 12px; }
++.kd-studio__notice > span { flex: 1; }
++.kd-studio__notice button { border: 0; background: transparent; color: var(--kd-muted); cursor: pointer; font-size: 18px; line-height: 1; }
++
++@media (max-width: 1023px) {
++  .kd-studio { padding: 16px; }
++  .kd-studio__body { grid-template-columns: minmax(0, 1fr); }
++  .kd-studio__preview-column { position: static; order: -1; }
++  .kd-studio__stage { min-height: 0; padding: 12px; }
++  .kd-studio__device--iphone { height: min(760px, 72dvh); }
++  .kd-studio__device--android { height: min(780px, 72dvh); }
++  .kd-studio__device--desktop { height: 65dvh; min-height: 480px; }
++}
++
++@media (max-width: 480px) {
++  .kd-studio { padding: 12px; }
++  .kd-studio__header { flex-direction: column; align-items: stretch; margin-bottom: 16px; }
++  .kd-studio__header-actions { justify-content: flex-start; min-height: 24px; }
++  .kd-studio__preview-toolbar { align-items: stretch; }
++  .kd-studio__toolbar-buttons { display: grid; grid-template-columns: 1fr 1fr; }
++  .kd-studio__toolbar-buttons .kd-button { padding-inline: 10px; }
++  .kd-studio__device-switch { width: 100%; }
++  .kd-studio__device-switch button { flex: 1; padding-inline: 7px; }
++  .kd-studio__device--iphone { height: min(690px, 70dvh); max-width: 100%; }
++  .kd-studio__device--android { height: min(690px, 70dvh); max-width: 100%; }
++  .kd-studio__device--desktop { height: 65dvh; min-height: 400px; }
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .kd-studio *, .kd-studio *::before, .kd-studio *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
++}
+diff --git a/src/components/animation/EnvelopeRenderer.tsx b/src/components/animation/EnvelopeRenderer.tsx
+index b838ce0..33e203c 100644
+--- a/src/components/animation/EnvelopeRenderer.tsx
++++ b/src/components/animation/EnvelopeRenderer.tsx
+@@ -1,6 +1,6 @@
+ 'use client';
+ 
+-import React, { useCallback, useEffect, useRef, useState } from 'react';
++import React, { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+ import { AnimatePresence, motion } from 'framer-motion';
+ import {
+   CalendarDays,
+@@ -15,6 +15,7 @@ import {
+   VolumeX,
+ } from 'lucide-react';
+ import { TemplateDefinition } from '@/lib/templates/types';
++import type { EventDesignEntity } from '@/lib/db/types';
+ import { WaxSeal } from '@/components/animation/WaxSeal';
+ import { ScrollParallax, RevealText } from '@/components/animation/MotionToolkit';
+ import { Logo } from '@/components/ui/Logo';
+@@ -36,18 +37,67 @@ interface EnvelopeRendererProps {
+   audioUrl?: string;
+   initialPhase?: AnimationPhase;
+   children?: React.ReactNode;
++  /** Saved event design or optimistic editor preview overrides. */
++  design?: Partial<EventDesignEntity>;
+ }
+ 
+-type ExperienceTheme = 'savannah-twilight' | 'ruby-disco' | 'gift-box' | 'pastel-garden' | 'sage-love-letter' | 'memorial';
++type ExperienceTheme = 'savannah-twilight' | 'ruby-disco' | 'gift-box' | 'pastel-garden' | 'sage-love-letter' | 'memorial' | 'graduation' | 'housewarming' | 'corporate' | 'holiday-celebration' | 'modern-editorial';
+ 
+ function getExperienceTheme(template: TemplateDefinition): ExperienceTheme {
+   if (template.experienceTheme) return template.experienceTheme;
+-  if (template.category === 'memorial') return 'memorial';
+-  if (template.id === 'milestone-gold') return 'ruby-disco';
+-  if (template.category === 'baby-shower' || template.id === 'sweet-beginnings') return 'pastel-garden';
+-  if (template.id === 'savannah-twilight') return 'savannah-twilight';
+-  if (template.category === 'wedding') return 'sage-love-letter';
+-  return 'gift-box';
++  if (template.category === 'memorial' || template.category === 'funeral') return 'memorial';
++  if (template.category === 'birthday') return template.id === 'milestone-gold' ? 'ruby-disco' : 'gift-box';
++  if (template.category === 'baby-shower' || template.category === 'welcome-baby' || template.id === 'sweet-beginnings') return 'pastel-garden';
++  if (template.category === 'wedding' || template.category === 'engagement' || template.category === 'anniversary' || template.category === 'bridal-shower') return 'sage-love-letter';
++  if (template.category === 'graduation') return 'graduation';
++  if (template.category === 'housewarming') return 'housewarming';
++  if (template.category === 'corporate' || template.category === 'product-launch' || template.category === 'fundraiser') return 'corporate';
++  if (template.category === 'holiday') return 'holiday-celebration';
++  return 'modern-editorial';
++}
++
++const LINER_BACKGROUNDS: Record<string, string> = {
++  floral: 'linear-gradient(135deg, #fff5f0, #dfb4b6)',
++  botanical: 'linear-gradient(135deg, #f1f2e8, #b9c8ae)',
++  geometric: 'repeating-linear-gradient(45deg, #f0e9d9 0 8px, #d6c9ae 8px 10px)',
++  'gold-foil': 'linear-gradient(135deg, #fff8e8, #d3b879)',
++  minimal: '#f4f1e8',
++  terracotta: 'linear-gradient(135deg, #f1c8ad, #b96e51)',
++  'african-print': 'repeating-linear-gradient(45deg, #e6c15c 0 7px, #254b42 7px 14px, #a64b37 14px 21px, #f2e7cc 21px 28px)',
++};
++
++function getRenderStyle(template: TemplateDefinition, design?: Partial<EventDesignEntity>): CSSProperties {
++  const palette = { ...template.palette, ...(design?.palette || {}) };
++  const linerId = design?.linerId || template.liner.id;
++  const font = design?.fontFamily || (template.fonts.heading === 'sans' ? 'Inter' : template.fonts.heading === 'display' ? 'Cormorant Garamond' : 'Playfair Display');
++  const linerPattern = linerId === 'floral'
++    ? 'radial-gradient(circle at 20% 25%, rgba(255,255,255,.7) 0 2px, transparent 3px), radial-gradient(circle at 70% 68%, rgba(165,75,88,.18) 0 4px, transparent 5px)'
++    : linerId === 'geometric'
++    ? 'repeating-linear-gradient(45deg, rgba(50,50,42,.16) 0 1px, transparent 1px 10px)'
++    : linerId === 'gold-foil'
++    ? 'linear-gradient(135deg, rgba(255,255,255,.35), transparent 55%)'
++    : linerId === 'african-print'
++    ? 'repeating-linear-gradient(45deg, #e6c15c 0 7px, #254b42 7px 14px, #a64b37 14px 21px, #f2e7cc 21px 28px)'
++    : linerId === 'botanical'
++    ? 'radial-gradient(ellipse at 20% 25%, rgba(62,91,67,.16), transparent 34%), radial-gradient(ellipse at 75% 75%, rgba(62,91,67,.12), transparent 30%)'
++    : 'none';
++  return {
++    '--iv-ink': palette.text || template.palette.text,
++    '--iv-paper': palette.cardBackground || template.palette.cardBackground,
++    '--iv-accent': palette.primary || template.palette.primary,
++    '--iv-gold': palette.secondary || template.palette.secondary,
++    '--iv-liner': LINER_BACKGROUNDS[linerId] || LINER_BACKGROUNDS.minimal,
++    '--iv-liner-pattern': linerPattern,
++    '--iv-envelope-color': palette.envelope || template.palette.envelope,
++    '--iv-flap-color': palette.flap || template.palette.flap,
++    '--iv-seal-color': design?.sealColor || template.seal.color,
++    '--iv-seal-ink': template.palette.sealIconColor,
++    '--iv-card-line': `${palette.secondary || template.palette.secondary}66`,
++    '--iv-font-heading': `"${font}", var(--font-playfair), Georgia, serif`,
++    '--iv-envelope-grad-left': `linear-gradient(120deg, color-mix(in srgb, ${palette.envelope || template.palette.envelope} 72%, white), ${palette.envelope || template.palette.envelope} 78%)`,
++    '--iv-envelope-grad-right': `linear-gradient(240deg, color-mix(in srgb, ${palette.envelope || template.palette.envelope} 85%, white), ${palette.envelope || template.palette.envelope} 78%)`,
++    '--iv-envelope-grad-bottom': `linear-gradient(0deg, color-mix(in srgb, ${palette.envelope || template.palette.envelope} 76%, black), ${palette.envelope || template.palette.envelope})`,
++  } as CSSProperties;
+ }
+ 
+ function BotanicalCorner({ side = 'left' }: { side?: 'left' | 'right' }) {
+@@ -108,8 +158,15 @@ export function EnvelopeRenderer({
+   audioUrl,
+   initialPhase,
+   children,
++  design,
+ }: EnvelopeRendererProps) {
+   const theme = getExperienceTheme(template);
++  const renderStyle = getRenderStyle(template, design);
++  const envelopeStyle = design?.envelopeStyle || 'classic-fold';
++  const letterStyle = design?.letterStyle || 'printed-letter';
++  const linerStyle = design?.linerId || template.liner.id;
++  const sealShape = design?.sealShape || template.seal.shape;
++  const sealMonogram = design?.sealMonogram || template.seal.monogram || 'K';
+   const [phase, setPhase] = useState<AnimationPhase>(initialPhase || 'closed');
+   const [activeGift, setActiveGift] = useState<'note' | 'flowers' | 'cake'>('note');
+   const [musicPlaying, setMusicPlaying] = useState(false);
+@@ -260,6 +317,14 @@ export function EnvelopeRenderer({
+     <div
+       className={`iv-world iv-world--${theme} ${phase === 'settled' ? 'iv-world--revealed' : ''}`}
+       data-template={template.id}
++      data-category={template.category}
++      data-envelope-style={envelopeStyle}
++      data-letter-style={letterStyle}
++      data-liner-style={linerStyle}
++      data-seal-shape={sealShape}
++      data-motion-preset={design?.motionPreset || template.motionPreset}
++      data-custom-design={design ? 'true' : 'false'}
++      style={renderStyle}
+     >
+       {theme === 'ruby-disco' && <StarField />}
+       {theme === 'savannah-twilight' && <span className="iv-candle-glow" aria-hidden="true" />}
+@@ -304,8 +369,8 @@ export function EnvelopeRenderer({
+           }`}
+           aria-label="Open your sealed invitation"
+         >
+-          {/* Candlelit Tabletop Scene Backdrop */}
+-          <div className="iv-tabletop-scene" aria-hidden="true">
++          {/* Occasion-appropriate atmosphere: candles/petals are reserved for romance, not every event. */}
++          {(theme === 'savannah-twilight' || theme === 'sage-love-letter') && <div className="iv-tabletop-scene" aria-hidden="true">
+             <span className="iv-candle-glow" />
+             <div className="iv-candle-flame">
+               <span className="iv-flame-core" />
+@@ -334,7 +399,7 @@ export function EnvelopeRenderer({
+                 <path d="M 4 12 C 16 4 30 14 28 28 C 14 32 2 22 4 12 Z" fill="#460A11" />
+               </svg>
+             </div>
+-          </div>
++          </div>}
+ 
+           {/* Eyebrow & Title: Compact and responsive on short phones */}
+           <div className="iv-opening-copy">
+@@ -345,6 +410,16 @@ export function EnvelopeRenderer({
+                 ? 'A celebration of love'
+                 : theme === 'memorial'
+                 ? 'A gathering in remembrance'
++                : theme === 'graduation'
++                ? 'A milestone worth celebrating'
++                : theme === 'housewarming'
++                ? 'A new chapter begins at home'
++                : theme === 'corporate'
++                ? 'You are cordially invited'
++                : theme === 'holiday-celebration'
++                ? 'Gather, celebrate, and be together'
++                : theme === 'modern-editorial'
++                ? 'A meaningful moment, thoughtfully shared'
+                 : isBirthday
+                 ? 'Something special for you'
+                 : 'A note from the heart'}
+@@ -360,6 +435,16 @@ export function EnvelopeRenderer({
+                 ? 'These are for you.'
+                 : theme === 'memorial'
+                 ? 'Remembering, together.'
++                : theme === 'graduation'
++                ? 'The next chapter starts here.'
++                : theme === 'housewarming'
++                ? 'There is room for you.'
++                : theme === 'corporate'
++                ? 'A gathering of ideas.'
++                : theme === 'holiday-celebration'
++                ? 'Make time for what matters.'
++                : theme === 'modern-editorial'
++                ? 'An occasion worth gathering for.'
+                 : 'A moment, sealed with love.'}
+             </h1>
+           </div>
+@@ -367,6 +452,7 @@ export function EnvelopeRenderer({
+           {/* 3D Physical Stationery Assembly */}
+           <motion.button
+             className="iv-envelope-hitarea"
++            style={renderStyle}
+             type="button"
+             onClick={openEnvelope}
+             onKeyDown={(event) => {
+@@ -393,12 +479,12 @@ export function EnvelopeRenderer({
+             {/* Envelope 3D Body */}
+             <span className="iv-envelope">
+               {/* Layer 2: Back Substrate with Gold Double Rule */}
+-              <span className="iv-envelope-back">
++              <span className="iv-envelope-back" style={renderStyle}>
+                 <span className="iv-envelope-back-border" />
+               </span>
+ 
+               {/* Layer 3: Inside Throat Liner Pattern with Fleurons & Gold Rule */}
+-              <span className="iv-envelope-liner">
++              <span className="iv-envelope-liner" style={renderStyle}>
+                 <span className="iv-liner-ornament">
+                   <span>❦</span>
+                   <i className="iv-liner-rule" />
+@@ -445,6 +531,7 @@ export function EnvelopeRenderer({
+               {/* Layer 5: Hero Formal Stationery Letter ("THE LETTER" in Reference Target) */}
+               <motion.span
+                 className="iv-card-preview"
++                style={renderStyle}
+                 animate={
+                   phase === 'closed' || phase === 'seal-press'
+                     ? { y: 28, z: 10, rotate: 0, scale: 0.96, opacity: 0 }
+@@ -469,7 +556,7 @@ export function EnvelopeRenderer({
+                   <div className="iv-letter-crest">
+                     <span className="iv-crest-laurel iv-crest-laurel--left">❧</span>
+                     <span className="iv-crest-monogram">
+-                      {template.seal.monogram === 'K&W' ? 'W&O' : (template.seal.monogram || 'K')}
++                      {sealMonogram === 'K&W' ? 'W&O' : sealMonogram}
+                     </span>
+                     <span className="iv-crest-laurel iv-crest-laurel--right">❧</span>
+                   </div>
+@@ -481,13 +568,19 @@ export function EnvelopeRenderer({
+ 
+                   {/* Formal Request Line */}
+                   <span className="iv-letter-request">
+-                    {template.category === 'wedding'
++                    {template.category === 'wedding' || template.category === 'engagement'
+                       ? 'joyfully invite'
+                       : isBirthday
+-                      ? 'invite you to join them in celebrating'
+-                      : template.category === 'memorial'
+-                      ? 'invite you to celebrate the life and memory of'
+-                      : 'cordially invite you to celebrate'}
++                      ? 'invite you to join in celebrating'
++                      : template.category === 'memorial' || template.category === 'funeral'
++                      ? 'invite you to gather in memory of'
++                      : template.category === 'graduation'
++                      ? 'invite you to celebrate the achievement of'
++                      : template.category === 'housewarming'
++                      ? 'invite you to celebrate the new home of'
++                      : template.category === 'corporate' || template.category === 'product-launch'
++                      ? 'request the pleasure of your company at'
++                      : 'invite you to celebrate with'}
+                   </span>
+ 
+                   {/* Prominent Guest Name Line ("Mr. & Mrs. Kamau" in Reference Target) */}
+@@ -498,7 +591,15 @@ export function EnvelopeRenderer({
+                   <span className="iv-letter-joining">
+                     {template.category === 'wedding'
+                       ? 'to celebrate the wedding of'
+-                      : 'in honour of'}
++                      : template.category === 'graduation'
++                      ? 'in honour of this achievement'
++                      : template.category === 'housewarming'
++                      ? 'at their new home'
++                      : template.category === 'memorial' || template.category === 'funeral'
++                      ? 'in loving memory of'
++                      : template.category === 'birthday'
++                      ? 'for a special birthday'
++                      : 'for this special gathering'}
+                   </span>
+ 
+                   {/* Prominent Editorial Names */}
+@@ -547,7 +648,7 @@ export function EnvelopeRenderer({
+               </motion.span>
+ 
+               {/* Layer 6: Front Mitred Pocket with Left, Right, Bottom Panels, Gold Rule & Fleuron */}
+-              <span className="iv-envelope-pocket">
++              <span className="iv-envelope-pocket" style={renderStyle}>
+                 <span className="iv-pocket-fold iv-pocket-fold--left" />
+                 <span className="iv-pocket-fold iv-pocket-fold--right" />
+                 <span className="iv-pocket-fold iv-pocket-fold--bottom" />
+@@ -601,6 +702,7 @@ export function EnvelopeRenderer({
+               <span className="iv-seal-anchor" aria-hidden="true">
+                 <motion.span
+                   className="iv-victorian-seal"
++                  style={renderStyle}
+                   initial={phase === 'closed' ? { scale: 1, opacity: 1 } : { scale: 0.5, opacity: 0 }}
+                   animate={
+                     phase === 'closed'
+@@ -615,7 +717,7 @@ export function EnvelopeRenderer({
+                 >
+                   <span className="iv-wax-rim" aria-hidden="true" />
+                   <span className="iv-wax-monogram">
+-                    {template.seal.monogram === 'K&W' ? 'W&O' : (template.seal.monogram || 'K')}
++                    {sealMonogram === 'K&W' ? 'W&O' : sealMonogram}
+                   </span>
+                   <span className="iv-wax-imprint" aria-hidden="true">❦</span>
+ 
+@@ -1007,8 +1109,24 @@ export function EnvelopeRenderer({
+             </section>
+           )}
+ 
++          {(theme === 'graduation' || theme === 'housewarming' || theme === 'corporate' || theme === 'holiday-celebration' || theme === 'modern-editorial') && (
++            <section className={`iv-occasion-cover iv-occasion-cover--${theme}`}>
++              <div className="iv-occasion-cover__copy">
++                <p className="iv-eyebrow">{template.category === 'graduation' ? 'A proud new chapter' : template.category === 'housewarming' ? 'A new place to call home' : template.category === 'holiday' ? 'Together is the best tradition' : template.category === 'corporate' || template.category === 'product-launch' ? 'An invitation to connect' : 'Mark the moment'}</p>
++                <h1>{data.title}</h1>
++                <p className="iv-occasion-cover__names">{data.celebrants || data.hosts}</p>
++                <div className="iv-occasion-cover__meta"><span>{data.date}</span><span>{data.time}</span><span>{data.venue}{data.city ? `, ${data.city}` : ''}</span></div>
++                <a href="#iv-content-start" className="iv-occasion-cover__link">Explore event details <ChevronDown size={14} /></a>
++              </div>
++              <div className="iv-occasion-cover__image">
++                {/* eslint-disable-next-line @next/next/no-img-element */}
++                <img src={data.heroImage} alt={`${data.title} invitation`} loading="lazy" />
++              </div>
++            </section>
++          )}
++
+           {/* Content sections passed down from page */}
+-          <div className="iv-content-sections">{children}</div>
++          <div id="iv-content-start" className="iv-content-sections">{children}</div>
+ 
+           {/* Ending / Footer */}
+           <footer className="iv-ending">
+diff --git a/src/components/invitations/DraftInvitationPreview.tsx b/src/components/invitations/DraftInvitationPreview.tsx
+new file mode 100644
+index 0000000..dc65fda
+--- /dev/null
++++ b/src/components/invitations/DraftInvitationPreview.tsx
+@@ -0,0 +1,159 @@
++'use client';
++
++import React, { useMemo } from 'react';
++import type { EventDesignEntity, EventEntity } from '@/lib/db/types';
++import { InvitationSectionsRenderer } from '@/components/invitations/InvitationSectionsRenderer';
++import { getDefaultInvitationSections } from '@/lib/events/default-invitation-sections';
++import type { TemplateDefinition } from '@/lib/templates/types';
++import { EnvelopeRenderer } from '@/components/animation/EnvelopeRenderer';
++import { InvitationThemeScope } from '@/components/invitations/InvitationThemeScope';
++
++export type DraftInvitationValues = {
++  title: string;
++  hosts: string;
++  celebrants: string;
++  date: string;
++  time: string;
++  venue: string;
++  city: string;
++  heroImage: string;
++  rsvpDeadline?: string;
++  dressCode?: string;
++};
++
++interface DraftInvitationPreviewProps {
++  template: TemplateDefinition;
++  values: DraftInvitationValues;
++  design: Partial<EventDesignEntity>;
++  guestName: string;
++  restartKey: number;
++}
++
++/**
++ * Uses the production EnvelopeRenderer for the editor preview. This deliberately
++ * avoids drawing a separate poster mockup, so edits use the same envelope and
++ * animation implementation as a published guest invitation.
++ */
++export function DraftInvitationPreview({
++  template,
++  values,
++  design,
++  guestName,
++  restartKey,
++}: DraftInvitationPreviewProps) {
++  const previewTemplate = useMemo<TemplateDefinition>(() => ({
++    ...template,
++    palette: {
++      ...template.palette,
++      primary: design.palette?.primary || template.palette.primary,
++      secondary: design.palette?.secondary || template.palette.secondary,
++      accent: design.palette?.accent || template.palette.accent,
++      envelope: design.palette?.envelope || template.palette.envelope,
++      flap: design.palette?.flap || template.palette.flap,
++      cardBackground: design.palette?.cardBackground || template.palette.cardBackground,
++    },
++    liner: {
++      ...template.liner,
++      id: (design.linerId || template.liner.id) as TemplateDefinition['liner']['id'],
++      name: design.linerId || template.liner.name,
++      className: `bg-liner-${design.linerId || template.liner.id}`,
++    },
++    seal: {
++      ...template.seal,
++      monogram: design.sealMonogram || template.seal.monogram,
++      color: design.sealColor || template.seal.color,
++      shape: (design.sealShape || template.seal.shape) as TemplateDefinition['seal']['shape'],
++    },
++    sampleData: {
++      ...template.sampleData,
++      title: values.title,
++      hosts: values.hosts,
++      celebrants: values.celebrants,
++      date: values.date,
++      time: values.time,
++      venue: values.venue,
++      city: values.city,
++      heroImage: values.heroImage || template.sampleData.heroImage,
++    },
++  }), [template, values, design]);
++
++  const isMemorial = template.category === 'memorial' || template.category === 'funeral';
++  const isBirthday = template.category === 'birthday';
++  const previewEvent = useMemo<EventEntity>(() => {
++    const story = template.sampleData.story || template.sampleData.subtitle || '';
++    const galleryImages = template.sampleData.galleryImages?.length
++      ? template.sampleData.galleryImages
++      : values.heroImage ? [values.heroImage] : [];
++    return {
++      id: 'kadi-draft-preview',
++      hostId: 'kadi-preview-host',
++      title: values.title,
++      subtitle: template.sampleData.subtitle || '',
++      slug: 'kadi-draft-preview',
++      category: template.category,
++      status: 'draft',
++      templateId: template.id,
++      templateVersion: template.version,
++      hosts: values.hosts,
++      celebrants: values.celebrants,
++      date: values.date,
++      time: values.time,
++      timezone: 'Africa/Nairobi',
++      venue: values.venue,
++      city: values.city,
++      dressCode: values.dressCode,
++      story,
++      heroImage: values.heroImage || template.sampleData.heroImage,
++      galleryImages,
++      rsvpDeadline: values.rsvpDeadline || 'Not set',
++      ourStoryMilestones: story ? [{ yearOrDate: 'A note from the hosts', title: 'The story so far', story }] : undefined,
++      programmeSchedule: [{
++        time: values.time || 'Time to be confirmed',
++        title: isBirthday ? 'Gather and celebrate' : isMemorial ? 'Service and gathering' : template.category === 'graduation' ? 'Ceremony and celebration' : template.category === 'housewarming' ? 'Welcome to the new home' : 'Event begins',
++        description: template.sampleData.subtitle || 'Event details will appear here as you customize the invitation.',
++        location: values.venue,
++      }],
++      faqItems: [
++        { question: 'Where is the event?', answer: [values.venue, values.city].filter(Boolean).join(', ') || 'Venue details to be confirmed.' },
++        { question: 'When should I arrive?', answer: `The event is scheduled for ${values.date || 'the date shown on this invitation'} at ${values.time || 'the listed time'}.` },
++      ],
++      birthdayAbout: isBirthday ? { heading: `About ${values.celebrants || 'the celebrant'}`, bio: story } : undefined,
++      memorialObituary: isMemorial ? { biography: story || `Details about ${values.celebrants || 'the person being remembered'} will be added by the host.` } : undefined,
++      memorialServices: isMemorial ? [{ name: 'Service', date: values.date, time: values.time, venue: values.venue, type: 'service' as const }] : undefined,
++      createdAt: '',
++      updatedAt: '',
++    };
++  }, [template, values, isBirthday, isMemorial]);
++
++  const defaultSectionKeys = getDefaultInvitationSections(template.category);
++  const defaultSectionSet = new Set(defaultSectionKeys);
++  const visibleSectionSet = new Set(
++    design.visibleSections !== undefined
++      ? design.visibleSections.filter((key) => defaultSectionSet.has(key))
++      : defaultSectionKeys,
++  );
++  const requestedOrder = design.sectionOrder?.length ? design.sectionOrder : defaultSectionKeys;
++  const previewSectionKeys = [
++    ...requestedOrder.filter((key) => defaultSectionSet.has(key) && visibleSectionSet.has(key)),
++    ...defaultSectionKeys.filter((key) => visibleSectionSet.has(key) && !requestedOrder.includes(key)),
++  ];
++
++  return (
++    <InvitationThemeScope template={previewTemplate} className="kadi-draft-preview">
++      <EnvelopeRenderer
++        key={restartKey}
++        template={previewTemplate}
++        design={design}
++        guestName={guestName}
++        isDemo
++      >
++        <InvitationSectionsRenderer
++          event={previewEvent}
++          sectionKeys={previewSectionKeys}
++          guestName={guestName}
++          previewMode
++        />
++      </EnvelopeRenderer>
++    </InvitationThemeScope>
++  );
++}
+diff --git a/src/components/invitations/InvitationSectionsRenderer.tsx b/src/components/invitations/InvitationSectionsRenderer.tsx
+new file mode 100644
+index 0000000..7c6c7f6
+--- /dev/null
++++ b/src/components/invitations/InvitationSectionsRenderer.tsx
+@@ -0,0 +1,110 @@
++'use client';
++
++import React from 'react';
++import { getDefaultInvitationSections } from '@/lib/events/default-invitation-sections';
++import type { EventEntity } from '@/lib/db/types';
++import { ScheduleSection } from '@/components/invitations/ScheduleSection';
++import { VenueSection } from '@/components/invitations/VenueSection';
++import { CeremonyReceptionSection } from '@/components/invitations/CeremonyReceptionSection';
++import { StorySection } from '@/components/invitations/StorySection';
++import { GallerySection } from '@/components/invitations/GallerySection';
++import { FAQSection } from '@/components/invitations/FAQSection';
++import { BirthdayAboutSection } from '@/components/invitations/BirthdayAboutSection';
++import { BirthdayActivitiesSection } from '@/components/invitations/BirthdayActivitiesSection';
++import { MemorialObituarySection } from '@/components/invitations/MemorialObituarySection';
++import { MemorialServiceSection } from '@/components/invitations/MemorialServiceSection';
++import { MemorialTributesCandlesSection } from '@/components/invitations/MemorialTributesCandlesSection';
++import { MemorialLivestreamSection } from '@/components/invitations/MemorialLivestreamSection';
++import { CondolencesSection } from '@/components/invitations/CondolencesSection';
++import { RSVPSection } from '@/components/invitations/RSVPSection';
++import { RegistrySection } from '@/components/invitations/RegistrySection';
++import { ClosingSection } from '@/components/invitations/ClosingSection';
++
++/**
++ * The one content-section renderer used by the public guest page, invitation
++ * designer preview, and the new-invitation live preview. Keep section behavior
++ * here so the editor cannot quietly drift away from the guest experience.
++ */
++
++interface InvitationSectionsRendererProps {
++  event: EventEntity;
++  sectionKeys?: string[];
++  guestToken?: string;
++  guestName?: string;
++  previewMode?: boolean;
++}
++
++function calendarData(event: EventEntity) {
++  return {
++    title: event.title,
++    description: `Invitation to ${event.title}`,
++    location: [event.venue, event.city].filter(Boolean).join(', '),
++    startDate: event.date,
++    endDate: event.date,
++  };
++}
++
++export function InvitationSectionsRenderer({
++  event,
++  sectionKeys,
++  guestToken,
++  guestName,
++  previewMode = false,
++}: InvitationSectionsRendererProps) {
++  const activeKeys = sectionKeys || getDefaultInvitationSections(event.category);
++  const calendar = calendarData(event);
++
++  const renderSection = (key: string): React.ReactNode => {
++    switch (key) {
++      case 'hero':
++      case 'welcome':
++        // The physical envelope and hero cover are owned by EnvelopeRenderer.
++        return null;
++      case 'story': {
++        const milestones = event.ourStoryMilestones?.length
++          ? event.ourStoryMilestones
++          : event.story
++            ? [{ yearOrDate: 'A note from the hosts', title: 'Our story', story: event.story }]
++            : [];
++        return milestones.length ? <StorySection key={key} milestones={milestones} /> : null;
++      }
++      case 'ceremony':
++        if (event.ceremonyDetails || event.receptionDetails) {
++          return <CeremonyReceptionSection key={key} ceremony={event.ceremonyDetails} reception={event.receptionDetails} eventTitle={event.title} eventDate={event.date} />;
++        }
++        return <VenueSection key={key} venue={event.venue} address={event.address} city={event.city} directionsNote={event.directionsNote} googleMapsUrl={event.googleMapsUrl} calendarData={calendar} />;
++      case 'venue':
++        return <VenueSection key={key} venue={event.venue} address={event.address} city={event.city} directionsNote={event.directionsNote} googleMapsUrl={event.googleMapsUrl} calendarData={calendar} />;
++      case 'schedule':
++        return event.programmeSchedule?.length ? <ScheduleSection key={key} items={event.programmeSchedule} /> : null;
++      case 'about':
++        return (event.birthdayAbout || event.story) ? <BirthdayAboutSection key={key} celebrantName={event.celebrants} milestoneAge={event.milestoneAge} bio={event.birthdayAbout?.bio || event.story} facts={event.birthdayAbout?.facts} heading={event.birthdayAbout?.heading} heroImage={event.heroImage} /> : null;
++      case 'activities':
++        return (event.birthdayActivities?.length || event.birthdayMenu) ? <BirthdayActivitiesSection key={key} activities={event.birthdayActivities} menu={event.birthdayMenu} /> : null;
++      case 'obituary':
++        return (event.memorialObituary || event.story) ? <MemorialObituarySection key={key} honoreeName={event.celebrants} biography={event.memorialObituary?.biography || event.story || ''} birthDate={event.memorialObituary?.birthDate} deathDate={event.memorialObituary?.deathDate} epitaph={event.memorialObituary?.epitaph} /> : null;
++      case 'services':
++        return event.memorialServices?.length ? <MemorialServiceSection key={key} services={event.memorialServices} orderOfService={event.memorialOrderOfService} /> : null;
++      case 'livestream':
++        return event.livestreamUrl ? <MemorialLivestreamSection key={key} livestreamUrl={event.livestreamUrl} livestreamStatus={event.livestreamStatus} honoreeName={event.celebrants} /> : null;
++      case 'candles':
++        return (event.category === 'memorial' || event.category === 'funeral') ? <MemorialTributesCandlesSection key={key} honoreeName={event.celebrants} initialCandlesCount={event.virtualCandlesCount} /> : null;
++      case 'condolences':
++        return (event.category === 'memorial' || event.category === 'funeral') ? <CondolencesSection key={key} honoreeName={event.celebrants} /> : null;
++      case 'gallery':
++        return event.galleryImages?.length ? <GallerySection key={key} images={event.galleryImages} celebrants={event.celebrants} /> : null;
++      case 'faq':
++        return event.faqItems?.length ? <FAQSection key={key} items={event.faqItems} /> : null;
++      case 'registry':
++        return event.mpesaNumber ? <RegistrySection key={key} mpesaType={event.mpesaType} mpesaNumber={event.mpesaNumber} recipientName={event.mpesaRecipient} accountReference={event.mpesaReference} /> : null;
++      case 'rsvp':
++        return <RSVPSection key={key} eventId={event.id} deadline={event.rsvpDeadline} guestToken={guestToken} defaultGuestName={guestName} allowedPlusOnes={previewMode ? 1 : undefined} previewMode={previewMode} />;
++      case 'closing':
++        return <ClosingSection key={key} celebrants={event.celebrants} closingNote={event.category === 'memorial' || event.category === 'funeral' ? 'Held in memory. Held together.' : undefined} calendarData={calendar} />;
++      default:
++        return null;
++    }
++  };
++
++  return <>{activeKeys.map((key) => <React.Fragment key={key}>{renderSection(key)}</React.Fragment>)}</>;
++}
+diff --git a/src/components/invitations/KadiStudioEditor.tsx b/src/components/invitations/KadiStudioEditor.tsx
+new file mode 100644
+index 0000000..6c3955a
+--- /dev/null
++++ b/src/components/invitations/KadiStudioEditor.tsx
+@@ -0,0 +1,417 @@
++'use client';
++
++import React, { useEffect, useMemo, useRef, useState } from 'react';
++import { AnimatePresence, motion } from 'framer-motion';
++import { Check, Copy, Monitor, RotateCcw, Smartphone, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react';
++import type { EventDesignEntity } from '@/lib/db/types';
++import type { TemplateDefinition } from '@/lib/templates/types';
++import { getDefaultInvitationSections } from '@/lib/events/default-invitation-sections';
++import { DraftInvitationPreview, type DraftInvitationValues } from '@/components/invitations/DraftInvitationPreview';
++
++export type StudioDraft = {
++  values: DraftInvitationValues;
++  design: Partial<EventDesignEntity>;
++};
++
++type Device = 'iphone' | 'android' | 'desktop';
++type SaveState = 'ready' | 'unsaved' | 'saving' | 'saved' | 'error';
++
++export interface PreviewGuestOption {
++  id: string;
++  label: string; // Supports a couple / household label such as "Mr. & Mrs. Kamau".
++}
++
++interface KadiStudioEditorProps {
++  template: TemplateDefinition;
++  templates?: TemplateDefinition[];
++  initialValues: DraftInvitationValues;
++  initialDesign: Partial<EventDesignEntity>;
++  guests?: PreviewGuestOption[];
++  /** Wire this to the existing event/design persistence service. Resolve only after persistence succeeds. */
++  onSaveDraft: (draft: StudioDraft) => Promise<void>;
++  /** Must create a private, expiring preview URL on the server; do not make draft slugs public. */
++  onGeneratePrivatePreviewLink?: () => Promise<string>;
++}
++
++const defaultGuests: PreviewGuestOption[] = [
++  { id: 'kamau-household', label: 'Mr. & Mrs. Kamau' },
++  { id: 'sarah-kamau', label: 'Sarah Kamau' },
++  { id: 'david-mwangi', label: 'David Mwangi' },
++  { id: 'wanjiku-family', label: 'Wanjiku Otieno & Family' },
++];
++
++const FONT_OPTIONS = [
++  { value: 'Inter', label: 'Inter — modern' },
++  { value: 'Playfair Display', label: 'Playfair Display — editorial' },
++  { value: 'Cormorant Garamond', label: 'Cormorant Garamond — elegant' },
++  { value: 'DM Sans', label: 'DM Sans — clean' },
++];
++
++const ENVELOPE_OPTIONS: Array<{ value: NonNullable<EventDesignEntity['envelopeStyle']>; label: string }> = [
++  { value: 'classic-fold', label: 'Classic fold' },
++  { value: 'pocket-fold', label: 'Pocket sleeve' },
++  { value: 'scalloped-edge', label: 'Scalloped edge' },
++  { value: 'minimal', label: 'Modern minimal' },
++];
++
++const LETTER_OPTIONS: Array<{ value: NonNullable<EventDesignEntity['letterStyle']>; label: string }> = [
++  { value: 'printed-letter', label: 'Printed invitation' },
++  { value: 'handwritten-letter', label: 'Handwritten letter' },
++  { value: 'folded-card', label: 'Folded card' },
++];
++
++function defaultsForTemplate(template: TemplateDefinition, previous?: DraftInvitationValues): DraftInvitationValues {
++  return {
++    title: template.sampleData.title,
++    hosts: template.sampleData.hosts,
++    celebrants: template.sampleData.celebrants,
++    date: template.sampleData.date,
++    time: template.sampleData.time,
++    venue: template.sampleData.venue,
++    city: template.sampleData.city,
++    heroImage: template.sampleData.heroImage,
++    rsvpDeadline: previous?.rsvpDeadline || '',
++    dressCode: previous?.dressCode || '',
++  };
++}
++
++function designForTemplate(template: TemplateDefinition): Partial<EventDesignEntity> {
++  const defaults = getDefaultInvitationSections(template.category);
++  return {
++    motionPreset: template.motionPreset,
++    palette: {
++      primary: template.palette.primary,
++      secondary: template.palette.secondary,
++      accent: template.palette.accent,
++      envelope: template.palette.envelope,
++      flap: template.palette.flap,
++      cardBackground: template.palette.cardBackground,
++    },
++    linerId: template.liner.id,
++    sealShape: template.seal.shape === 'oval' ? 'circle' : template.seal.shape,
++    sealMonogram: template.seal.monogram || 'K',
++    sealColor: template.seal.color,
++    visibleSections: defaults,
++    sectionOrder: defaults,
++    fontFamily: template.fonts.heading === 'sans' ? 'Inter' : template.fonts.heading === 'display' ? 'Cormorant Garamond' : 'Playfair Display',
++    envelopeStyle: 'classic-fold',
++    letterStyle: 'printed-letter',
++    backgroundAnimation: 'none',
++    scrollAnimation: 'fade-up',
++    transitionSpeed: 'medium',
++  };
++}
++
++function useReducedMotionFlag() {
++  const [reduced, setReduced] = useState(false);
++  useEffect(() => {
++    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
++    const sync = () => setReduced(media.matches);
++    sync();
++    media.addEventListener?.('change', sync);
++    return () => media.removeEventListener?.('change', sync);
++  }, []);
++  return reduced;
++}
++
++/**
++ * Real preview editor. Controls update local draft state immediately; preview is rendered from
++ * that same state. Only persistence is debounced. Pass the actual EventService-backed save
++ * callback so the "Saved" status means the server/service has really accepted the draft.
++ */
++export function KadiStudioEditor({
++  template,
++  templates = [template],
++  initialValues,
++  initialDesign,
++  guests = defaultGuests,
++  onSaveDraft,
++  onGeneratePrivatePreviewLink,
++}: KadiStudioEditorProps) {
++  const [templateId, setTemplateId] = useState(template.id);
++  const activeTemplate = useMemo(
++    () => templates.find((item) => item.id === templateId) || template,
++    [templates, templateId, template],
++  );
++  const [draft, setDraft] = useState<StudioDraft>({ values: initialValues, design: initialDesign });
++  const [guestId, setGuestId] = useState(guests[0]?.id || 'default');
++  const [device, setDevice] = useState<Device>('iphone');
++  const [replayKey, setReplayKey] = useState(0);
++  const [saveState, setSaveState] = useState<SaveState>('ready');
++  const [notice, setNotice] = useState('');
++  const hasEdited = useRef(false);
++  const saveQueue = useRef<Promise<void>>(Promise.resolve());
++  const saveCallbackRef = useRef(onSaveDraft);
++  const reducedMotion = useReducedMotionFlag();
++  const guest = guests.find((item) => item.id === guestId) || guests[0];
++
++  useEffect(() => { saveCallbackRef.current = onSaveDraft; }, [onSaveDraft]);
++
++  // Every field modifies the one draft object. This is the key to live preview parity.
++  const patchValue = <K extends keyof DraftInvitationValues>(key: K, value: DraftInvitationValues[K]) => {
++    hasEdited.current = true;
++    setSaveState('unsaved');
++    setDraft((current) => ({ ...current, values: { ...current.values, [key]: value } }));
++  };
++
++  const patchDesign = (patch: Partial<EventDesignEntity>) => {
++    hasEdited.current = true;
++    setSaveState('unsaved');
++    setDraft((current) => ({ ...current, design: { ...current.design, ...patch } }));
++  };
++
++  const patchPalette = (key: 'primary' | 'secondary' | 'accent' | 'envelope' | 'flap' | 'cardBackground', value: string) => {
++    const base = { ...activeTemplate.palette, ...(draft.design.palette || {}) };
++    patchDesign({ palette: { ...base, [key]: value } });
++  };
++
++  const toggleSection = (section: string, checked: boolean) => {
++    const defaults = getDefaultInvitationSections(activeTemplate.category);
++    const current = (draft.design.visibleSections || defaults).filter((key) => defaults.includes(key));
++    const next = checked ? [...current, section].filter((key, index, all) => all.indexOf(key) === index) : current.filter((key) => key !== section);
++    const oldOrder = draft.design.sectionOrder || defaults;
++    const nextOrder = oldOrder.filter((key) => next.includes(key));
++    next.forEach((key) => { if (!nextOrder.includes(key)) nextOrder.push(key); });
++    patchDesign({ visibleSections: next, sectionOrder: nextOrder });
++  };
++
++  const moveSection = (section: string, direction: -1 | 1) => {
++    const defaults = getDefaultInvitationSections(activeTemplate.category);
++    const visible = (draft.design.visibleSections || defaults).filter((key) => defaults.includes(key));
++    const order = (draft.design.sectionOrder || defaults).filter((key) => visible.includes(key));
++    const index = order.indexOf(section);
++    const target = index + direction;
++    if (index < 0 || target < 0 || target >= order.length) return;
++    const next = [...order];
++    [next[index], next[target]] = [next[target], next[index]];
++    patchDesign({ sectionOrder: next });
++  };
++
++  const selectTemplate = (nextId: string) => {
++    const nextTemplate = templates.find((item) => item.id === nextId);
++    if (!nextTemplate) return;
++    setTemplateId(nextId);
++    hasEdited.current = true;
++    setSaveState('unsaved');
++    setDraft((current) => ({ values: defaultsForTemplate(nextTemplate, current.values), design: designForTemplate(nextTemplate) }));
++    setReplayKey((key) => key + 1);
++  };
++
++  // Preview updates on every state change; only network/service persistence waits for 500ms.
++  useEffect(() => {
++    if (!hasEdited.current) return;
++    let active = true;
++    const snapshot = draft;
++    const timer = window.setTimeout(() => {
++      setSaveState('saving');
++      const operation = saveQueue.current
++        .catch(() => undefined)
++        .then(() => saveCallbackRef.current(snapshot));
++      saveQueue.current = operation;
++      operation.then(() => {
++        if (active) setSaveState('saved');
++      }).catch(() => {
++        if (active) setSaveState('error');
++      });
++    }, 500);
++    return () => {
++      active = false;
++      window.clearTimeout(timer);
++    };
++  }, [draft]);
++
++  const sharePreview = async () => {
++    if (!onGeneratePrivatePreviewLink) {
++      setNotice('Private preview links are not configured yet. Do not share a public draft URL.');
++      return;
++    }
++    if (saveState !== 'saved') {
++      setNotice('Save the latest changes before generating a preview link.');
++      return;
++    }
++    try {
++      const url = await onGeneratePrivatePreviewLink();
++      await navigator.clipboard.writeText(url);
++      setNotice('Private preview link copied.');
++    } catch {
++      setNotice('Could not create or copy the private preview link. Check the share service and browser clipboard permissions.');
++    }
++  };
++
++  const sectionDefaults = getDefaultInvitationSections(activeTemplate.category);
++  const activeSections = (draft.design.visibleSections || sectionDefaults).filter((key) => sectionDefaults.includes(key));
++  const sectionOrder = (draft.design.sectionOrder || sectionDefaults).filter((key) => activeSections.includes(key));
++  const sectionRows = [...sectionOrder, ...sectionDefaults.filter((key) => !activeSections.includes(key))];
++  const resolvedGuestName = guest?.label || 'Guest';
++  const palette = { ...activeTemplate.palette, ...(draft.design.palette || {}) };
++
++  return (
++    <div className="kd-studio kd-app-surface">
++      <header className="kd-studio__header">
++        <div className="kd-studio__header-copy">
++          <div className="kd-kicker">Kadi invitation studio</div>
++          <h1 className="kd-page-title">Make it yours.</h1>
++          <p className="kd-muted kd-studio__subheading">Edit on the left. Your guest sees the result on the right.</p>
++        </div>
++        <div className="kd-studio__header-actions">
++          <span className="kd-status" data-state={saveState} role="status" aria-live="polite">
++            <span className="kd-status__dot" />
++            {saveState === 'ready' ? 'Draft ready' : saveState === 'unsaved' ? 'Unsaved changes' : saveState === 'saving' ? 'Saving changes…' : saveState === 'saved' ? 'All changes saved' : 'Could not save'}
++          </span>
++        </div>
++      </header>
++
++      <div className="kd-studio__body">
++        <aside className="kd-studio__controls" aria-label="Invitation controls">
++          <details className="kd-studio__accordion" open>
++            <summary>Event details</summary>
++            <div className="kd-studio__fields">
++              <label className="kd-field"><span className="kd-label">Template</span>
++                <select className="kd-select" value={templateId} onChange={(event) => selectTemplate(event.target.value)}>
++                  {templates.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.category}</option>)}
++                </select>
++              </label>
++              <label className="kd-field"><span className="kd-label">Invitation title</span><input className="kd-input" value={draft.values.title} onChange={(event) => patchValue('title', event.target.value)} /></label>
++              <label className="kd-field"><span className="kd-label">Host name(s)</span><input className="kd-input" value={draft.values.hosts} onChange={(event) => patchValue('hosts', event.target.value)} /></label>
++              <label className="kd-field"><span className="kd-label">Celebrant / honouree</span><input className="kd-input" value={draft.values.celebrants} onChange={(event) => patchValue('celebrants', event.target.value)} /></label>
++              <div className="kd-studio__field-row">
++                <label className="kd-field"><span className="kd-label">Date</span><input className="kd-input" value={draft.values.date} onChange={(event) => patchValue('date', event.target.value)} placeholder="12 Dec 2026" /></label>
++                <label className="kd-field"><span className="kd-label">Time</span><input className="kd-input" value={draft.values.time} onChange={(event) => patchValue('time', event.target.value)} placeholder="2:00 PM" /></label>
++              </div>
++              <label className="kd-field"><span className="kd-label">Venue</span><input className="kd-input" value={draft.values.venue} onChange={(event) => patchValue('venue', event.target.value)} /></label>
++              <label className="kd-field"><span className="kd-label">City / area</span><input className="kd-input" value={draft.values.city} onChange={(event) => patchValue('city', event.target.value)} /></label>
++              <label className="kd-field"><span className="kd-label">Hero image URL</span><input className="kd-input" value={draft.values.heroImage} onChange={(event) => patchValue('heroImage', event.target.value)} /></label>
++              <label className="kd-field"><span className="kd-label">RSVP deadline</span><input className="kd-input" value={draft.values.rsvpDeadline || ''} onChange={(event) => patchValue('rsvpDeadline', event.target.value)} placeholder="1 Dec 2026" /></label>
++              <label className="kd-field"><span className="kd-label">Dress code</span><input className="kd-input" value={draft.values.dressCode || ''} onChange={(event) => patchValue('dressCode', event.target.value)} placeholder="Optional" /></label>
++            </div>
++          </details>
++
++          <details className="kd-studio__accordion" open>
++            <summary>Design</summary>
++            <div className="kd-studio__fields">
++              <label className="kd-field"><span className="kd-label">Heading typeface</span>
++                <select className="kd-select" value={draft.design.fontFamily || 'Inter'} onChange={(event) => patchDesign({ fontFamily: event.target.value })}>
++                  {FONT_OPTIONS.map((font) => <option key={font.value} value={font.value}>{font.label}</option>)}
++                </select>
++              </label>
++              <div className="kd-studio__field-row kd-studio__field-row--colors">
++                <label className="kd-field"><span className="kd-label">Primary</span><input className="kd-color-input" aria-label="Primary colour" type="color" value={palette.primary} onChange={(event) => patchPalette('primary', event.target.value)} /></label>
++                <label className="kd-field"><span className="kd-label">Envelope</span><input className="kd-color-input" aria-label="Envelope colour" type="color" value={palette.envelope} onChange={(event) => patchPalette('envelope', event.target.value)} /></label>
++                <label className="kd-field"><span className="kd-label">Flap</span><input className="kd-color-input" aria-label="Envelope flap colour" type="color" value={palette.flap} onChange={(event) => patchPalette('flap', event.target.value)} /></label>
++                <label className="kd-field"><span className="kd-label">Paper</span><input className="kd-color-input" aria-label="Letter paper colour" type="color" value={palette.cardBackground} onChange={(event) => patchPalette('cardBackground', event.target.value)} /></label>
++              </div>
++              <label className="kd-field"><span className="kd-label">Envelope construction</span>
++                <select className="kd-select" value={draft.design.envelopeStyle || 'classic-fold'} onChange={(event) => patchDesign({ envelopeStyle: event.target.value as EventDesignEntity['envelopeStyle'] })}>
++                  {ENVELOPE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
++                </select>
++              </label>
++              <label className="kd-field"><span className="kd-label">Letter format</span>
++                <select className="kd-select" value={draft.design.letterStyle || 'printed-letter'} onChange={(event) => patchDesign({ letterStyle: event.target.value as EventDesignEntity['letterStyle'] })}>
++                  {LETTER_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
++                </select>
++              </label>
++              <div className="kd-studio__field-row kd-studio__field-row--colors">
++                <label className="kd-field"><span className="kd-label">Wax colour</span><input className="kd-color-input" aria-label="Wax seal colour" type="color" value={draft.design.sealColor || activeTemplate.seal.color} onChange={(event) => patchDesign({ sealColor: event.target.value })} /></label>
++                <label className="kd-field"><span className="kd-label">Seal initials</span><input maxLength={3} className="kd-input" value={draft.design.sealMonogram || 'K'} onChange={(event) => patchDesign({ sealMonogram: event.target.value.toUpperCase() })} /></label>
++              </div>
++            </div>
++          </details>
++
++          <details className="kd-studio__accordion">
++            <summary>Invitation sections</summary>
++            <p className="kd-help">Turn sections on or off and reorder them. Available sections depend on the event type.</p>
++            <div className="kd-studio__section-list">
++              {sectionRows.map((section) => {
++                const isActive = activeSections.includes(section);
++                const index = sectionOrder.indexOf(section);
++                return (
++                  <div className={`kd-studio__section-row ${isActive ? '' : 'is-inactive'}`} key={section}>
++                    <label className="kd-studio__section-label"><input type="checkbox" checked={isActive} onChange={(event) => toggleSection(section, event.target.checked)} /><span>{section.replace(/-/g, ' ').replace(/^./, (match) => match.toUpperCase())}</span></label>
++                    {isActive && <span className="kd-studio__section-reorder">
++                      <button type="button" className="kd-icon-button" disabled={index === 0} onClick={() => moveSection(section, -1)} aria-label={`Move ${section} up`}><ChevronUp size={15} /></button>
++                      <button type="button" className="kd-icon-button" disabled={index === sectionOrder.length - 1} onClick={() => moveSection(section, 1)} aria-label={`Move ${section} down`}><ChevronDown size={15} /></button>
++                    </span>}
++                  </div>
++                );
++              })}
++            </div>
++          </details>
++
++          <details className="kd-studio__accordion">
++            <summary>Animations</summary>
++            <div className="kd-studio__fields">
++              <label className="kd-field"><span className="kd-label">Background animation</span>
++                <select className="kd-select" value={draft.design.backgroundAnimation || 'none'} onChange={(event) => patchDesign({ backgroundAnimation: event.target.value as EventDesignEntity['backgroundAnimation'] })}>
++                  <option value="none">None</option><option value="petals">Floating petals</option><option value="confetti">Confetti</option><option value="bokeh">Soft bokeh</option><option value="leaves">Falling leaves</option><option value="snow">Snow</option><option value="candles">Candle flicker</option>
++                </select>
++              </label>
++              <label className="kd-field"><span className="kd-label">Scroll motion</span>
++                <select className="kd-select" value={draft.design.scrollAnimation || 'fade-up'} onChange={(event) => patchDesign({ scrollAnimation: event.target.value as EventDesignEntity['scrollAnimation'] })}>
++                  <option value="none">None</option><option value="fade-up">Fade up</option><option value="slide-in">Slide in</option><option value="scale-in">Scale in</option><option value="parallax">Parallax</option>
++                </select>
++              </label>
++              <label className="kd-field"><span className="kd-label">Transition speed</span>
++                <select className="kd-select" value={draft.design.transitionSpeed || 'medium'} onChange={(event) => patchDesign({ transitionSpeed: event.target.value as EventDesignEntity['transitionSpeed'] })}>
++                  <option value="slow">Slow</option><option value="medium">Medium</option><option value="fast">Fast</option>
++                </select>
++              </label>
++            </div>
++          </details>
++        </aside>
++
++        <section className="kd-studio__preview-column" aria-label="Live guest preview">
++          <div className="kd-studio__preview-toolbar">
++            <label className="kd-field kd-studio__guest-picker"><span className="kd-label">Preview as guest</span>
++              <select className="kd-select" value={guestId} onChange={(event) => setGuestId(event.target.value)}>
++                {guests.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
++              </select>
++            </label>
++            <div className="kd-studio__toolbar-buttons">
++              <button className="kd-button kd-button--small" type="button" onClick={() => setReplayKey((key) => key + 1)}><RotateCcw size={14} /> Restart</button>
++              <button className="kd-button kd-button--small" type="button" onClick={sharePreview} disabled={saveState === 'saving' || saveState === 'unsaved'}><Copy size={14} /> Share preview</button>
++            </div>
++          </div>
++
++          <div className="kd-studio__device-switch" role="group" aria-label="Preview device">
++            <button type="button" className={device === 'iphone' ? 'is-active' : ''} aria-pressed={device === 'iphone'} onClick={() => setDevice('iphone')}><Smartphone size={15} /> iPhone</button>
++            <button type="button" className={device === 'android' ? 'is-active' : ''} aria-pressed={device === 'android'} onClick={() => setDevice('android')}><Smartphone size={15} /> Android</button>
++            <button type="button" className={device === 'desktop' ? 'is-active' : ''} aria-pressed={device === 'desktop'} onClick={() => setDevice('desktop')}><Monitor size={15} /> Desktop</button>
++          </div>
++
++          <div className="kd-studio__stage">
++            <AnimatePresence mode="wait" initial={false}>
++              <motion.div
++                key={device}
++                className={`kd-studio__device kd-studio__device--${device}`}
++                initial={reducedMotion ? false : { opacity: 0, y: 8, scale: .99 }}
++                animate={{ opacity: 1, y: 0, scale: 1 }}
++                exit={reducedMotion ? undefined : { opacity: 0, y: -4, scale: .995 }}
++                transition={{ duration: reducedMotion ? 0 : .24, ease: [.32, .72, 0, 1] }}
++              >
++                <div className="kd-studio__viewport">
++                  <DraftInvitationPreview
++                    template={activeTemplate}
++                    values={draft.values}
++                    design={{ ...draft.design, visibleSections: activeSections, sectionOrder }}
++                    guestName={resolvedGuestName}
++                    restartKey={replayKey}
++                  />
++                </div>
++              </motion.div>
++            </AnimatePresence>
++          </div>
++
++          <AnimatePresence>
++            {notice && (
++              <motion.div className="kd-studio__notice" role="status" initial={reducedMotion ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
++                {notice.startsWith('Private preview link copied') ? <Check size={15} /> : <AlertCircle size={15} />}
++                <span>{notice}</span>
++                <button type="button" onClick={() => setNotice('')} aria-label="Dismiss message">×</button>
++              </motion.div>
++            )}
++          </AnimatePresence>
++        </section>
++      </div>
++    </div>
++  );
++}
+diff --git a/src/components/visual-reference/KadiReferenceLanding.tsx b/src/components/visual-reference/KadiReferenceLanding.tsx
+index 189355d..e472aab 100644
+--- a/src/components/visual-reference/KadiReferenceLanding.tsx
++++ b/src/components/visual-reference/KadiReferenceLanding.tsx
+@@ -2,42 +2,34 @@
+ 
+ import { useEffect, useState, type CSSProperties } from 'react';
+ import Link from 'next/link';
+-import { ArrowRight, ArrowUpRight } from 'lucide-react';
++import Image from 'next/image';
++import { ArrowRight, ArrowUpRight, CalendarDays, CheckCircle2, MessageCircle, ShieldCheck, Users } from 'lucide-react';
+ import { Logo } from '@/components/ui/Logo';
+ import { KadiFullViewportHero } from '@/components/landing/KadiFullViewportHero';
+ import { KADI_HERO_SLIDES } from '@/lib/landing-hero-slides';
++import { TEMPLATES } from '@/lib/templates/catalogue';
++import { EVENT_CATEGORY_LABELS } from '@/lib/events/categories';
++
++const templateImage = (category: string, fallback: string) =>
++  TEMPLATES.find((template) => template.category === category)?.sampleData.heroImage || fallback;
+ 
+ const occasions = [
+-  {
+-    title: 'Weddings',
+-    description: 'Timeless elegance for your special day.',
+-    image: '/kadi/category-botanical.webp',
+-    imageAlt: 'Botanical paper envelope closed with a gold wax seal',
+-    href: '/templates?category=wedding',
+-  },
+-  {
+-    title: 'Birthdays',
+-    description: 'Bold, fun and full of personality.',
+-    image: '/kadi/category-velvet.webp',
+-    imageAlt: 'Deep burgundy invitation envelope with gold ornament',
+-    href: '/templates?category=birthday',
+-  },
+-  {
+-    title: 'Memorials',
+-    description: 'A dignified way to celebrate lives well lived.',
+-    image: '/kadi/category-letter.webp',
+-    imageAlt: 'A keepsake letter in warm natural paper tones',
+-    href: '/templates?category=memorial',
+-  },
+-  {
+-    title: '& More',
+-    description: 'Baby showers, graduations, anniversaries and more.',
+-    image: '/kadi/category-blush.webp',
+-    imageAlt: 'Soft blush envelope with a delicate wax seal',
+-    href: '/templates',
+-  },
++  { title: 'Weddings', description: 'Ceremonies, receptions and the story behind them.', image: templateImage('wedding', '/kadi/category-wedding.webp'), imageAlt: 'Wedding invitation design', href: '/templates?category=wedding' },
++  { title: 'Birthdays', description: 'Playful, colourful, elegant or all-out party.', image: templateImage('birthday', '/kadi/category-velvet.webp'), imageAlt: 'Birthday invitation design', href: '/templates?category=birthday' },
++  { title: 'Graduations', description: 'Celebrate the work behind the milestone.', image: templateImage('graduation', '/kadi/category-celestial.webp'), imageAlt: 'Graduation invitation design', href: '/templates?category=graduation' },
++  { title: 'Housewarmings', description: 'Open the door to a new chapter.', image: templateImage('housewarming', '/kadi/category-botanical.webp'), imageAlt: 'Housewarming invitation design', href: '/templates?category=housewarming' },
++  { title: 'Memorials', description: 'Gather with care to honour a life.', image: templateImage('memorial', '/kadi/category-letter.webp'), imageAlt: 'Memorial invitation design', href: '/templates?category=memorial' },
++  { title: 'Funerals', description: 'Share service details with dignity and clarity.', image: templateImage('funeral', '/kadi/category-letter.webp'), imageAlt: 'Funeral service announcement design', href: '/templates?category=funeral' },
++  { title: 'Baby showers', description: 'A warm welcome for a little one.', image: templateImage('baby-shower', '/kadi/category-blush.webp'), imageAlt: 'Baby shower invitation design', href: '/templates?category=baby-shower' },
++  { title: 'Work & community', description: 'Launches, reunions, fundraisers and more.', image: templateImage('corporate', '/kadi/category-celestial.webp'), imageAlt: 'Corporate gathering invitation design', href: '/templates?category=corporate' },
+ ];
+ 
++const featuredCategories = ['birthday', 'graduation', 'housewarming', 'funeral', 'baby-shower', 'corporate'];
++const featuredTemplates = featuredCategories
++  .map((category) => TEMPLATES.find((template) => template.category === category))
++  .filter((template): template is (typeof TEMPLATES)[number] => Boolean(template));
++
++
+ export default function KadiReferenceLanding() {
+ 
+   useEffect(() => {
+@@ -76,7 +68,7 @@ export default function KadiReferenceLanding() {
+               <article className="kr-occasion" data-kr-reveal key={occasion.title} style={{ '--kr-delay': `${index * 80}ms` } as CSSProperties & { '--kr-delay': string }}>
+                 <Link href={occasion.href} className="kr-occasion__link">
+                   <div className="kr-occasion__image-wrap">
+-                    <img src={occasion.image} alt={occasion.imageAlt} loading="lazy" />
++                    <Image src={occasion.image} alt={occasion.imageAlt} fill sizes="(max-width: 680px) 46vw, (max-width: 1024px) 23vw, 18vw" loading="lazy" quality={78} style={{ objectFit: 'cover' }} />
+                   </div>
+                   <div className="kr-occasion__body">
+                     <h3>{occasion.title}</h3>
+@@ -90,9 +82,36 @@ export default function KadiReferenceLanding() {
+         </div>
+       </section>
+ 
++      <section className="kr-featured" aria-labelledby="kr-featured-title">
++        <div className="kr-container">
++          <div className="kr-featured__heading" data-kr-reveal>
++            <div>
++              <p className="kr-eyebrow">A growing design collection</p>
++              <h2 id="kr-featured-title">Different moments. Different moods.</h2>
++              <p>Start with a design that already feels right, then make it yours.</p>
++            </div>
++            <Link href="/templates" className="kr-text-link">Explore all templates <ArrowUpRight size={15} /></Link>
++          </div>
++          <div className="kr-featured__rail">
++            {featuredTemplates.map((template, index) => (
++              <article className="kr-featured__item" data-kr-reveal key={template.id} style={{ '--kr-delay': `${index * 65}ms` } as CSSProperties & { '--kr-delay': string }}>
++                <Link href={`/templates/${template.id}`} className="kr-featured__visual">
++                  <Image src={template.sampleData.heroImage} alt={`${template.name} invitation template`} fill sizes="(max-width: 680px) 78vw, (max-width: 1024px) 32vw, 30vw" loading="lazy" quality={78} style={{ objectFit: 'cover' }} />
++                  <span className="kr-featured__category">{EVENT_CATEGORY_LABELS[template.category] || template.category}</span>
++                </Link>
++                <div className="kr-featured__meta">
++                  <div><h3>{template.name}</h3><p>{template.description}</p></div>
++                  <Link href={`/app/events/new?template=${template.id}`} className="kr-featured__use" aria-label={`Use ${template.name}`}><ArrowRight size={15} /></Link>
++                </div>
++              </article>
++            ))}
++          </div>
++        </div>
++      </section>
++
+       <section id="how-it-works" className="kr-how" aria-labelledby="kr-how-title">
+         <div className="kr-how__image" data-kr-reveal>
+-          <img src="/kadi/hero-phone.webp" alt="A mobile invitation displayed beside a sealed cream envelope and flowers" loading="lazy" />
++          <Image src="/kadi/hero-phone.webp" alt="A mobile invitation displayed beside a sealed cream envelope and flowers" fill sizes="(max-width: 680px) 100vw, 50vw" loading="lazy" quality={82} style={{ objectFit: 'cover' }} />
+           <Link href="/templates" className="kr-how__image-link" aria-label="Explore invitations"><ArrowUpRight size={18} /></Link>
+         </div>
+         <div className="kr-how__copy" data-kr-reveal>
+@@ -107,6 +126,51 @@ export default function KadiReferenceLanding() {
+         </div>
+       </section>
+ 
++      <section className="kr-hosts" aria-labelledby="kr-hosts-title">
++        <div className="kr-hosts__intro" data-kr-reveal>
++          <p className="kr-eyebrow">Thoughtful from both sides</p>
++          <h2 id="kr-hosts-title">Easy for the host.<br /><em>Lovely for the guest.</em></h2>
++          <p>Create a personal invitation with the details guests actually need. They open the link, explore the event, and respond without having to create a Kadi account.</p>
++          <Link href="/app/events/new" className="kr-button kr-button--dark">Create an invitation <ArrowRight size={15} /></Link>
++        </div>
++        <div className="kr-hosts__features">
++          <article data-kr-reveal><span className="kr-hosts__icon"><Users size={18} /></span><div><h3>Know who&apos;s coming</h3><p>Keep guest lists, household invitations and responses together.</p></div></article>
++          <article data-kr-reveal><span className="kr-hosts__icon"><MessageCircle size={18} /></span><div><h3>Share where people are</h3><p>Send a link through WhatsApp, SMS, email or a printed QR code.</p></div></article>
++          <article data-kr-reveal><span className="kr-hosts__icon"><CalendarDays size={18} /></span><div><h3>Make the details useful</h3><p>Dates, venue directions and schedules are easy to find on a phone.</p></div></article>
++          <article data-kr-reveal><span className="kr-hosts__icon"><ShieldCheck size={18} /></span><div><h3>Keep the experience clear</h3><p>Guest access is simple, with RSVP forms designed for the event.</p></div></article>
++        </div>
++      </section>
++
++      <section className="kr-kenya" aria-labelledby="kr-kenya-title">
++        <div className="kr-kenya__image" data-kr-reveal>
++          <Image src="/kadi/hero-phone.webp" alt="A mobile digital invitation ready to share with family and friends" fill sizes="(max-width: 680px) 100vw, 46vw" loading="lazy" quality={82} style={{ objectFit: 'cover' }} />
++        </div>
++        <div className="kr-kenya__copy" data-kr-reveal>
++          <p className="kr-eyebrow">Made for how we gather</p>
++          <h2 id="kr-kenya-title">Local details.<br /><em>Personal touches.</em></h2>
++          <p>From family celebrations in Nairobi to gatherings by the coast and upcountry, Kadi brings the invitation and the practical details into one place.</p>
++          <ul>
++            <li><CheckCircle2 size={16} /> Time and dates suited to East Africa</li>
++            <li><CheckCircle2 size={16} /> M-Pesa contribution details when the host chooses to include them</li>
++            <li><CheckCircle2 size={16} /> Mobile-first pages guests can open from a message</li>
++          </ul>
++          <Link href="/templates" className="kr-text-link">Find your occasion <ArrowRight size={15} /></Link>
++        </div>
++      </section>
++
++      <section className="kr-faq" aria-labelledby="kr-faq-title">
++        <div className="kr-faq__heading" data-kr-reveal>
++          <p className="kr-eyebrow">Before you begin</p>
++          <h2 id="kr-faq-title">A few helpful answers.</h2>
++        </div>
++        <div className="kr-faq__list">
++          <details data-kr-reveal><summary>Can I make invitations for occasions other than weddings?</summary><p>Yes. Kadi is intended for birthdays, graduations, housewarmings, baby showers, memorials, funerals, work events, reunions and other gatherings. Each occasion should use a visual style that suits the event.</p></details>
++          <details data-kr-reveal><summary>Do guests need to sign up?</summary><p>Guests should be able to open an invitation and submit an RSVP without creating a Kadi account.</p></details>
++          <details data-kr-reveal><summary>Can I change the invitation after choosing a template?</summary><p>Choose a starting design, then customize the event details, visual palette, stationery and content before sharing it.</p></details>
++          <details data-kr-reveal><summary>Can I manage responses after sharing?</summary><p>The host workspace is designed to bring guest details and RSVP responses together so you can check attendance and follow up.</p></details>
++        </div>
++      </section>
++
+       <section className="kr-closing" aria-labelledby="kr-closing-title">
+         <div className="kr-closing__art" aria-hidden="true" />
+         <div className="kr-closing__content" data-kr-reveal>
+diff --git a/src/lib/db/types.ts b/src/lib/db/types.ts
+index 758e911..498ab79 100644
+--- a/src/lib/db/types.ts
++++ b/src/lib/db/types.ts
+@@ -143,6 +143,13 @@ export interface EventDesignEntity {
+   sealColor: string;
+   visibleSections: string[];
+   sectionOrder?: string[];
++  /** Visual controls saved by the editor; optional to keep older records compatible. */
++  fontFamily?: string;
++  envelopeStyle?: 'classic-fold' | 'pocket-fold' | 'scalloped-edge' | 'minimal';
++  letterStyle?: 'printed-letter' | 'handwritten-letter' | 'folded-card';
++  backgroundAnimation?: 'none' | 'petals' | 'confetti' | 'bokeh' | 'leaves' | 'snow' | 'candles';
++  scrollAnimation?: 'none' | 'fade-up' | 'slide-in' | 'scale-in' | 'parallax';
++  transitionSpeed?: 'slow' | 'medium' | 'fast';
+ }
+ 
+ export interface GuestHouseholdEntity {
+diff --git a/src/lib/events/default-invitation-sections.ts b/src/lib/events/default-invitation-sections.ts
+new file mode 100644
+index 0000000..e009411
+--- /dev/null
++++ b/src/lib/events/default-invitation-sections.ts
+@@ -0,0 +1,35 @@
++import type { EventCategory } from '@/lib/events/categories';
++
++/**
++ * Shared default section order for publication, design previews and new drafts.
++ * Intro/hero content belongs to EnvelopeRenderer rather than this list.
++ */
++export const DEFAULT_INVITATION_SECTIONS: Partial<Record<EventCategory, string[]>> = {
++  wedding: ['story', 'ceremony', 'schedule', 'gallery', 'faq', 'registry', 'rsvp', 'closing'],
++  birthday: ['about', 'activities', 'schedule', 'gallery', 'rsvp', 'faq', 'registry', 'closing'],
++  memorial: ['obituary', 'services', 'livestream', 'candles', 'condolences', 'rsvp', 'registry', 'closing'],
++  funeral: ['obituary', 'services', 'livestream', 'candles', 'condolences', 'rsvp', 'closing'],
++  housewarming: ['venue', 'schedule', 'story', 'gallery', 'faq', 'rsvp', 'closing'],
++  graduation: ['ceremony', 'schedule', 'story', 'gallery', 'faq', 'registry', 'rsvp', 'closing'],
++  corporate: ['schedule', 'venue', 'faq', 'rsvp', 'closing'],
++  anniversary: ['story', 'ceremony', 'schedule', 'gallery', 'rsvp', 'closing'],
++  engagement: ['story', 'schedule', 'gallery', 'rsvp', 'closing'],
++  'baby-shower': ['about', 'activities', 'registry', 'rsvp', 'closing'],
++  'bridal-shower': ['schedule', 'gallery', 'rsvp', 'closing'],
++  holiday: ['activities', 'schedule', 'rsvp', 'closing'],
++  reunion: ['story', 'schedule', 'gallery', 'rsvp', 'closing'],
++  'religious-milestone': ['story', 'schedule', 'venue', 'rsvp', 'closing'],
++  'cultural-celebration': ['story', 'schedule', 'gallery', 'rsvp', 'closing'],
++  retirement: ['about', 'schedule', 'gallery', 'rsvp', 'closing'],
++  'product-launch': ['schedule', 'venue', 'faq', 'rsvp', 'closing'],
++  fundraiser: ['story', 'schedule', 'venue', 'registry', 'rsvp', 'closing'],
++  community: ['schedule', 'venue', 'faq', 'rsvp', 'closing'],
++  'welcome-baby': ['about', 'gallery', 'closing'],
++  farewell: ['story', 'schedule', 'gallery', 'rsvp', 'closing'],
++  'get-well': ['about', 'closing'],
++  custom: ['story', 'schedule', 'gallery', 'faq', 'rsvp', 'closing'],
++};
++
++export function getDefaultInvitationSections(category: EventCategory): string[] {
++  return [...(DEFAULT_INVITATION_SECTIONS[category] || ['venue', 'schedule', 'gallery', 'faq', 'rsvp', 'closing'])];
++}
+diff --git a/src/lib/services/event-service.ts b/src/lib/services/event-service.ts
+index 771522d..e59ed96 100644
+--- a/src/lib/services/event-service.ts
++++ b/src/lib/services/event-service.ts
+@@ -1,6 +1,7 @@
+ import { mockDb } from '../db/mock-db';
+ import { EventEntity, EventDesignEntity } from '../db/types';
+ import { getTemplateById } from '../templates/catalogue';
++import { getDefaultInvitationSections } from '../events/default-invitation-sections';
+ 
+ export class EventService {
+   static listEvents(hostId = 'host-1'): EventEntity[] {
+@@ -85,7 +86,8 @@ export class EventService {
+         sealShape: template.seal.shape as any,
+         sealMonogram: template.seal.monogram || 'K',
+         sealColor: template.seal.color,
+-        visibleSections: ['hero', 'schedule', 'venue', 'rsvp'],
++        visibleSections: getDefaultInvitationSections(newEvent.category),
++        sectionOrder: getDefaultInvitationSections(newEvent.category),
+       };
+     }
+ 
+@@ -106,6 +108,7 @@ export class EventService {
+ 
+   static updateDesign(eventId: string, updates: Partial<EventDesignEntity>): EventDesignEntity {
+     if (!mockDb.designs[eventId]) {
++      const eventCategory = mockDb.events.find((event) => event.id === eventId)?.category || 'wedding';
+       mockDb.designs[eventId] = {
+         eventId,
+         motionPreset: 'classic-stationery',
+@@ -121,7 +124,8 @@ export class EventService {
+         sealShape: 'diamond',
+         sealMonogram: 'K',
+         sealColor: '#D4AF37',
+-        visibleSections: ['hero', 'schedule', 'venue', 'rsvp'],
++        visibleSections: getDefaultInvitationSections(eventCategory),
++        sectionOrder: getDefaultInvitationSections(eventCategory),
+       };
+     }
+ 
+diff --git a/src/lib/templates/types.ts b/src/lib/templates/types.ts
+index 4c7cdc3..b946bab 100644
+--- a/src/lib/templates/types.ts
++++ b/src/lib/templates/types.ts
+@@ -46,7 +46,18 @@ export interface TemplateSeal {
+   borderStyle?: string;
+ }
+ 
+-export type InvitationExperienceTheme = 'savannah-twilight' | 'ruby-disco' | 'gift-box' | 'pastel-garden' | 'sage-love-letter' | 'memorial';
++export type InvitationExperienceTheme =
++  | 'savannah-twilight'
++  | 'ruby-disco'
++  | 'gift-box'
++  | 'pastel-garden'
++  | 'sage-love-letter'
++  | 'memorial'
++  | 'graduation'
++  | 'housewarming'
++  | 'corporate'
++  | 'holiday-celebration'
++  | 'modern-editorial';
+ 
+ export interface TemplateDefinition {
+   experienceTheme?: InvitationExperienceTheme;

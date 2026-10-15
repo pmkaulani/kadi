@@ -2,83 +2,54 @@ import React from 'react';
 import Link from 'next/link';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { Heart, Sparkles, Shield, Compass, ArrowRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+
+const principles = [
+  { number: '01', title: 'The feeling comes first', text: 'Digital does not have to mean disposable. We are interested in the anticipation of opening something made with care.' },
+  { number: '02', title: 'Useful should feel effortless', text: 'Once the letter has opened, event details, replies and guest logistics should be clear and simple to use.' },
+  { number: '03', title: 'Every occasion deserves its own voice', text: 'A wedding, a birthday and a memorial should never be forced into the same tone. The design and motion should respect the moment.' },
+  { number: '04', title: 'Made for how people gather here', text: 'Kadi is being shaped around familiar ways of sharing invitations in Kenya, with mobile-first experiences and practical local event needs.' },
+];
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="kadi-page min-h-screen flex flex-col">
       <PublicNavbar />
-
-      <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <Badge variant="purple" size="sm">
-            Our Purpose
-          </Badge>
-          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-brand-charcoal mt-3">
-            Crafting occasions, not just cards.
-          </h1>
-          <p className="text-sm sm:text-base text-brand-slate mt-4 leading-relaxed">
-            Kadi was created to bring back the anticipation and dignity of receiving a formal, physical invitation—reimagined seamlessly for modern mobile life in Kenya.
-          </p>
-        </div>
-
-        <div className="space-y-12 text-brand-charcoal text-sm sm:text-base leading-relaxed">
-          <section className="p-8 rounded-3xl bg-brand-mist border border-slate-200/80">
-            <h2 className="text-2xl font-serif font-bold text-brand-charcoal mb-4">
-              The Problem with Digital Invites Today
-            </h2>
-            <p className="text-brand-slate text-xs sm:text-sm leading-relaxed mb-4">
-              Over the last decade, invitations devolved into two extremes: either expensive printed stationery that gets lost on kitchen tables, or generic WhatsApp text blasts with compressed screenshot posters where dates and directions are impossible to read.
-            </p>
-            <p className="text-brand-slate text-xs sm:text-sm leading-relaxed">
-              We asked ourselves: why shouldn&apos;t opening an invitation on your phone feel just as tactile, cinematic, and emotional as breaking a wax seal on hand-pressed paper?
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-serif font-bold text-brand-charcoal mb-6 text-center">
-              Our Core Guiding Values
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 rounded-2xl border border-slate-200 bg-white">
-                <Sparkles className="w-6 h-6 text-brand-gold mb-3" />
-                <h3 className="font-serif font-bold text-base mb-1">Physical Tactility</h3>
-                <p className="text-xs text-brand-slate leading-relaxed">
-                  Every envelope has real 3D depth, hinged folds, and textured liners that rise physically into the viewport.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl border border-slate-200 bg-white">
-                <Compass className="w-6 h-6 text-brand-purple mb-3" />
-                <h3 className="font-serif font-bold text-base mb-1">Local Relevance</h3>
-                <p className="text-xs text-brand-slate leading-relaxed">
-                  Tailored specifically for East African celebrations: native WhatsApp dispatch, Kenyan phone formats, and direct M-Pesa gift rails.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl border border-slate-200 bg-white">
-                <Shield className="w-6 h-6 text-emerald-600 mb-3" />
-                <h3 className="font-serif font-bold text-base mb-1">Dignity & Privacy</h3>
-                <p className="text-xs text-brand-slate leading-relaxed">
-                  Memorials are treated with reverence, not party gimmicks. Personal guest data is strictly guarded under KDPA 2019.
-                </p>
-              </div>
+      <main className="flex-1">
+        <section className="bg-[#EDE5D9] pt-16 md:pt-24 pb-16 md:pb-24">
+          <div className="kadi-container grid md:grid-cols-12 gap-8 md:gap-12 items-start">
+            <div className="md:col-span-8">
+              <div className="flex items-center gap-3 mb-6"><span className="kadi-ornament" /><p className="kadi-eyebrow text-[#934638]">Why we are making Kadi</p></div>
+              <h1 className="kadi-display text-6xl sm:text-7xl md:text-[6.6rem]">An invitation is<br />a small act of <em className="text-[#934638]">care.</em></h1>
             </div>
-          </section>
-
-          <div className="pt-8 text-center">
-            <Link href="/templates">
-              <Button size="lg" variant="primary" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Explore the Template Suites
-              </Button>
-            </Link>
+            <div className="md:col-span-4 md:pt-24">
+              <p className="font-serif text-2xl leading-snug tracking-[-.025em]">Not just an image in a chat. Not just another link. A moment of anticipation before someone discovers they are wanted there.</p>
+              <p className="text-sm text-[#756F64] leading-7 mt-5">Kadi is being built to bring the tactility and thoughtfulness of printed stationery into the everyday reach of the web.</p>
+            </div>
           </div>
-        </div>
+        </section>
+        <section className="bg-[#F6F2EA] py-16 md:py-24">
+          <div className="kadi-container grid md:grid-cols-12 gap-9 md:gap-14">
+            <div className="md:col-span-4">
+              <p className="kadi-eyebrow text-[#934638] mb-5">The point of view</p>
+              <h2 className="font-serif text-4xl md:text-5xl leading-tight tracking-[-.04em]">Beautiful is not the opposite of useful.</h2>
+            </div>
+            <div className="md:col-span-7 md:col-start-6">
+              <p className="text-base md:text-lg text-[#756F64] leading-8">Printed invitations have presence and ceremony, but they take time to deliver and are difficult to update. Digital invitations are immediate, but too often they look like a form or a poster. We believe there is room for something more considered: an invitation with an opening, a story, and the details people need to be there.</p>
+              <p className="text-base md:text-lg text-[#756F64] leading-8 mt-5">That means building the animation and the practical product together. The envelope is the first gesture; the guest list, event details, RSVP and accessible mobile experience are what make the gesture useful.</p>
+            </div>
+          </div>
+        </section>
+        <section className="bg-[#EDE5D9] py-16 md:py-24">
+          <div className="kadi-container">
+            <p className="kadi-eyebrow text-[#934638] mb-6">Our principles</p>
+            <div className="border-t border-[rgba(39,38,32,.2)]">
+              {principles.map((item) => <article key={item.number} className="grid grid-cols-[45px_minmax(0,1fr)] md:grid-cols-12 gap-4 md:gap-8 py-6 md:py-8 border-b border-[rgba(39,38,32,.2)]"><span className="font-serif italic text-2xl text-[#B99A62] md:col-span-1">{item.number}</span><h3 className="font-serif text-2xl md:text-3xl tracking-[-.03em] md:col-span-4">{item.title}</h3><p className="col-start-2 md:col-start-7 md:col-span-5 text-sm leading-7 text-[#756F64]">{item.text}</p></article>)}
+            </div>
+            <Link href="/templates" className="kadi-link inline-flex items-center gap-2 text-sm mt-9">Explore the invitation collection <ArrowUpRight size={15} /></Link>
+          </div>
+        </section>
       </main>
-
       <PublicFooter />
     </div>
   );

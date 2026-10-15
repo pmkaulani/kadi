@@ -1,0 +1,11 @@
+KADI FULL IMPLEMENTATION HANDOFF — START HERE
+
+1. Extract the ZIP into the root of your existing Kadi repository. It creates a folder named `Kadi_Full_Antigravity_Handoff/`, which Antigravity can read from the same workspace. Do not replace the actual `src/` folder with the copies under `source_map/`.
+2. Open the Kadi repository in Antigravity.
+3. Paste this message into Antigravity:
+
+Read `Kadi_Full_Antigravity_Handoff/MASTER_PROMPT_FOR_ANTIGRAVITY.md` completely. First execute `Kadi_Full_Antigravity_Handoff/prompts/00_AUDIT_BASELINE.md` only. Inspect the active repository, not the copies in `source_map/project_snapshot/`. Then execute the phases in numerical order, one phase at a time, making real source changes and running the checks for each. Use `Kadi_Full_Antigravity_Handoff/reference/` images as visual acceptance targets. Reconcile files under `starter_snippets/previous_repair_kit/` with the active source before using them; do not blindly overwrite. Report actual test/build results and attach real browser screenshots; do not claim verification without evidence. Preserve all existing working routes/data/API behavior and do not label mock/sandbox features as production.
+
+4. Continue to `prompts/01...` only after Antigravity has produced the audit and baseline. If the audit finds a blocker or a different active architecture, update the plan based on real source.
+
+Important: This is an implementation handoff pack, not a patch that automatically changes your local app.

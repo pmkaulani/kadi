@@ -3,14 +3,15 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { CheckCircle2, AlertCircle, Users, Utensils, Heart } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Users, Utensils, Heart, Music, ShieldCheck } from 'lucide-react';
 
-interface RSVPSectionProps {
+export interface RSVPSectionProps {
   eventId: string;
   deadline?: string;
   guestToken?: string;
   defaultGuestName?: string;
   allowedPlusOnes?: number;
+  previewMode?: boolean;
 }
 
 export function RSVPSection({
@@ -19,28 +20,60 @@ export function RSVPSection({
   guestToken,
   defaultGuestName = '',
   allowedPlusOnes = 1,
+  previewMode = false,
 }: RSVPSectionProps) {
   const [attending, setAttending] = useState<'yes' | 'no' | 'maybe' | null>(null);
   const [fullName, setFullName] = useState(defaultGuestName);
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [attendeeCount, setAttendeeCount] = useState(1);
+  const [additionalGuestNames, setAdditionalGuestNames] = useState<string[]>([]);
   const [dietaryRequirements, setDietaryRequirements] = useState('');
   const [songRequest, setSongRequest] = useState('');
   const [noteToHost, setNoteToHost] = useState('');
+  const [hasConsent, setHasConsent] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
 
-  // States
+  // UI States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSimulatedPreview, setIsSimulatedPreview] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const maxAllowed = 1 + allowedPlusOnes;
+
+  // Sync additional guest name inputs when attendee count changes
+  const handleAttendeeCountChange = (count: number) => {
+    setAttendeeCount(count);
+    const extraCount = Math.max(0, count - 1);
+    setAdditionalGuestNames((prev) => {
+      const next = [...prev];
+      while (next.length < extraCount) {
+        next.push('');
+      }
+      return next.slice(0, extraCount);
+    });
+  };
+
+  const handleAdditionalNameChange = (index: number, name: string) => {
+    setAdditionalGuestNames((prev) => {
+      const next = [...prev];
+      next[index] = name;
+      return next;
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
+    // Honeypot spam trap check
+    if (honeypot.trim().length > 0) {
+      setErrorMessage('Spam activity detected.');
+      return;
+    }
+
     if (!attending) {
-      setErrorMessage('Please select whether you will attend.');
+      setErrorMessage('Please indicate whether you will be joining us.');
       return;
     }
     if (!fullName.trim()) {
@@ -51,11 +84,30 @@ export function RSVPSection({
       setErrorMessage('Please provide an email or phone number for confirmation.');
       return;
     }
+    if (attending === 'yes' && attendeeCount > maxAllowed) {
+      setErrorMessage(`Your invitation includes up to ${maxAllowed} attendees.`);
+      return;
+    }
+    if (!hasConsent) {
+      setErrorMessage('Please accept the consent checkbox to share your details with the host.');
+      return;
+    }
+
+    // Preview mode: In-memory simulation only, never hit network API
+    if (previewMode) {
+      setIsSimulatedPreview(true);
+      setIsSubmitted(true);
+      return;
+    }
 
     setIsSubmitting(true);
 
     try {
-      // Post to authoritative API endpoint
+      const attendeeNames =
+        attending === 'yes'
+          ? [fullName.trim(), ...additionalGuestNames.map((n) => n.trim()).filter(Boolean)]
+          : [];
+
       const res = await fetch('/api/public/rsvp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -63,12 +115,13 @@ export function RSVPSection({
           eventId,
           guestToken,
           status: attending,
-          primaryName: fullName,
-          contact: emailOrPhone,
+          primaryName: fullName.trim(),
+          contact: emailOrPhone.trim(),
           attendeeCount: attending === 'yes' ? attendeeCount : 0,
-          dietaryRequirements,
-          songRequest,
-          noteToHost,
+          attendeeNames,
+          dietaryRequirements: dietaryRequirements.trim() || undefined,
+          songRequest: songRequest.trim() || undefined,
+          noteToHost: noteToHost.trim() || undefined,
         }),
       });
 
@@ -78,6 +131,7 @@ export function RSVPSection({
         throw new Error(data.error || 'Failed to submit RSVP. Please try again.');
       }
 
+      setIsSimulatedPreview(false);
       setIsSubmitted(true);
     } catch (err: any) {
       setErrorMessage(err.message || 'An unexpected network error occurred.');
@@ -87,64 +141,94 @@ export function RSVPSection({
   };
 
   return (
-    <section id="rsvp-section" className="w-full p-6 sm:p-12 bg-white border-t border-slate-100">
-      <div className="max-w-xl mx-auto">
+    <section
+      id="rsvp-section"
+      aria-label="RSVP Form"
+      className="w-full px-4 sm:px-6 py-14 sm:py-20 bg-transparent border-t border-[rgba(39,38,32,0.12)]"
+    >
+      <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-purple bg-brand-purple-light px-3 py-1 rounded-full">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--event-primary,#934638)]">
             RSVP Information
           </span>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-brand-charcoal mt-3">
+          <h2 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--event-ink,#272620)] mt-2">
             Will you be joining us?
           </h2>
-          <p className="text-xs sm:text-sm text-brand-slate mt-1">
-            Kindly respond by <strong className="text-brand-charcoal">{deadline}</strong>
+          <p className="text-xs sm:text-sm text-[#8C8375] mt-1.5">
+            Kindly respond by <strong className="text-[var(--event-ink,#272620)]">{deadline}</strong>
           </p>
         </div>
 
         {isSubmitted ? (
-          <div className="p-8 rounded-2xl bg-emerald-50 border border-emerald-200 text-center animate-in fade-in zoom-in-95">
+          <div className="p-6 sm:p-8 rounded-2xl bg-white border border-emerald-200 shadow-sm text-center animate-in fade-in duration-200">
             <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto mb-3" />
-            <h3 className="text-lg font-serif font-bold text-emerald-900">
-              Thank You! Your RSVP is Confirmed
+            <h3 className="text-2xl font-serif font-semibold text-emerald-950">
+              {attending === 'yes' ? 'Your RSVP is Confirmed!' : 'Response Recorded'}
             </h3>
             <p className="text-xs sm:text-sm text-emerald-800 mt-2">
-              We have recorded your response for{' '}
-              <strong>{fullName}</strong> ({attending === 'yes' ? `${attendeeCount} attending` : 'Declined'}).
+              Thank you, <strong>{fullName}</strong>. We have recorded your attendance response as{' '}
+              <strong className="capitalize">{attending === 'yes' ? `${attendeeCount} attending` : attending}</strong>.
             </p>
-            <p className="text-xs text-emerald-700/80 mt-1">
-              A confirmation has been logged with the hosts. You may return to this link anytime to update your response.
+
+            {attending === 'yes' && additionalGuestNames.filter(Boolean).length > 0 && (
+              <p className="text-xs text-emerald-700 mt-1">
+                Named guests: {additionalGuestNames.filter(Boolean).join(', ')}
+              </p>
+            )}
+
+            {isSimulatedPreview && (
+              <div className="mt-4 p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-800">
+                ✨ <strong>Studio Preview Simulation:</strong> This simulated response was kept in-memory only. Your production guests will submit to the live database.
+              </div>
+            )}
+
+            <p className="text-xs text-[#8C8375] mt-4">
+              A confirmation has been logged. You may return to this invitation link anytime to update your response.
             </p>
+
             <Button
               variant="outline"
               size="sm"
-              className="mt-6 border-emerald-600 text-emerald-800 hover:bg-emerald-100"
+              className="mt-6 border-emerald-600 text-emerald-900 hover:bg-emerald-50"
               onClick={() => setIsSubmitted(false)}
             >
-              Edit Response
+              Update Response
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 sm:p-8 rounded-2xl border border-[rgba(39,38,32,0.12)] shadow-xs">
+            {/* Hidden honeypot field */}
+            <input
+              type="text"
+              name="company_fax"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              className="hidden"
+              aria-hidden="true"
+            />
+
             {errorMessage && (
-              <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-rose-800 text-xs sm:text-sm">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5" />
+              <div className="p-4 rounded-xl border border-rose-200 bg-rose-50 flex items-start gap-3 text-rose-800 text-xs sm:text-sm animate-in fade-in">
+                <AlertCircle className="w-5 h-5 shrink-0 text-rose-600 mt-0.5" />
                 <span>{errorMessage}</span>
               </div>
             )}
 
             {/* Attendance Choice Buttons */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-brand-slate mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C8375] mb-2">
                 Your Response *
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2.5">
                 <button
                   type="button"
                   onClick={() => setAttending('yes')}
-                  className={`p-3 sm:p-4 rounded-xl text-center border-2 transition-all font-semibold text-xs sm:text-sm flex flex-col items-center gap-1.5 ${
+                  className={`p-3 sm:p-3.5 rounded-xl text-center border transition-all text-xs sm:text-sm flex flex-col items-center gap-1 ${
                     attending === 'yes'
-                      ? 'border-brand-purple bg-brand-purple text-white shadow-md'
-                      : 'border-slate-200 bg-slate-50 text-brand-charcoal hover:bg-slate-100'
+                      ? 'border-[var(--event-primary,#934638)] bg-[var(--event-primary,#934638)] text-white font-semibold shadow-xs'
+                      : 'border-[rgba(39,38,32,0.14)] bg-[#FAF8F5] text-[#272620] hover:bg-[#F2EFE9]'
                   }`}
                 >
                   <span className="text-base sm:text-lg">✓</span>
@@ -154,10 +238,10 @@ export function RSVPSection({
                 <button
                   type="button"
                   onClick={() => setAttending('no')}
-                  className={`p-3 sm:p-4 rounded-xl text-center border-2 transition-all font-semibold text-xs sm:text-sm flex flex-col items-center gap-1.5 ${
+                  className={`p-3 sm:p-3.5 rounded-xl text-center border transition-all text-xs sm:text-sm flex flex-col items-center gap-1 ${
                     attending === 'no'
-                      ? 'border-brand-slate bg-brand-slate text-white shadow-md'
-                      : 'border-slate-200 bg-slate-50 text-brand-charcoal hover:bg-slate-100'
+                      ? 'border-[#272620] bg-[#272620] text-white font-semibold shadow-xs'
+                      : 'border-[rgba(39,38,32,0.14)] bg-[#FAF8F5] text-[#272620] hover:bg-[#F2EFE9]'
                   }`}
                 >
                   <span className="text-base sm:text-lg">✕</span>
@@ -167,10 +251,10 @@ export function RSVPSection({
                 <button
                   type="button"
                   onClick={() => setAttending('maybe')}
-                  className={`p-3 sm:p-4 rounded-xl text-center border-2 transition-all font-semibold text-xs sm:text-sm flex flex-col items-center gap-1.5 ${
+                  className={`p-3 sm:p-3.5 rounded-xl text-center border transition-all text-xs sm:text-sm flex flex-col items-center gap-1 ${
                     attending === 'maybe'
-                      ? 'border-brand-gold bg-brand-gold text-brand-charcoal shadow-md'
-                      : 'border-slate-200 bg-slate-50 text-brand-charcoal hover:bg-slate-100'
+                      ? 'border-amber-600 bg-amber-600 text-white font-semibold shadow-xs'
+                      : 'border-[rgba(39,38,32,0.14)] bg-[#FAF8F5] text-[#272620] hover:bg-[#F2EFE9]'
                   }`}
                 >
                   <span className="text-base sm:text-lg">?</span>
@@ -179,10 +263,10 @@ export function RSVPSection({
               </div>
             </div>
 
-            {/* Attendee Details */}
+            {/* Attendee Contact Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
-                label="Full Name *"
+                label="Primary Guest Full Name *"
                 placeholder="e.g. Dr. Peter Otieno"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -190,7 +274,7 @@ export function RSVPSection({
               />
 
               <Input
-                label="Email or Mobile Phone *"
+                label="Email or WhatsApp Phone *"
                 placeholder="e.g. +254 712 345 678"
                 value={emailOrPhone}
                 onChange={(e) => setEmailOrPhone(e.target.value)}
@@ -199,22 +283,23 @@ export function RSVPSection({
             </div>
 
             {attending === 'yes' && (
-              <div className="space-y-4 p-5 rounded-2xl bg-brand-mist border border-slate-200/80">
-                <div className="flex items-center justify-between">
+              <div className="space-y-4 pt-4 border-t border-[rgba(39,38,32,0.08)]">
+                {/* Headcount selector */}
+                <div className="flex items-center justify-between gap-4">
                   <div>
-                    <label className="text-xs font-semibold uppercase tracking-wider text-brand-charcoal flex items-center gap-2">
-                      <Users className="w-4 h-4 text-brand-purple" />
-                      <span>Number of Guests Attending</span>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-[#272620] flex items-center gap-2">
+                      <Users className="w-4 h-4 text-[var(--event-primary,#934638)]" />
+                      <span>Number of Attendees</span>
                     </label>
-                    <p className="text-[11px] text-brand-slate mt-0.5">
-                      Your invitation includes up to {maxAllowed} {maxAllowed === 1 ? 'person' : 'attendees'}.
+                    <p className="text-[11px] text-[#8C8375] mt-0.5">
+                      Your invitation includes up to {maxAllowed} {maxAllowed === 1 ? 'attendee' : 'attendees'}.
                     </p>
                   </div>
 
                   <select
                     value={attendeeCount}
-                    onChange={(e) => setAttendeeCount(Number(e.target.value))}
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-brand-charcoal focus:outline-none focus:ring-2 focus:ring-brand-purple"
+                    onChange={(e) => handleAttendeeCountChange(Number(e.target.value))}
+                    className="rounded-xl border border-[rgba(39,38,32,0.2)] bg-[#FAF8F5] px-3.5 py-2 text-xs font-semibold text-[#272620] focus:outline-none focus:border-[var(--event-primary,#934638)]"
                   >
                     {Array.from({ length: maxAllowed }, (_, i) => i + 1).map((num) => (
                       <option key={num} value={num}>
@@ -224,32 +309,51 @@ export function RSVPSection({
                   </select>
                 </div>
 
+                {/* Additional Named Guests */}
+                {attendeeCount > 1 && (
+                  <div className="space-y-3 pt-2 pl-2 border-l-2 border-[var(--event-primary,#934638)]/30">
+                    <p className="text-xs font-medium text-[#272620]">
+                      Please provide the names of your accompanying guests:
+                    </p>
+                    {Array.from({ length: attendeeCount - 1 }).map((_, idx) => (
+                      <Input
+                        key={idx}
+                        label={`Guest ${idx + 2} Full Name`}
+                        placeholder={`e.g. Grace Otieno`}
+                        value={additionalGuestNames[idx] || ''}
+                        onChange={(e) => handleAdditionalNameChange(idx, e.target.value)}
+                      />
+                    ))}
+                  </div>
+                )}
+
                 {/* Dietary Requirements */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-brand-slate mb-1 flex items-center gap-1.5">
-                    <Utensils className="w-3.5 h-3.5 text-brand-purple" />
-                    <span>Dietary Needs or Allergies</span>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C8375] mb-1 flex items-center gap-1.5">
+                    <Utensils className="w-3.5 h-3.5 text-[var(--event-primary,#934638)]" />
+                    <span>Dietary Requirements or Allergies</span>
                   </label>
                   <input
                     type="text"
                     placeholder="e.g. Vegetarian, Halal, Nut allergy, None"
                     value={dietaryRequirements}
                     onChange={(e) => setDietaryRequirements(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm text-brand-charcoal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-purple"
+                    className="w-full rounded-xl border border-[rgba(39,38,32,0.18)] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#272620] placeholder:text-[#8C8375]/60 focus:outline-none focus:border-[var(--event-primary,#934638)]"
                   />
                 </div>
 
                 {/* Song Request */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-brand-slate mb-1">
-                    Song Request for the Dancefloor
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C8375] mb-1 flex items-center gap-1.5">
+                    <Music className="w-3.5 h-3.5 text-[var(--event-primary,#934638)]" />
+                    <span>Song Request for the Celebration</span>
                   </label>
                   <input
                     type="text"
                     placeholder="Artist — Song Title"
                     value={songRequest}
                     onChange={(e) => setSongRequest(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm text-brand-charcoal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-purple"
+                    className="w-full rounded-xl border border-[rgba(39,38,32,0.18)] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#272620] placeholder:text-[#8C8375]/60 focus:outline-none focus:border-[var(--event-primary,#934638)]"
                   />
                 </div>
               </div>
@@ -257,27 +361,41 @@ export function RSVPSection({
 
             {/* Note to Host */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-brand-slate mb-1 flex items-center gap-1.5">
-                <Heart className="w-3.5 h-3.5 text-event-rose" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C8375] mb-1 flex items-center gap-1.5">
+                <Heart className="w-3.5 h-3.5 text-[var(--event-primary,#934638)]" />
                 <span>Message or Blessing to the Hosts</span>
               </label>
               <textarea
                 rows={3}
-                placeholder="Write a warm note to the hosts..."
+                placeholder="Share warm wishes, advice, or a blessing..."
                 value={noteToHost}
                 onChange={(e) => setNoteToHost(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs sm:text-sm text-brand-charcoal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-purple resize-none"
+                className="w-full rounded-xl border border-[rgba(39,38,32,0.18)] bg-white p-3 text-xs sm:text-sm text-[#272620] placeholder:text-[#8C8375]/60 focus:outline-none focus:border-[var(--event-primary,#934638)] resize-none"
               />
+            </div>
+
+            {/* Consent & Privacy Checkbox */}
+            <div className="pt-2 flex items-start gap-3">
+              <input
+                id="consent-checkbox"
+                type="checkbox"
+                checked={hasConsent}
+                onChange={(e) => setHasConsent(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-[var(--event-primary,#934638)] focus:ring-[var(--event-primary,#934638)]"
+              />
+              <label htmlFor="consent-checkbox" className="text-xs text-[#8C8375] leading-relaxed cursor-pointer select-none">
+                I agree to share my attendance response and contact information with the event hosts for planning and event coordination.
+              </label>
             </div>
 
             <Button
               type="submit"
               size="lg"
               variant="primary"
-              className="w-full text-base py-3.5 shadow-lg"
+              className="w-full py-3.5 text-sm font-semibold shadow-md"
               isLoading={isSubmitting}
             >
-              Submit My RSVP Response
+              Submit RSVP Response
             </Button>
           </form>
         )}

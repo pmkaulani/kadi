@@ -1,351 +1,202 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { EventService } from '@/lib/services/event-service';
-import { TEMPLATES } from '@/lib/templates/catalogue';
-import { EventCategory } from '@/lib/templates/types';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Sparkles,
-  Calendar,
-  Clock,
-  MapPin,
-  Check,
-} from 'lucide-react';
+import { TEMPLATES, getTemplateById } from '@/lib/templates/catalogue';
+import { KadiStudioEditor, type StudioDraft } from '@/components/studio/KadiStudioEditor';
+import { Modal } from '@/components/ui/Modal';
+import { type EventEntity } from '@/lib/db/types';
+import { ArrowLeft, CheckCircle2, Copy, Check, ExternalLink } from 'lucide-react';
 
-const CATEGORIES: Array<{ id: EventCategory; title: string; desc: string }> = [
-  { id: 'wedding', title: 'Wedding', desc: 'Ceremony, reception, wedding party & gift registry' },
-  { id: 'birthday', title: 'Milestone Birthday', desc: 'Jubilees, dinners & vibrant celebrations' },
-  { id: 'memorial', title: 'Memorial & Funeral', desc: 'Dignified tributes, service schedule & condolences' },
-  { id: 'baby-shower', title: 'Baby Shower', desc: 'Pastel themes, nursery wishlist & family blessings' },
-  { id: 'graduation', title: 'Graduation', desc: 'Academic milestones, honours & commencement parties' },
-  { id: 'corporate', title: 'Corporate / Summit', desc: 'Agendas, executive speakers & venue logistics' },
-];
-
-function NewEventWizardContent() {
+function NewEventStudioContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTemplateId = searchParams.get('template') || 'savannah-twilight';
+  const templateParam = searchParams.get('templateId') || searchParams.get('template');
+  const matchedTemplate = getTemplateById(templateParam || 'sage-botanical') || TEMPLATES[0];
 
-  const [step, setStep] = useState<number>(1);
-  const [category, setCategory] = useState<EventCategory>('wedding');
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(initialTemplateId);
+  const createdEventIdRef = useRef<string | null>(null);
+  const [publishedEvent, setPublishedEvent] = useState<EventEntity | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
 
-  // Form Fields
-  const [title, setTitle] = useState('');
-  const [hosts, setHosts] = useState('');
-  const [celebrants, setCelebrants] = useState('');
-  const [date, setDate] = useState('Saturday, 14 November 2026');
-  const [time, setTime] = useState('2:00 PM EAT');
-  const [venue, setVenue] = useState('Safari Park Hotel & Casino, Thika Road');
-  const [city, setCity] = useState('Nairobi, Kenya');
-  const [rsvpDeadline, setRsvpDeadline] = useState('1 November 2026');
-  const [dressCode, setDressCode] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const selectedTemplate =
-    TEMPLATES.find((t) => t.id === selectedTemplateId) || TEMPLATES[0];
-
-  const handleFinishCreate = async () => {
-    setIsSubmitting(true);
-    try {
+  const handleSaveDraft = async (draft: StudioDraft, revision: number) => {
+    if (!createdEventIdRef.current) {
+      // First persistence creates the durable draft event entity
       const newEvent = EventService.createEvent({
-        title: title || selectedTemplate.sampleData.title,
-        hosts: hosts || selectedTemplate.sampleData.hosts,
-        celebrants: celebrants || selectedTemplate.sampleData.celebrants,
-        category,
-        templateId: selectedTemplateId,
-        date,
-        time,
-        venue,
-        city,
-        rsvpDeadline,
-        dressCode: dressCode || undefined,
-        heroImage: selectedTemplate.sampleData.heroImage,
+        title: draft.values.title,
+        hosts: draft.values.hosts,
+        celebrants: draft.values.celebrants,
+        category: draft.category as any,
+        templateId: draft.templateId,
+        date: draft.values.date,
+        time: draft.values.time,
+        timezone: draft.values.timezone || 'Africa/Nairobi',
+        venue: draft.values.venue,
+        city: draft.values.city,
+        heroImage: draft.values.heroImage,
+        rsvpDeadline: draft.values.rsvpDeadline,
+        dressCode: draft.values.dressCode,
+        audioUrl: draft.values.audioUrl,
+        mpesaType: draft.values.mpesaType,
+        mpesaNumber: draft.values.mpesaNumber,
+        mpesaRecipient: draft.values.mpesaRecipient,
+        mpesaReference: draft.values.mpesaReference,
       });
-
-      router.push(`/app/events/${newEvent.id}`);
-    } catch (err: any) {
-      alert(err.message || 'Error creating event');
-      setIsSubmitting(false);
+      createdEventIdRef.current = newEvent.id;
+      EventService.updateDesign(newEvent.id, draft.design);
+    } else {
+      // Subsequent debounced updates persist to the existing draft entity
+      EventService.updateEvent(createdEventIdRef.current, {
+        title: draft.values.title,
+        hosts: draft.values.hosts,
+        celebrants: draft.values.celebrants,
+        category: draft.category as any,
+        templateId: draft.templateId,
+        date: draft.values.date,
+        time: draft.values.time,
+        venue: draft.values.venue,
+        city: draft.values.city,
+        heroImage: draft.values.heroImage,
+        rsvpDeadline: draft.values.rsvpDeadline,
+        dressCode: draft.values.dressCode,
+        audioUrl: draft.values.audioUrl,
+        mpesaType: draft.values.mpesaType,
+        mpesaNumber: draft.values.mpesaNumber,
+        mpesaRecipient: draft.values.mpesaRecipient,
+        mpesaReference: draft.values.mpesaReference,
+      });
+      EventService.updateDesign(createdEventIdRef.current, draft.design);
     }
   };
 
+  const handlePublish = async () => {
+    let eventId = createdEventIdRef.current;
+    if (!eventId) {
+      // Create if user immediately clicks publish before debounce fires
+      const newEvent = EventService.createEvent({
+        title: matchedTemplate.sampleData.title,
+        hosts: matchedTemplate.sampleData.hosts,
+        celebrants: matchedTemplate.sampleData.celebrants,
+        category: matchedTemplate.category as any,
+        templateId: matchedTemplate.id,
+        date: matchedTemplate.sampleData.date,
+        time: matchedTemplate.sampleData.time,
+        venue: matchedTemplate.sampleData.venue,
+        city: matchedTemplate.sampleData.city,
+        heroImage: matchedTemplate.sampleData.heroImage,
+      });
+      eventId = newEvent.id;
+      createdEventIdRef.current = newEvent.id;
+    }
+
+    const pub = EventService.publishEvent(eventId);
+    setPublishedEvent(pub);
+  };
+
   return (
-    <div className="max-w-3xl mx-auto py-6">
-      {/* Top Breadcrumb & Step Tracker */}
-      <div className="mb-8">
+    <div className="w-full max-w-[1600px] mx-auto py-2 px-2 sm:px-4 flex flex-col h-[calc(100vh-80px)]">
+      {/* Top back navigation */}
+      <div className="flex items-center justify-between pb-2 mb-2 border-b border-[rgba(39,38,32,0.08)] shrink-0">
         <Link
           href="/app/events"
-          className="text-xs font-semibold text-brand-slate hover:text-brand-charcoal flex items-center gap-1.5 mb-4"
+          className="inline-flex items-center gap-1.5 text-xs text-[#756F64] hover:text-[#934638] font-medium transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to My Events</span>
+          <ArrowLeft size={14} />
+          <span>Back to dashboard</span>
         </Link>
-
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-serif font-bold text-brand-charcoal">
-            Create Event Invitation
-          </h1>
-          <span className="text-xs font-semibold text-brand-purple bg-brand-purple-light px-3 py-1 rounded-full">
-            Step {step} of 3
-          </span>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full bg-slate-200 h-1.5 rounded-full mt-4 overflow-hidden">
-          <div
-            className="bg-brand-purple h-full transition-all duration-300"
-            style={{ width: `${(step / 3) * 100}%` }}
-          />
-        </div>
+        <span className="text-[10px] uppercase font-bold tracking-widest text-[#8C8375]">
+          New Invitation
+        </span>
       </div>
 
-      {/* STEP 1: EVENT TYPE */}
-      {step === 1 && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          <div>
-            <h2 className="text-lg font-serif font-bold text-brand-charcoal">
-              What occasion are you celebrating?
-            </h2>
-            <p className="text-xs text-brand-slate mt-1">
-              Selecting the event category sets the appropriate animation motion and recommended sections.
-            </p>
-          </div>
+      <div className="flex-1 min-h-0">
+        <KadiStudioEditor
+          template={matchedTemplate}
+          availableTemplates={TEMPLATES}
+          onSaveDraft={handleSaveDraft}
+          onPublish={handlePublish}
+        />
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setCategory(cat.id)}
-                className={`p-5 rounded-2xl border-2 text-left transition-all flex flex-col justify-between ${
-                  category === cat.id
-                    ? 'border-brand-purple bg-brand-purple-light/40 shadow-sm'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
-              >
-                <div>
-                  <h3 className="font-serif font-bold text-sm text-brand-charcoal">
-                    {cat.title}
-                  </h3>
-                  <p className="text-xs text-brand-slate mt-1 leading-relaxed">
-                    {cat.desc}
-                  </p>
-                </div>
-                {category === cat.id && (
-                  <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-brand-purple">
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Selected</span>
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-
-          <div className="pt-6 flex justify-end">
-            <Button
-              size="md"
-              variant="primary"
-              onClick={() => setStep(2)}
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-            >
-              Continue to Choose Design
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* STEP 2: SELECT TEMPLATE */}
-      {step === 2 && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          <div>
-            <h2 className="text-lg font-serif font-bold text-brand-charcoal">
-              Choose an Invitation Suite
-            </h2>
-            <p className="text-xs text-brand-slate mt-1">
-              Each design features a 3D envelope, custom liner, and coordinated typography palette.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {TEMPLATES.map((tmpl) => (
-              <div
-                key={tmpl.id}
-                onClick={() => setSelectedTemplateId(tmpl.id)}
-                className={`rounded-2xl border-2 overflow-hidden cursor-pointer transition-all ${
-                  selectedTemplateId === tmpl.id
-                    ? 'border-brand-purple shadow-md bg-brand-purple-light/10'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
-              >
-                <div className="h-32 w-full overflow-hidden bg-slate-100 relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={tmpl.sampleData.heroImage}
-                    alt={tmpl.name}
-                    className="w-full h-full object-cover"
-                  />
-                  {selectedTemplateId === tmpl.id && (
-                    <div className="absolute top-2 right-2 bg-brand-purple text-white p-1 rounded-full shadow-md">
-                      <Check className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-serif font-bold text-sm text-brand-charcoal">
-                    {tmpl.name}
-                  </h3>
-                  <p className="text-[11px] text-brand-slate mt-0.5 line-clamp-1">
-                    {tmpl.description}
-                  </p>
-                  <div className="mt-2 text-[10px] text-slate-400 font-medium">
-                    Liner: {tmpl.liner.name} • Motion: {tmpl.motionPreset}
-                  </div>
-                </div>
+      {publishedEvent && (
+        <Modal
+          isOpen={true}
+          onClose={() => router.push(`/app/events/${publishedEvent.id}`)}
+          title="Invitation Published & Live!"
+          description="Your gathering is now open for guests to view and reply."
+          maxWidth="md"
+        >
+          <div className="space-y-5 py-2">
+            <div className="flex items-center gap-3 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800">
+              <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
+              <div className="text-xs leading-relaxed">
+                <strong>{publishedEvent.title}</strong> is now live. Guests visiting your invitation link can open the envelope and RSVP.
               </div>
-            ))}
-          </div>
-
-          <div className="pt-6 flex items-center justify-between">
-            <Button size="sm" variant="ghost" onClick={() => setStep(1)}>
-              Back
-            </Button>
-            <Button
-              size="md"
-              variant="primary"
-              onClick={() => setStep(3)}
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-            >
-              Continue to Details
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* STEP 3: DETAILS */}
-      {step === 3 && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          <div>
-            <h2 className="text-lg font-serif font-bold text-brand-charcoal">
-              Enter Event Details
-            </h2>
-            <p className="text-xs text-brand-slate mt-1">
-              You can fine-tune every field, upload photos, and edit sections later in the design studio.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 space-y-4">
-            <Input
-              label="Event Title *"
-              placeholder="e.g. The Wedding of Kevin & Wanjiku"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Host(s) / Families *"
-                placeholder="e.g. Mr. & Mrs. Kamau"
-                value={hosts}
-                onChange={(e) => setHosts(e.target.value)}
-                required
-              />
-
-              <Input
-                label="Celebrant(s) / Honoree *"
-                placeholder="e.g. Kevin Kamau & Wanjiku Ochieng"
-                value={celebrants}
-                onChange={(e) => setCelebrants(e.target.value)}
-                required
-              />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Date *"
-                placeholder="e.g. Saturday, 14 November 2026"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-
-              <Input
-                label="Time *"
-                placeholder="e.g. 2:00 PM EAT"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                required
-              />
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8D867A] mb-1.5">
+                Live Public Link
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={`${typeof window !== 'undefined' ? window.location.origin : ''}/e/${publishedEvent.slug}`}
+                  className="flex-1 text-xs bg-black/5 border border-[rgba(39,38,32,0.15)] rounded-lg px-3 py-2 text-[#272620] select-all font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      navigator.clipboard.writeText(`${window.location.origin}/e/${publishedEvent.slug}`);
+                      setCopiedLink(true);
+                      setTimeout(() => setCopiedLink(false), 2000);
+                    }
+                  }}
+                  className="kadi-button !py-2 !px-3 text-xs shrink-0"
+                >
+                  {copiedLink ? <Check size={14} /> : <Copy size={14} />}
+                  <span>{copiedLink ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Venue Name *"
-                placeholder="e.g. Safari Park Hotel, Thika Road"
-                value={venue}
-                onChange={(e) => setVenue(e.target.value)}
-                required
-              />
-
-              <Input
-                label="City / Region *"
-                placeholder="e.g. Nairobi, Kenya"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="RSVP Deadline *"
-                placeholder="e.g. 1 November 2026"
-                value={rsvpDeadline}
-                onChange={(e) => setRsvpDeadline(e.target.value)}
-                required
-              />
-
-              <Input
-                label="Dress Code (Optional)"
-                placeholder="e.g. Black Tie with African Royal Accents"
-                value={dressCode}
-                onChange={(e) => setDressCode(e.target.value)}
-              />
+            <div className="pt-3 border-t border-[rgba(39,38,32,0.1)] flex flex-col sm:flex-row gap-3">
+              <Link
+                href={`/app/events/${publishedEvent.id}?tab=guests`}
+                className="kadi-button flex-1 justify-center text-xs"
+              >
+                <span>Manage Guests &amp; Send</span>
+              </Link>
+              <a
+                href={`/e/${publishedEvent.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="kadi-button kadi-button--quiet flex-1 justify-center text-xs inline-flex items-center gap-1.5"
+              >
+                <span>View Live Invitation</span>
+                <ExternalLink size={13} />
+              </a>
             </div>
           </div>
-
-          <div className="pt-6 flex items-center justify-between">
-            <Button size="sm" variant="ghost" onClick={() => setStep(2)}>
-              Back
-            </Button>
-            <Button
-              size="lg"
-              variant="primary"
-              onClick={handleFinishCreate}
-              isLoading={isSubmitting}
-              rightIcon={<Check className="w-4 h-4" />}
-            >
-              Create Event & Open Studio
-            </Button>
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
 }
 
-export default function NewEventWizardPage() {
+export default function NewEventStudioPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-brand-slate">Loading event wizard...</div>}>
-      <NewEventWizardContent />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center text-xs text-[#756F64]">
+          Loading Studio…
+        </div>
+      }
+    >
+      <NewEventStudioContent />
     </Suspense>
   );
 }

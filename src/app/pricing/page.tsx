@@ -2,161 +2,73 @@ import React from 'react';
 import Link from 'next/link';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { Check, Info, ArrowRight } from 'lucide-react';
+import { ArrowUpRight, Check } from 'lucide-react';
+
+const tiers = [
+  {
+    number: '01', name: 'The First Chapter', label: 'Free', price: 'KES 0', period: 'per event',
+    description: 'A thoughtful starting point for small gatherings and getting to know Kadi.',
+    features: ['Up to 50 guest invitations', 'Envelope opening and RSVP tracking', 'Share through WhatsApp', 'Venue links and calendar download', 'Guest list export'],
+    cta: 'Begin for free', featured: false,
+  },
+  {
+    number: '02', name: 'The Celebration', label: 'Most chosen', price: 'KES 2,900', period: 'one-time per event',
+    description: 'For the gatherings where every detail matters — weddings, milestones and family celebrations.',
+    features: ['Up to 300 guest invitations', 'Full design and colour customisation', 'Photo gallery and story sections', 'Household RSVP and custom questions', 'CSV guest import', 'M-Pesa gift instructions'],
+    cta: 'Create a celebration', featured: true,
+  },
+  {
+    number: '03', name: 'The Keepsake', label: 'Full suite', price: 'KES 4,500', period: 'one-time per event',
+    description: 'A considered space for large celebrations, memorials and events with a team behind them.',
+    features: ['Expanded guest allowance', 'Memorial tributes and virtual candles', 'Planner or co-host permissions', 'Personalised guest names', 'Optional ambient audio', 'Event-day check-in tools'],
+    cta: 'Explore the full suite', featured: false,
+  },
+];
 
 export default function PricingPage() {
-  const tiers = [
-    {
-      name: 'Starter Suite',
-      badge: 'Free Preview',
-      price: 'KES 0',
-      period: 'per event',
-      description: 'Perfect for small family gatherings, intimate birthdays, and casual showers.',
-      features: [
-        'Up to 50 guest invitations',
-        'Standard 3D animated envelope opening',
-        'Real-time RSVP tracking',
-        'Native WhatsApp sharing link',
-        'Google Maps & .ics calendar downloads',
-        'CSV guest list export',
-      ],
-      cta: 'Start with Free Tier',
-      variant: 'secondary' as const,
-    },
-    {
-      name: 'Celebration Suite',
-      badge: 'Most Popular',
-      price: 'KES 2,900',
-      period: 'per event (one-time)',
-      description: 'Ideal for weddings, milestone jubilees, and large family celebrations.',
-      features: [
-        'Up to 300 guest invitations',
-        'All curated liners, wax seals, and palettes',
-        'Custom photo gallery (up to 15 photos)',
-        'Dietary preferences & custom song requests',
-        'Direct M-Pesa gift instructions integration',
-        'Bulk CSV guest import & phone normalization',
-        'Priority email & WhatsApp support',
-      ],
-      cta: 'Create Celebration Suite',
-      variant: 'primary' as const,
-      popular: true,
-    },
-    {
-      name: 'Grand Gala & Memorial',
-      badge: 'Full Suite',
-      price: 'KES 4,500',
-      period: 'per event (one-time)',
-      description: 'For expansive weddings, state memorials, or corporate summits.',
-      features: [
-        'Unlimited guest invitations',
-        'Dignified memorial mode (virtual candles & tribute book)',
-        'Dedicated planner / co-host access permissions',
-        'Personalized guest envelopes with individual names',
-        'Background ambient audio/music support',
-        'Event-day door check-in scanner mode',
-        'Lifetime invitation archive preservation',
-      ],
-      cta: 'Create Grand Event',
-      variant: 'gold' as const,
-    },
-  ];
-
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="kadi-page min-h-screen flex flex-col">
       <PublicNavbar />
-
-      <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <Badge variant="purple" size="sm">
-            Transparent Pricing
-          </Badge>
-          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-brand-charcoal mt-3">
-            Simple, pay-per-event pricing
-          </h1>
-          <p className="text-sm sm:text-base text-brand-slate mt-4 leading-relaxed">
-            No recurring monthly subscriptions for one-time events. Pay once per event or use our free tier for smaller gatherings.
-          </p>
-
-          <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-800 text-xs flex items-center justify-center gap-2 max-w-xl mx-auto">
-            <Info className="w-4 h-4 flex-shrink-0" />
-            <span>
-              <strong>Developer Preview:</strong> All template features and live demos are available for exploration with zero payment barriers.
-            </span>
-          </div>
-        </div>
-
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-          {tiers.map((tier) => (
-            <div
-              key={tier.name}
-              className={`rounded-3xl p-8 flex flex-col justify-between transition-all ${
-                tier.popular
-                  ? 'bg-brand-mist border-2 border-brand-purple shadow-xl shadow-brand-purple/10 relative'
-                  : 'bg-white border border-slate-200/90 shadow-sm hover:shadow-md'
-              }`}
-            >
-              {tier.popular && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="bg-brand-purple text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded-full shadow-md">
-                    Recommended
-                  </span>
-                </div>
-              )}
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-serif text-xl font-bold text-brand-charcoal">
-                    {tier.name}
-                  </h3>
-                  <Badge variant={tier.popular ? 'purple' : 'default'} size="sm">
-                    {tier.badge}
-                  </Badge>
-                </div>
-                <p className="text-xs text-brand-slate leading-relaxed">
-                  {tier.description}
-                </p>
-
-                <div className="my-6">
-                  <span className="text-3xl sm:text-4xl font-serif font-bold text-brand-charcoal">
-                    {tier.price}
-                  </span>
-                  <span className="text-xs text-brand-slate ml-2">{tier.period}</span>
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-slate-200/60">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-brand-slate block">
-                    What&apos;s included:
-                  </span>
-                  {tier.features.map((feat, i) => (
-                    <div key={i} className="flex items-start gap-2.5 text-xs text-brand-charcoal">
-                      <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-8 mt-6 border-t border-slate-100">
-                <Link href="/templates">
-                  <Button
-                    size="md"
-                    variant={tier.variant}
-                    className="w-full text-xs font-semibold py-3"
-                    rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                  >
-                    {tier.cta}
-                  </Button>
-                </Link>
-              </div>
+      <main className="flex-1">
+        <section className="bg-[#EDE5D9] pt-16 md:pt-24 pb-12 md:pb-16">
+          <div className="kadi-container grid md:grid-cols-12 gap-8 items-end">
+            <div className="md:col-span-8">
+              <div className="flex items-center gap-3 mb-6"><span className="kadi-ornament" /><p className="kadi-eyebrow text-[#934638]">Clear from the beginning</p></div>
+              <h1 className="kadi-display text-6xl sm:text-7xl md:text-[6.5rem]">A fair price<br /><em className="text-[#934638]">for your moment.</em></h1>
             </div>
-          ))}
-        </div>
-      </main>
+            <p className="md:col-span-4 text-sm md:text-base leading-7 text-[#756F64] max-w-sm md:pb-2">Pay per event, not for another monthly subscription you forget about. Choose the invitation suite that fits your gathering.</p>
+          </div>
+        </section>
 
+        <section className="bg-[#F6F2EA] py-8 md:py-14">
+          <div className="kadi-container">
+            {tiers.map((tier) => (
+              <article key={tier.number} className={`grid md:grid-cols-12 gap-5 md:gap-8 py-9 md:py-12 border-b border-[rgba(39,38,32,.2)] ${tier.featured ? 'bg-[#EDE5D9] px-5 md:px-8 -mx-5 md:-mx-8 border-t border-[rgba(39,38,32,.2)]' : ''}`}>
+                <div className="md:col-span-1 flex md:block items-center gap-4">
+                  <span className="font-serif italic text-3xl text-[#934638]">{tier.number}</span>
+                  <span className="md:hidden kadi-eyebrow text-[#756F64]">{tier.label}</span>
+                </div>
+                <div className="md:col-span-4">
+                  <div className="hidden md:block kadi-eyebrow text-[#756F64] mb-3">{tier.label}</div>
+                  <h2 className="font-serif text-3xl md:text-[2.6rem] leading-tight tracking-[-.04em]">{tier.name}</h2>
+                  <p className="text-sm leading-6 text-[#756F64] mt-3 max-w-sm">{tier.description}</p>
+                  <div className="mt-5 flex items-baseline gap-2"><span className="font-serif text-3xl md:text-4xl">{tier.price}</span><span className="text-xs text-[#756F64]">{tier.period}</span></div>
+                </div>
+                <div className="md:col-span-4 md:col-start-7">
+                  <p className="kadi-eyebrow text-[#934638] mb-4">Included in this suite</p>
+                  <ul className="space-y-3">
+                    {tier.features.map((feature) => <li key={feature} className="flex items-start gap-3 text-sm text-[#514C43]"><Check size={15} className="mt-0.5 text-[#747D62] shrink-0" strokeWidth={1.7} /><span>{feature}</span></li>)}
+                  </ul>
+                </div>
+                <div className="md:col-span-2 md:flex md:justify-end md:items-start md:pt-1">
+                  <Link href="/templates" className={`kadi-button ${tier.featured ? '' : 'kadi-button--quiet'} w-full md:w-auto whitespace-nowrap`}>{tier.cta} <ArrowUpRight size={15} /></Link>
+                </div>
+              </article>
+            ))}
+            <p className="text-xs text-[#756F64] leading-6 mt-8 max-w-3xl">Pricing and feature limits shown here are planning values for the current prototype, not a live checkout offer. Final entitlements, payment methods, taxes and refund terms should be confirmed before public launch.</p>
+          </div>
+        </section>
+      </main>
       <PublicFooter />
     </div>
   );

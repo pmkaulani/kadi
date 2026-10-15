@@ -1,0 +1,192 @@
+/*
+  KADI shared app design system.
+  Merge these tokens and component classes into src/app/globals.css.
+  Do not delete existing invitation-specific styles; those control guest-facing themes.
+*/
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces / text */
+  --kd-canvas: #FAFAF7;
+  --kd-surface: #FFFFFF;
+  --kd-surface-2: #F2F1EC;
+  --kd-surface-3: #EAE9E3;
+  --kd-ink: #1D1D1F;
+  --kd-ink-2: #3A3A3C;
+  --kd-muted: #6E6E73;
+  --kd-muted-2: #8E8E93;
+  --kd-line: rgba(60, 60, 67, 0.16);
+  --kd-line-strong: rgba(60, 60, 67, 0.28);
+
+  /* Kadi brand accent. Keep warm and restrained; occasion colours belong to templates. */
+  --kd-accent: #794A32;
+  --kd-accent-hover: #603924;
+  --kd-accent-pressed: #4F2E20;
+  --kd-accent-soft: #F3E9E2;
+  --kd-focus: #B99A62;
+  --kd-success: #2F6D4E;
+  --kd-warning: #8A5A12;
+  --kd-danger: #B42318;
+
+  /* 4px base scale */
+  --kd-space-1: 4px;
+  --kd-space-2: 8px;
+  --kd-space-3: 12px;
+  --kd-space-4: 16px;
+  --kd-space-6: 24px;
+  --kd-space-8: 32px;
+  --kd-space-12: 48px;
+  --kd-space-16: 64px;
+
+  /* Four radii only: controls, cards, panels, pills */
+  --kd-radius-control: 12px;
+  --kd-radius-card: 16px;
+  --kd-radius-panel: 24px;
+  --kd-radius-pill: 999px;
+
+  /* Soft elevation; keep most panels border-led, not shadow-led */
+  --kd-shadow-card: 0 1px 3px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.045);
+  --kd-shadow-popover: 0 12px 36px rgba(0,0,0,.14);
+  --kd-shadow-phone: 0 22px 70px rgba(0,0,0,.22);
+
+  /* Typography: native SF on Apple platforms, Inter fallback elsewhere */
+  --kd-font-ui: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --kd-font-display: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --kd-text-xs: 12px;
+  --kd-text-sm: 14px;
+  --kd-text-base: 16px;
+  --kd-text-lg: 18px;
+  --kd-text-xl: 22px;
+  --kd-text-2xl: 28px;
+  --kd-text-3xl: clamp(32px, 3vw, 44px);
+  --kd-leading-tight: 1.12;
+  --kd-leading-body: 1.5;
+
+  /* Motion */
+  --kd-ease: cubic-bezier(.32, .72, 0, 1);
+  --kd-duration-fast: 140ms;
+  --kd-duration-normal: 240ms;
+  --kd-duration-slow: 360ms;
+
+  --kd-content-max: 1440px;
+  --kd-page-gutter: clamp(16px, 3vw, 40px);
+  --kd-topbar-height: 64px;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --kd-canvas: #000000;
+  --kd-surface: #1C1C1E;
+  --kd-surface-2: #2C2C2E;
+  --kd-surface-3: #3A3A3C;
+  --kd-ink: #F5F5F7;
+  --kd-ink-2: #E5E5EA;
+  --kd-muted: #AEAEB2;
+  --kd-muted-2: #8E8E93;
+  --kd-line: rgba(235, 235, 245, .14);
+  --kd-line-strong: rgba(235, 235, 245, .26);
+  --kd-accent-soft: #33251F;
+  --kd-shadow-card: 0 1px 3px rgba(0,0,0,.18), 0 8px 24px rgba(0,0,0,.12);
+}
+
+.kd-app-surface {
+  background: var(--kd-canvas);
+  color: var(--kd-ink);
+  font-family: var(--kd-font-ui);
+  font-size: var(--kd-text-base);
+  line-height: var(--kd-leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.kd-page {
+  width: min(100%, var(--kd-content-max));
+  margin-inline: auto;
+  padding-inline: var(--kd-page-gutter);
+}
+
+.kd-panel {
+  min-width: 0;
+  background: var(--kd-surface);
+  border: 1px solid var(--kd-line);
+  border-radius: var(--kd-radius-card);
+  box-shadow: var(--kd-shadow-card);
+}
+
+.kd-divider { border-color: var(--kd-line); }
+
+.kd-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--kd-line-strong);
+  border-radius: var(--kd-radius-pill);
+  background: var(--kd-surface);
+  color: var(--kd-ink);
+  font: 600 var(--kd-text-sm)/1 var(--kd-font-ui);
+  letter-spacing: -.01em;
+  cursor: pointer;
+  transition: background var(--kd-duration-fast) var(--kd-ease),
+    border-color var(--kd-duration-fast) var(--kd-ease),
+    color var(--kd-duration-fast) var(--kd-ease),
+    transform var(--kd-duration-fast) var(--kd-ease);
+}
+.kd-button:hover { background: var(--kd-surface-2); }
+.kd-button:active { transform: scale(.975); }
+.kd-button:focus-visible,
+.kd-input:focus-visible,
+.kd-select:focus-visible,
+.kd-link:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--kd-focus) 72%, transparent);
+  outline-offset: 2px;
+}
+.kd-button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.kd-button--primary { color: #fff; background: var(--kd-accent); border-color: var(--kd-accent); }
+.kd-button--primary:hover { background: var(--kd-accent-hover); border-color: var(--kd-accent-hover); }
+.kd-button--primary:active { background: var(--kd-accent-pressed); }
+.kd-button--quiet { background: transparent; border-color: transparent; }
+.kd-button--small { min-height: 36px; padding-inline: 12px; font-size: var(--kd-text-xs); }
+
+.kd-field { display: grid; gap: 6px; min-width: 0; }
+.kd-label { color: var(--kd-ink-2); font-size: var(--kd-text-sm); font-weight: 600; }
+.kd-help { color: var(--kd-muted); font-size: var(--kd-text-xs); line-height: 1.45; }
+.kd-input,
+.kd-select,
+.kd-textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--kd-line-strong);
+  border-radius: var(--kd-radius-control);
+  background: var(--kd-surface);
+  color: var(--kd-ink);
+  font: 400 var(--kd-text-sm)/1.4 var(--kd-font-ui);
+  transition: border-color var(--kd-duration-fast) var(--kd-ease), box-shadow var(--kd-duration-fast) var(--kd-ease);
+}
+.kd-textarea { min-height: 88px; resize: vertical; }
+.kd-input:hover, .kd-select:hover, .kd-textarea:hover { border-color: var(--kd-muted-2); }
+.kd-input:focus, .kd-select:focus, .kd-textarea:focus { border-color: var(--kd-accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--kd-accent) 13%, transparent); }
+
+.kd-kicker { color: var(--kd-muted); font-size: 11px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+.kd-page-title { margin: 0; font-size: var(--kd-text-2xl); font-weight: 650; letter-spacing: -.04em; line-height: var(--kd-leading-tight); }
+.kd-muted { color: var(--kd-muted); }
+.kd-status { display: inline-flex; align-items: center; gap: 7px; color: var(--kd-muted); font-size: var(--kd-text-xs); }
+.kd-status__dot { width: 7px; height: 7px; flex: none; border-radius: 999px; background: var(--kd-muted-2); }
+.kd-status[data-state="saving"] .kd-status__dot { background: var(--kd-warning); }
+.kd-status[data-state="saved"] .kd-status__dot { background: var(--kd-success); }
+.kd-status[data-state="error"] .kd-status__dot { background: var(--kd-danger); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

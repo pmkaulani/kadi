@@ -12,14 +12,14 @@ export function Card({
   ...props
 }: CardProps) {
   const variants = {
-    default: 'bg-white rounded-2xl border border-slate-200/80 shadow-sm',
-    elevated: 'bg-white rounded-2xl shadow-xl shadow-brand-charcoal/5 border border-slate-100',
-    bordered: 'bg-white rounded-2xl border-2 border-slate-200',
-    paper: 'bg-paper-grain rounded-2xl border border-amber-900/10 shadow-lg shadow-brand-charcoal/5',
+    default: 'bg-white border border-[rgba(29,29,31,0.08)] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.045)]',
+    elevated: 'bg-white border border-[rgba(29,29,31,0.08)] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)]',
+    bordered: 'bg-[#FAFAF7] border border-[rgba(29,29,31,0.12)] rounded-2xl',
+    paper: 'bg-[#FBF8F1] border border-[rgba(185,154,98,0.25)] rounded-2xl shadow-sm',
   };
 
   return (
-    <div className={`${variants[variant]} p-6 transition-all duration-200 ${className}`} {...props}>
+    <div className={`${variants[variant]} p-5 sm:p-6 transition-all duration-200 ${className}`} {...props}>
       {children}
     </div>
   );

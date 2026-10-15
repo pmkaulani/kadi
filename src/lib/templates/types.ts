@@ -1,13 +1,5 @@
-export type EventCategory =
-  | 'wedding'
-  | 'birthday'
-  | 'memorial'
-  | 'baby-shower'
-  | 'graduation'
-  | 'anniversary'
-  | 'corporate'
-  | 'community'
-  | 'custom';
+import type { EventCategory } from '@/lib/events/categories';
+export type { EventCategory } from '@/lib/events/categories';
 
 export type MotionPreset =
   | 'classic-stationery'
@@ -18,7 +10,13 @@ export type MotionPreset =
   | 'baby-shower'
   | 'graduation'
   | 'dignified-memorial'
-  | 'corporate';
+  | 'corporate'
+  | 'home-warming'
+  | 'funeral-service'
+  | 'holiday-celebration'
+  | 'product-launch'
+  | 'cultural-celebration'
+  | 'corporate-minimal';
 
 export interface TemplatePalette {
   primary: string;
@@ -48,7 +46,10 @@ export interface TemplateSeal {
   borderStyle?: string;
 }
 
+export type InvitationExperienceTheme = 'savannah-twilight' | 'ruby-disco' | 'gift-box' | 'pastel-garden' | 'sage-love-letter' | 'memorial';
+
 export interface TemplateDefinition {
+  experienceTheme?: InvitationExperienceTheme;
   id: string;
   version: string;
   name: string;
@@ -89,6 +90,8 @@ export interface TemplateDefinition {
     venue: string;
     city: string;
     heroImage: string;
+    galleryImages?: string[];
+    milestoneAge?: number;
     story?: string;
   };
 }

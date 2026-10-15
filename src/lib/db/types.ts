@@ -1,3 +1,5 @@
+import type { EventCategory } from '@/lib/events/categories';
+
 export type EventStatus = 'draft' | 'published' | 'archived';
 export type RSVPStatus = 'yes' | 'no' | 'maybe' | 'pending' | 'attending';
 
@@ -15,7 +17,7 @@ export interface EventEntity {
   title: string;
   subtitle?: string;
   slug: string;
-  category: 'wedding' | 'birthday' | 'memorial' | 'baby-shower' | 'graduation' | 'anniversary' | 'corporate' | 'community' | 'custom';
+  category: EventCategory;
   status: EventStatus;
   templateId: string;
   templateVersion: string;
@@ -31,14 +33,97 @@ export interface EventEntity {
   dressCode?: string;
   story?: string;
   heroImage: string;
+  galleryImages?: string[];
+  accommodationUrl?: string;
+  googleMapsUrl?: string;
+  openingPhrase?: string;
+  houseRules?: string[];
+  milestoneAge?: number;
   rsvpDeadline: string;
   maxCapacity?: number;
   allowsChildren?: boolean;
   audioUrl?: string;
+  countdownLabel?: string;
   mpesaType?: 'till' | 'paybill' | 'send_money';
   mpesaNumber?: string;
   mpesaRecipient?: string;
   mpesaReference?: string;
+  // Rich data-driven section extensions
+  ourStoryMilestones?: Array<{
+    yearOrDate: string;
+    title: string;
+    story: string;
+    image?: string;
+    location?: string;
+  }>;
+  ceremonyDetails?: {
+    name: string;
+    time?: string;
+    address: string;
+    mapUrl?: string;
+    directions?: string;
+    dressCode?: string;
+    dressCodeColors?: string[];
+  };
+  receptionDetails?: {
+    name: string;
+    time?: string;
+    address: string;
+    mapUrl?: string;
+    directions?: string;
+  };
+  programmeSchedule?: Array<{
+    time: string;
+    title: string;
+    description?: string;
+    icon?: string;
+    location?: string;
+  }>;
+  faqItems?: Array<{
+    question: string;
+    answer: string;
+    category?: string;
+  }>;
+  birthdayAbout?: {
+    bio?: string;
+    facts?: string[];
+    heading?: string;
+  };
+  birthdayActivities?: Array<{
+    title: string;
+    description: string;
+    time?: string;
+  }>;
+  birthdayMenu?: {
+    items: string[];
+    drinksPolicy?: string;
+    cakeNote?: string;
+  };
+  memorialObituary?: {
+    biography: string;
+    birthDate?: string;
+    deathDate?: string;
+    epitaph?: string;
+  };
+  memorialServices?: Array<{
+    name: string;
+    date: string;
+    time: string;
+    venue: string;
+    address?: string;
+    mapUrl?: string;
+    type: 'service' | 'burial' | 'viewing';
+  }>;
+  memorialOrderOfService?: Array<{
+    time?: string;
+    item: string;
+    participant?: string;
+    notes?: string;
+  }>;
+  virtualCandlesCount?: number;
+  livestreamUrl?: string;
+  livestreamStatus?: 'upcoming' | 'live' | 'ended' | 'none';
+  blocks?: import('@/lib/blocks/types').InvitationBlockConfig[];
   createdAt: string;
   updatedAt: string;
 }
@@ -53,12 +138,39 @@ export interface EventDesignEntity {
     envelope: string;
     flap: string;
     cardBackground: string;
+    text?: string;
   };
   linerId: string;
   sealShape: 'circle' | 'diamond' | 'shield';
   sealMonogram: string;
   sealColor: string;
   visibleSections: string[];
+  sectionOrder?: string[];
+  fontFamily?: string;
+  envelopeStyle?: 'classic-fold' | 'pocket-fold' | 'scalloped-edge' | 'minimal';
+  letterStyle?: 'printed-letter' | 'handwritten-letter' | 'folded-card';
+  backgroundAnimation?: 'none' | 'petals' | 'confetti' | 'bokeh' | 'leaves' | 'snow' | 'candles';
+  scrollAnimation?: 'none' | 'fade-up' | 'slide-in' | 'scale-in' | 'parallax';
+  transitionSpeed?: 'slow' | 'medium' | 'fast';
+  layoutSpacing?: 'compact' | 'comfortable' | 'spacious';
+  cardPadding?: 'normal' | 'generous' | 'minimal';
+  imageCropFocalPosition?: string;
+  headingTracking?: 'tight' | 'normal' | 'wide';
+  headingLineHeight?: 'tight' | 'snug' | 'normal';
+  countdownLabel?: string;
+  blocks?: import('@/lib/blocks/types').InvitationBlockConfig[];
+  typography?: {
+    headingFont?: string;
+    bodyFont?: string;
+    scale?: number;
+    headingLetterSpacing?: number;
+    bodyLineHeight?: number;
+  };
+  layoutPreset?: {
+    spacing?: 'compact' | 'comfortable' | 'spacious';
+    cornerStyle?: 'square' | 'soft' | 'round' | 'pill';
+    borderStyle?: 'none' | 'thin' | 'thick' | 'dotted';
+  };
 }
 
 export interface GuestHouseholdEntity {

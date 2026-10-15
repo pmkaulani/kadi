@@ -1,0 +1,1077 @@
+'use client';
+
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  CirclePlay,
+  Clock3,
+  MapPin,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
+import { TemplateDefinition } from '@/lib/templates/types';
+import { WaxSeal } from '@/components/animation/WaxSeal';
+import { ScrollParallax, RevealText } from '@/components/animation/MotionToolkit';
+import { Logo } from '@/components/ui/Logo';
+
+export type AnimationPhase =
+  | 'closed'
+  | 'seal-press'
+  | 'seal-release'
+  | 'flap-open'
+  | 'card-rising'
+  | 'settling'
+  | 'settled';
+
+interface EnvelopeRendererProps {
+  template: TemplateDefinition;
+  guestName?: string;
+  isDemo?: boolean;
+  onPhaseChange?: (phase: AnimationPhase) => void;
+  audioUrl?: string;
+  initialPhase?: AnimationPhase;
+  children?: React.ReactNode;
+}
+
+type ExperienceTheme = 'savannah-twilight' | 'ruby-disco' | 'gift-box' | 'pastel-garden' | 'sage-love-letter' | 'memorial';
+
+function getExperienceTheme(template: TemplateDefinition): ExperienceTheme {
+  if (template.experienceTheme) return template.experienceTheme;
+  if (template.category === 'memorial') return 'memorial';
+  if (template.id === 'milestone-gold') return 'ruby-disco';
+  if (template.category === 'baby-shower' || template.id === 'sweet-beginnings') return 'pastel-garden';
+  if (template.id === 'savannah-twilight') return 'savannah-twilight';
+  if (template.category === 'wedding') return 'sage-love-letter';
+  return 'gift-box';
+}
+
+function BotanicalCorner({ side = 'left' }: { side?: 'left' | 'right' }) {
+  return (
+    <svg className={`iv-botanical iv-botanical--${side}`} viewBox="0 0 180 230" fill="none" aria-hidden="true">
+      <path d="M12 218 C42 174 45 120 93 80 C122 55 145 35 160 10" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M42 173 C12 163 8 139 13 122 C34 125 48 143 42 173Z" fill="currentColor" fillOpacity=".28" stroke="currentColor" strokeWidth="1" />
+      <path d="M60 140 C85 145 103 129 103 108 C80 108 63 120 60 140Z" fill="currentColor" fillOpacity=".22" stroke="currentColor" strokeWidth="1" />
+      <path d="M86 98 C55 92 48 70 57 51 C79 59 90 78 86 98Z" fill="currentColor" fillOpacity=".25" stroke="currentColor" strokeWidth="1" />
+      <path d="M107 69 C130 77 152 65 157 45 C134 38 115 49 107 69Z" fill="currentColor" fillOpacity=".22" stroke="currentColor" strokeWidth="1" />
+      <path d="M28 196 C54 198 69 181 67 162 C45 166 31 179 28 196Z" fill="currentColor" fillOpacity=".22" stroke="currentColor" strokeWidth="1" />
+      <circle cx="155" cy="24" r="8" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="155" cy="24" r="3" fill="currentColor" />
+    </svg>
+  );
+}
+
+function StarField() {
+  return (
+    <div className="iv-star-field" aria-hidden="true">
+      <span className="iv-star iv-star--one">✦</span>
+      <span className="iv-star iv-star--two">✧</span>
+      <span className="iv-star iv-star--three">✦</span>
+      <span className="iv-star iv-star--four">✧</span>
+      <span className="iv-disco-ball iv-disco-ball--one" />
+      <span className="iv-disco-ball iv-disco-ball--two" />
+    </div>
+  );
+}
+
+function DecorativeRecord({ playing }: { playing: boolean }) {
+  return (
+    <div className={`iv-record ${playing ? 'is-playing' : ''}`} aria-hidden="true">
+      <div className="iv-record__grooves" />
+      <div className="iv-record__label"><span>kadi</span></div>
+      <span className="iv-record__hole" />
+    </div>
+  );
+}
+
+function useReducedMotionPreference() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(query.matches);
+    update();
+    query.addEventListener?.('change', update);
+    return () => query.removeEventListener?.('change', update);
+  }, []);
+  return reduced;
+}
+
+export function EnvelopeRenderer({
+  template,
+  guestName,
+  isDemo = false,
+  onPhaseChange,
+  audioUrl,
+  initialPhase,
+  children,
+}: EnvelopeRendererProps) {
+  const theme = getExperienceTheme(template);
+  const [phase, setPhase] = useState<AnimationPhase>(initialPhase || 'closed');
+  const [activeGift, setActiveGift] = useState<'note' | 'flowers' | 'cake'>('note');
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const timerRefs = useRef<number[]>([]);
+  const reducedMotion = useReducedMotionPreference();
+  const data = template.sampleData;
+  const isBirthday = template.category === 'birthday';
+  const birthdayNumber = data.milestoneAge?.toString() || data.title.match(/\b(\d{1,2})(?:st|nd|rd|th)?\b/)?.[1] || '50';
+
+  const changePhase = useCallback((next: AnimationPhase) => {
+    setPhase(next);
+    onPhaseChange?.(next);
+  }, [onPhaseChange]);
+
+  useEffect(() => {
+    if (reducedMotion) changePhase('settled');
+  }, [reducedMotion, changePhase]);
+
+  useEffect(() => {
+    const currentTimers = timerRefs.current;
+    return () => currentTimers.forEach(window.clearTimeout);
+  }, []);
+
+  useEffect(() => {
+    if (!audioUrl) return;
+    const audio = new Audio(audioUrl);
+    audio.loop = true;
+    audio.preload = 'none';
+    audioRef.current = audio;
+    return () => {
+      audio.pause();
+      audio.src = '';
+      audioRef.current = null;
+    };
+  }, [audioUrl]);
+
+  /**
+   * Choreographed 6-Beat Opening Sequence:
+   * Beat A (0ms): Seal press & envelope slight deflection
+   * Beat B (320ms): Seal release & unlock
+   * Beat C (570ms): 3D hinged flap swing open (-180deg)
+   * Beat D & E (1120ms): Staggered paper inserts + tall card rise with photo & details
+   * Beat F (1920ms): Settling expansion
+   * Settled (2650ms): Full editorial invitation active
+   */
+  const openEnvelope = useCallback(() => {
+    if (phase !== 'closed') return;
+    if (reducedMotion) {
+      changePhase('settled');
+      return;
+    }
+
+    timerRefs.current.forEach(window.clearTimeout);
+    timerRefs.current = [];
+
+    // Beat A — Seal press
+    changePhase('seal-press');
+
+    // Beat B — Break / release
+    timerRefs.current.push(
+      window.setTimeout(() => {
+        changePhase('seal-release');
+      }, 320)
+    );
+
+    // Beat C — Hinged flap opens backwards 180deg
+    timerRefs.current.push(
+      window.setTimeout(() => {
+        changePhase('flap-open');
+      }, 570)
+    );
+
+    // Beat D & E — Inserts move and tall hero card rises
+    timerRefs.current.push(
+      window.setTimeout(() => {
+        changePhase('card-rising');
+      }, 1120)
+    );
+
+    // Beat F — Settling expansion
+    timerRefs.current.push(
+      window.setTimeout(() => {
+        changePhase('settling');
+      }, 1920)
+    );
+
+    // Settled — Full invitation page active
+    timerRefs.current.push(
+      window.setTimeout(() => {
+        changePhase('settled');
+      }, 2650)
+    );
+  }, [phase, reducedMotion, changePhase]);
+
+  const skipToDetails = useCallback(() => {
+    timerRefs.current.forEach(window.clearTimeout);
+    timerRefs.current = [];
+    changePhase('settled');
+  }, [changePhase]);
+
+  const replay = useCallback(() => {
+    timerRefs.current.forEach(window.clearTimeout);
+    timerRefs.current = [];
+    if (audioRef.current && musicPlaying) {
+      audioRef.current.pause();
+      setMusicPlaying(false);
+    }
+    changePhase('closed');
+    window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+  }, [musicPlaying, changePhase, reducedMotion]);
+
+  const toggleMusic = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (musicPlaying) {
+      audio.pause();
+      setMusicPlaying(false);
+      return;
+    }
+    try {
+      await audio.play();
+      setMusicPlaying(true);
+    } catch {
+      setMusicPlaying(false);
+    }
+  };
+
+  const shareInvitation = async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    try {
+      if (navigator.share) await navigator.share({ title: data.title, text: `You're invited to ${data.title}`, url });
+      else {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2200);
+      }
+    } catch {
+      // Sharing cancellation should not interrupt the invitation.
+    }
+  };
+
+  const galleryPhotos = (data.galleryImages?.length ? data.galleryImages : [data.heroImage]).filter(Boolean);
+
+  return (
+    <div
+      className={`iv-world iv-world--${theme} ${phase === 'settled' ? 'iv-world--revealed' : ''}`}
+      data-template={template.id}
+    >
+      {theme === 'ruby-disco' && <StarField />}
+      {theme === 'savannah-twilight' && <span className="iv-candle-glow" aria-hidden="true" />}
+      {(theme === 'pastel-garden' || theme === 'sage-love-letter' || theme === 'gift-box') && (
+        <>
+          <BotanicalCorner side="left" />
+          <BotanicalCorner side="right" />
+        </>
+      )}
+
+      {/* Control Rail: Brand mark + quiet controls */}
+      <div className="iv-control-rail">
+        <Logo size="sm" color="#c4a16a" />
+        <div className="iv-control-actions">
+          {audioUrl && theme !== 'gift-box' && (
+            <button
+              className="iv-icon-control"
+              onClick={toggleMusic}
+              aria-label={musicPlaying ? 'Pause invitation music' : 'Play invitation music'}
+              title={musicPlaying ? 'Pause music' : 'Play music'}
+            >
+              {musicPlaying ? <Volume2 size={16} /> : <VolumeX size={16} />}
+              <span>{musicPlaying ? 'Music on' : 'Music off'}</span>
+            </button>
+          )}
+          {phase === 'settled' ? (
+            <button className="iv-text-control" onClick={replay}>
+              <RotateCcw size={13} /> Replay opening
+            </button>
+          ) : phase !== 'closed' ? (
+            <button className="iv-text-control" onClick={skipToDetails}>
+              Skip intro <ChevronRight size={13} />
+            </button>
+          ) : null}
+        </div>
+      </div>
+
+      {phase !== 'settled' ? (
+        <section
+          className={`iv-opening-stage ${phase !== 'closed' ? 'is-opening' : ''} ${
+            phase === 'card-rising' || phase === 'settling' ? 'card-rising' : ''
+          }`}
+          aria-label="Open your sealed invitation"
+        >
+          {/* Candlelit Tabletop Scene Backdrop */}
+          <div className="iv-tabletop-scene" aria-hidden="true">
+            <span className="iv-candle-glow" />
+            <div className="iv-candle-flame">
+              <span className="iv-flame-core" />
+              <span className="iv-flame-glow" />
+            </div>
+            {/* Scattered deep-crimson rose petals on the table */}
+            <div className="iv-tabletop-petals">
+              <svg className="iv-petal iv-petal--1" viewBox="0 0 36 36">
+                <path d="M 6 30 C 2 16 14 4 30 6 C 34 20 22 34 6 30 Z" fill="#6A141D" />
+                <path d="M 10 26 C 8 16 16 8 26 10 C 28 18 20 28 10 26 Z" fill="#8C1B26" opacity="0.65" />
+              </svg>
+              <svg className="iv-petal iv-petal--2" viewBox="0 0 36 36">
+                <path d="M 4 10 C 16 2 32 12 30 28 C 16 34 2 22 4 10 Z" fill="#520E15" />
+                <path d="M 8 12 C 16 6 26 14 24 24 C 14 28 6 20 8 12 Z" fill="#75151F" opacity="0.65" />
+              </svg>
+              <svg className="iv-petal iv-petal--3" viewBox="0 0 36 36">
+                <path d="M 8 28 C 3 13 18 3 33 8 C 33 23 23 33 8 28 Z" fill="#781722" />
+              </svg>
+              <svg className="iv-petal iv-petal--4" viewBox="0 0 36 36">
+                <path d="M 10 6 C 24 4 32 18 26 30 C 12 32 4 18 10 6 Z" fill="#5A0F17" />
+              </svg>
+              <svg className="iv-petal iv-petal--5" viewBox="0 0 36 36">
+                <path d="M 6 30 C 2 16 14 4 30 6 C 34 20 22 34 6 30 Z" fill="#721420" />
+              </svg>
+              <svg className="iv-petal iv-petal--6" viewBox="0 0 36 36">
+                <path d="M 4 12 C 16 4 30 14 28 28 C 14 32 2 22 4 12 Z" fill="#460A11" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Eyebrow & Title: Compact and responsive on short phones */}
+          <div className="iv-opening-copy">
+            <p className="iv-eyebrow">
+              {theme === 'ruby-disco'
+                ? 'A celebration awaits'
+                : theme === 'savannah-twilight'
+                ? 'A celebration of love'
+                : theme === 'memorial'
+                ? 'A gathering in remembrance'
+                : isBirthday
+                ? 'Something special for you'
+                : 'A note from the heart'}
+            </p>
+            <h1 className="iv-opening-title">
+              {theme === 'ruby-disco'
+                ? 'Tonight has your name on it.'
+                : theme === 'savannah-twilight'
+                ? 'For you, with love.'
+                : theme === 'pastel-garden'
+                ? 'A celebration, beautifully told.'
+                : theme === 'gift-box'
+                ? 'These are for you.'
+                : theme === 'memorial'
+                ? 'Remembering, together.'
+                : 'A moment, sealed with love.'}
+            </h1>
+          </div>
+
+          {/* 3D Physical Stationery Assembly */}
+          <motion.button
+            className="iv-envelope-hitarea"
+            type="button"
+            onClick={openEnvelope}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') openEnvelope();
+            }}
+            aria-label="Open your invitation envelope"
+            disabled={phase !== 'closed'}
+            animate={
+              phase === 'seal-press'
+                ? { y: 3, scale: 0.99 }
+                : phase === 'seal-release'
+                ? { y: -1, scale: 1 }
+                : { y: 0, scale: 1 }
+            }
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+          >
+            {/* Layer 0: Victorian Shadow Paper Underlay */}
+            <span className="iv-shadow-paper" aria-hidden="true" />
+
+            {/* Layer 1 & 9: Contact Shadows */}
+            <span className="iv-envelope-shadow" />
+            <span className="iv-envelope-contact-shadow" />
+
+            {/* Envelope 3D Body */}
+            <span className="iv-envelope">
+              {/* Layer 2: Back Substrate with Gold Double Rule */}
+              <span className="iv-envelope-back">
+                <span className="iv-envelope-back-border" />
+              </span>
+
+              {/* Layer 3: Inside Throat Liner Pattern with Fleurons & Gold Rule */}
+              <span className="iv-envelope-liner">
+                <span className="iv-liner-ornament">
+                  <span>❦</span>
+                  <i className="iv-liner-rule" />
+                  <span>❦</span>
+                </span>
+              </span>
+
+              {/* Layer 3.5: Deep Pocket Cavity Throat Shadow behind card */}
+              <span className="iv-envelope-throat-shadow" />
+
+              {/* Layer 4: Staggered Stationery Inserts (Beat D) */}
+              <motion.span
+                className="iv-insert-paper iv-insert-paper--back"
+                animate={
+                  phase === 'card-rising' || phase === 'settling'
+                    ? { y: -48, x: 26, rotate: 5.5, opacity: 1 }
+                    : phase === 'flap-open'
+                    ? { y: -16, x: 10, rotate: 2, opacity: 0.85 }
+                    : { y: 0, x: 0, rotate: 0, opacity: 0 }
+                }
+                transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span className="iv-insert-header">✦ R . S . V . P . ✦</span>
+                <span className="iv-insert-rule" />
+                <span className="iv-insert-sub">Kindly respond</span>
+              </motion.span>
+
+              <motion.span
+                className="iv-insert-paper iv-insert-paper--front"
+                animate={
+                  phase === 'card-rising' || phase === 'settling'
+                    ? { y: -42, x: -26, rotate: -4.5, opacity: 1 }
+                    : phase === 'flap-open'
+                    ? { y: -14, x: -10, rotate: -1.5, opacity: 0.85 }
+                    : { y: 0, x: 0, rotate: 0, opacity: 0 }
+                }
+                transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span className="iv-insert-header">✦ D E T A I L S ✦</span>
+                <span className="iv-insert-rule" />
+                <span className="iv-insert-sub">Information for guests</span>
+              </motion.span>
+
+              {/* Layer 5: Hero Formal Stationery Letter ("THE LETTER" in Reference Target) */}
+              <motion.span
+                className="iv-card-preview"
+                animate={
+                  phase === 'closed' || phase === 'seal-press'
+                    ? { y: 28, z: 10, rotate: 0, scale: 0.96, opacity: 0 }
+                    : phase === 'flap-open'
+                    ? { y: 4, z: 14, rotate: 0, scale: 0.98, opacity: 1 }
+                    : phase === 'card-rising'
+                    ? { y: -136, z: 22, rotate: -0.5, scale: 1.03, opacity: 1 }
+                    : phase === 'settling'
+                    ? { y: -140, z: 26, rotate: 0, scale: 1.04, opacity: 1 }
+                    : { y: 0, z: 16, rotate: 0, scale: 1, opacity: 1 }
+                }
+                transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {/* Victorian Inner Border Frame with Ornate Corner Scroll Brackets */}
+                <span className="iv-letter-inner-border">
+                  <span className="iv-letter-corner iv-letter-corner--tl" />
+                  <span className="iv-letter-corner iv-letter-corner--tr" />
+                  <span className="iv-letter-corner iv-letter-corner--bl" />
+                  <span className="iv-letter-corner iv-letter-corner--br" />
+
+                  {/* Top Royal Monogram Crest inside Laurel Wreath */}
+                  <div className="iv-letter-crest">
+                    <span className="iv-crest-laurel iv-crest-laurel--left">❧</span>
+                    <span className="iv-crest-monogram">
+                      {template.seal.monogram === 'K&W' ? 'W&O' : (template.seal.monogram || 'K')}
+                    </span>
+                    <span className="iv-crest-laurel iv-crest-laurel--right">❧</span>
+                  </div>
+
+                  {/* Host Line */}
+                  <span className="iv-letter-hosts">
+                    {data.hosts || (isBirthday ? 'A SPECIAL CELEBRATION' : 'TOGETHER WITH THEIR FAMILIES')}
+                  </span>
+
+                  {/* Formal Request Line */}
+                  <span className="iv-letter-request">
+                    {template.category === 'wedding'
+                      ? 'joyfully invite'
+                      : isBirthday
+                      ? 'invite you to join them in celebrating'
+                      : template.category === 'memorial'
+                      ? 'invite you to celebrate the life and memory of'
+                      : 'cordially invite you to celebrate'}
+                  </span>
+
+                  {/* Prominent Guest Name Line ("Mr. & Mrs. Kamau" in Reference Target) */}
+                  <span className="iv-letter-guest-line">
+                    {guestName || 'Mr. & Mrs. Kamau'}
+                  </span>
+
+                  <span className="iv-letter-joining">
+                    {template.category === 'wedding'
+                      ? 'to celebrate the wedding of'
+                      : 'in honour of'}
+                  </span>
+
+                  {/* Prominent Editorial Names */}
+                  <span className={`iv-letter-names ${template.category === 'wedding' ? 'iv-letter-names--script' : ''}`}>
+                    {isBirthday
+                      ? data.celebrants || data.title
+                      : template.category === 'wedding'
+                      ? (data.celebrants || data.title.replace(/^The Wedding of\s*/i, ''))
+                      : data.celebrants || data.title}
+                  </span>
+
+                  {/* Milestone age badge for birthday */}
+                  {isBirthday && (
+                    <span className="iv-letter-badge">
+                      Celebrating {birthdayNumber} Years
+                    </span>
+                  )}
+
+                  {/* Gold Tapered Rule with Diamond Fleuron */}
+                  <div className="iv-letter-divider">
+                    <span className="iv-divider-diamond">✦ ─── ❦ ─── ✦</span>
+                  </div>
+
+                  {/* Date, Time & Venue with Icons */}
+                  <div className="iv-letter-details-grid">
+                    <div className="iv-letter-detail-item">
+                      <CalendarDays size={11} className="text-amber-800/80" />
+                      <span>{data.date}</span>
+                    </div>
+                    <div className="iv-letter-detail-item">
+                      <Clock3 size={11} className="text-amber-800/80" />
+                      <span>{data.time}</span>
+                    </div>
+                    <div className="iv-letter-detail-item">
+                      <MapPin size={11} className="text-amber-800/80" />
+                      <span>{data.venue}{data.city ? `, ${data.city}` : ''}</span>
+                    </div>
+                  </div>
+
+                  {/* Bottom Flourish & RSVP */}
+                  <div className="iv-letter-bottom-section">
+                    <span className="iv-letter-bottom-flourish">❦</span>
+                    <span className="iv-letter-rsvp-hint">R . S . V . P .</span>
+                  </div>
+                </span>
+              </motion.span>
+
+              {/* Layer 6: Front Mitred Pocket with Left, Right, Bottom Panels, Gold Rule & Fleuron */}
+              <span className="iv-envelope-pocket">
+                <span className="iv-pocket-fold iv-pocket-fold--left" />
+                <span className="iv-pocket-fold iv-pocket-fold--right" />
+                <span className="iv-pocket-fold iv-pocket-fold--bottom" />
+                <span className="iv-pocket-gold-rule" />
+                <span className="iv-pocket-fleuron">❦</span>
+                <span className="iv-pocket-crease-shadow" />
+              </span>
+
+              {/* Layer 7 & 8: Hinged Flap with 3D Rotation and Inner Liner Face */}
+              <motion.span
+                className="iv-envelope-flap-hinge"
+                animate={
+                  phase === 'flap-open' || phase === 'card-rising' || phase === 'settling'
+                    ? { rotateX: -178 }
+                    : { rotateX: 0 }
+                }
+                transition={{ duration: 0.62, ease: [0.25, 1, 0.5, 1] }}
+              >
+                {/* Outer Flap Face (Visible when closed with Antique Gold Filigree Lace Border) */}
+                <span className="iv-envelope-flap-face iv-envelope-flap-face--outer">
+                  <span className="iv-flap-outer-polygon">
+                    <span className="iv-flap-gold-frame" />
+                    {/* Victorian Gold Filigree Lace Border along triangle edges */}
+                    <svg className="iv-flap-filigree-border" viewBox="0 0 500 320" fill="none" preserveAspectRatio="none">
+                      <path d="M 14 10 L 250 274 L 486 10" stroke="#dab76f" strokeWidth="1.6" strokeOpacity="0.9" />
+                      <path d="M 24 16 L 250 262 L 476 16" stroke="#f3e5c8" strokeWidth="0.8" strokeOpacity="0.5" strokeDasharray="3 2" />
+                      {/* Top corners baroque scrolls */}
+                      <path d="M 16 26 C 28 16 42 20 52 32 C 45 38 36 36 30 29 C 24 40 38 50 54 46" stroke="#dab76f" strokeWidth="1.2" strokeLinecap="round" />
+                      <path d="M 484 26 C 472 16 458 20 448 32 C 455 38 464 36 470 29 C 476 40 462 50 446 46" stroke="#dab76f" strokeWidth="1.2" strokeLinecap="round" />
+                      {/* Flap Tip Gold Royal Fleur-de-lis above seal */}
+                      <path d="M 238 238 C 244 222 250 212 250 202 C 250 212 256 222 262 238 C 256 242 252 248 250 258 C 248 248 244 242 238 238 Z" fill="#dab76f" />
+                      <circle cx="250" cy="196" r="3" fill="#f3e5c8" />
+                    </svg>
+                  </span>
+                </span>
+
+                {/* Inner Flap Face (Flips up and faces forward when opened) */}
+                <span className="iv-envelope-flap-face iv-envelope-flap-face--inner">
+                  <span className="iv-flap-inner-rim" />
+                  <span className="iv-flap-inner-liner">
+                    <span className="iv-liner-ornament">
+                      <span>❦</span>
+                      <i className="iv-liner-rule" />
+                      <span>❦</span>
+                    </span>
+                  </span>
+                </span>
+              </motion.span>
+
+              {/* Layer 9: Victorian Physical Wax Seal with Dangling Antique Gold Charm */}
+              <span className="iv-seal-anchor" aria-hidden="true">
+                <motion.span
+                  className="iv-victorian-seal"
+                  initial={phase === 'closed' ? { scale: 1, opacity: 1 } : { scale: 0.5, opacity: 0 }}
+                  animate={
+                    phase === 'closed'
+                      ? { scale: 1, y: 0, rotate: 0, opacity: 1 }
+                      : phase === 'seal-press'
+                      ? { scale: 0.86, y: 3, rotate: 0, opacity: 1 }
+                      : phase === 'seal-release'
+                      ? { scale: 1.14, y: -4, rotate: -6, opacity: 0.88 }
+                      : { scale: 0.4, y: -16, rotate: 16, opacity: 0 }
+                  }
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                >
+                  <span className="iv-wax-rim" aria-hidden="true" />
+                  <span className="iv-wax-monogram">
+                    {template.seal.monogram === 'K&W' ? 'W&O' : (template.seal.monogram || 'K')}
+                  </span>
+                  <span className="iv-wax-imprint" aria-hidden="true">❦</span>
+
+                  {/* Silk Ribbon / Cord & Dangling Antique Gold Coin Medallion Charm */}
+                  <span className="iv-seal-cord" aria-hidden="true" />
+                  <span className="iv-seal-charm" aria-hidden="true">
+                    <span className="iv-seal-charm-inner">❦</span>
+                  </span>
+                </motion.span>
+              </span>
+            </span>
+          </motion.button>
+
+          {/* Tap Prompt & Guest Greeting */}
+          {phase === 'closed' ? (
+            <>
+              <div className="iv-open-instruction">
+                <span className="iv-pulse-dot" />
+                <span>Tap the seal to open</span>
+              </div>
+              {guestName && (
+                <p className="iv-personalized">
+                  Prepared especially for <strong>{guestName}</strong>
+                </p>
+              )}
+              <p className="iv-tap-caption">An invitation is waiting inside.</p>
+            </>
+          ) : (
+            <div className="iv-opening-status" aria-live="polite">
+              <span>Opening your invitation...</span>
+            </div>
+          )}
+        </section>
+      ) : (
+        /* Full Editorial Invitation Revealed Stage with Scroll Parallax & Content Sections */
+        <motion.main
+          className={`iv-invitation iv-invitation--${theme}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.55 }}
+        >
+          {theme === 'savannah-twilight' && (
+            <section className="iv-wedding-hero-cover">
+              <div className="iv-wedding-hero-frame">
+                <div className="iv-wedding-hero-photo-wrap">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={data.heroImage || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80'}
+                    alt={data.celebrants}
+                    className="iv-wedding-hero-photo"
+                  />
+                  <div className="iv-wedding-hero-overlay" />
+                </div>
+                <div className="iv-wedding-hero-copy">
+                  <span className="iv-wedding-hero-kicker">A CELEBRATION OF LOVE</span>
+                  <h1 className="iv-wedding-hero-names">{data.celebrants}</h1>
+                  <div className="iv-wedding-hero-divider">✦ ─── ❦ ─── ✦</div>
+                  <p className="iv-wedding-hero-meta">
+                    <span>{data.date}</span>
+                    <span className="iv-bullet">·</span>
+                    <span>{data.venue}{data.city ? `, ${data.city}` : ''}</span>
+                  </p>
+                  <a href="#ceremony" className="iv-wedding-hero-scroll">
+                    <span>Scroll to explore</span>
+                    <ChevronDown size={14} className="animate-bounce" />
+                  </a>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {theme === 'ruby-disco' && (
+            <>
+              <section className="iv-disco-cover">
+                <div className="iv-disco-cover__top">
+                  <span>YOU ARE INVITED TO</span>
+                  <span>AN UNFORGETTABLE NIGHT</span>
+                </div>
+                <div className="iv-disco-cover__copy">
+                  <p className="iv-script">{data.subtitle || 'Let the good times roll'}</p>
+                  <RevealText
+                    text={data.title.replace(/\s*Celebration/i, '')}
+                    tag="h1"
+                    className="font-serif font-medium tracking-tight"
+                  />
+                  <div className="iv-birthday-number">{birthdayNumber}</div>
+                  <p className="iv-cover-date">{data.date} <span>·</span> {data.time}</p>
+                </div>
+                <ScrollParallax offset={14}>
+                  <div className="iv-cover-photo">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={data.heroImage} alt={data.celebrants || data.title} />
+                  </div>
+                </ScrollParallax>
+                <a href="#iv-event-details" className="iv-down-link">
+                  The details <ChevronDown size={15} />
+                </a>
+              </section>
+
+              <section className="iv-party-details" id="iv-event-details">
+                <p className="iv-eyebrow">Meet us on the dance floor</p>
+                <h2>Good people. <em>Good music.</em><br />A night to remember.</h2>
+                <div className="iv-detail-row">
+                  <span><CalendarDays size={16} /> When</span>
+                  <strong>{data.date} · {data.time}</strong>
+                </div>
+                <div className="iv-detail-row">
+                  <span><MapPin size={16} /> Where</span>
+                  <strong>{data.venue}, {data.city}</strong>
+                </div>
+                <div className="iv-detail-row">
+                  <span><Clock3 size={16} /> Dress code</span>
+                  <strong>Come dressed to celebrate</strong>
+                </div>
+              </section>
+
+              <section className="iv-house-rules">
+                <div className="iv-house-rules__title">
+                  <span>THE SMALL PRINT</span>
+                  <h2>House rules, darling.</h2>
+                </div>
+                <ul>
+                  <li>Bring your best energy.</li>
+                  <li>Arrive ready to make a memory.</li>
+                  <li>Let the host know if your plans change.</li>
+                </ul>
+                <DecorativeRecord playing={musicPlaying} />
+              </section>
+            </>
+          )}
+
+          {theme === 'pastel-garden' && (
+            <>
+              <section className="iv-garden-cover">
+                <div className="iv-garden-frame">
+                  <p className="iv-eyebrow">You are invited to</p>
+                  <p className="iv-script">{data.subtitle || 'A day full of little joys'}</p>
+                  <h1>{data.celebrants}</h1>
+                  <div className="iv-garden-illustration" aria-hidden="true">
+                    <span className="iv-gazebo-roof" />
+                    <span className="iv-gazebo-dome" />
+                    <span className="iv-gazebo-posts" />
+                    <span className="iv-gazebo-base" />
+                    <span className="iv-garden-butterfly">✧</span>
+                  </div>
+                  <p className="iv-garden-event-type">{data.title}</p>
+                  <div className="iv-garden-meta">
+                    <span>{data.date}</span><i /> <span>{data.time}</span>
+                  </div>
+                </div>
+                <p className="iv-garden-caption">A lovely day is made lovelier by you.</p>
+              </section>
+
+              <section className="iv-garden-green">
+                <p className="iv-eyebrow">Save the date</p>
+                <h2>We saved you<br /><em>a little place.</em></h2>
+                <div className="iv-garden-venue">
+                  <MapPin size={16} />
+                  <div>
+                    <strong>{data.venue}</strong>
+                    <span>{data.city}</span>
+                  </div>
+                </div>
+                <div className="iv-garden-date">
+                  <span className="iv-garden-date__day">
+                    {data.date.split(' ')[1]?.replace(',', '') || '19'}
+                  </span>
+                  <span>{data.date}</span>
+                </div>
+                <a href="#rsvp-section" className="iv-garden-rsvp">
+                  Kindly reply <ChevronDown size={14} />
+                </a>
+              </section>
+            </>
+          )}
+
+          {theme === 'gift-box' && (
+            <>
+              <section className="iv-gifts-cover">
+                <p className="iv-eyebrow">A little something made for you</p>
+                <p className="iv-script">These are for you</p>
+                <ScrollParallax offset={12}>
+                  <div className="iv-gifts-hero">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={data.heroImage} alt={data.celebrants || data.title} />
+                    <span className="iv-photo-tape" />
+                  </div>
+                </ScrollParallax>
+                <h1>{data.title}</h1>
+                <p>{data.date} · {data.time}</p>
+              </section>
+
+              <section className="iv-gift-interactive">
+                <p className="iv-eyebrow">Open a little something</p>
+                <h2>Pick your <em>surprise.</em></h2>
+                <div className="iv-gift-options" role="group" aria-label="Choose a birthday surprise">
+                  <button
+                    type="button"
+                    className={activeGift === 'note' ? 'is-active' : ''}
+                    onClick={() => setActiveGift('note')}
+                  >
+                    <span className="iv-gift-art iv-gift-art--letter">A</span>
+                    <span>A note</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={activeGift === 'flowers' ? 'is-active' : ''}
+                    onClick={() => setActiveGift('flowers')}
+                  >
+                    <span className="iv-gift-art iv-gift-art--flowers"><i /><i /><i /><i /><b /></span>
+                    <span>Flowers</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={activeGift === 'cake' ? 'is-active' : ''}
+                    onClick={() => setActiveGift('cake')}
+                  >
+                    <span className="iv-gift-art iv-gift-art--cake"><i /><b /></span>
+                    <span>Something sweet</span>
+                  </button>
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    className="iv-gift-message"
+                    key={activeGift}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.28 }}
+                  >
+                    {activeGift === 'note' ? (
+                      <>
+                        <span className="iv-gift-message__ornament">To you, with love</span>
+                        <p>
+                          Here&apos;s to another year of moments worth keeping, people worth holding close, and a little more magic than you expected.
+                        </p>
+                      </>
+                    ) : activeGift === 'flowers' ? (
+                      <>
+                        <span className="iv-gift-message__ornament">Flowers for your day</span>
+                        <p>
+                          May the year ahead bloom with joy, bright surprises and new things to love.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <span className="iv-gift-message__ornament">Save a little room</span>
+                        <p>
+                          There will be cake, laughter and people who are very happy you were born.
+                        </p>
+                      </>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </section>
+
+              <section className="iv-memory-collage">
+                <div className="iv-collage-heading">
+                  <p className="iv-eyebrow">Little things, big memories</p>
+                  <h2>Life looks better <em>together.</em></h2>
+                </div>
+                <div className="iv-collage-grid">
+                  {galleryPhotos.map((photo, index) => (
+                    <button
+                      key={`${photo}-${index}`}
+                      type="button"
+                      className={`iv-collage-photo iv-collage-photo--${index + 1}`}
+                      onClick={() => setGalleryIndex(index)}
+                      aria-label={`Open photograph ${index + 1}`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={photo}
+                        alt={`${data.celebrants || 'Celebration'} memory ${index + 1}`}
+                        loading="lazy"
+                      />
+                      <span>{['The good days', 'All our people', 'The little moments', 'More to come'][index]}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="iv-record-dock">
+                  <DecorativeRecord playing={musicPlaying} />
+                  <p>
+                    {audioUrl
+                      ? musicPlaying
+                        ? 'Now playing'
+                        : 'A little music, if you like'
+                      : 'A soundtrack for the memory'}
+                  </p>
+                  {audioUrl && (
+                    <button type="button" onClick={toggleMusic}>
+                      {musicPlaying ? 'Pause music' : 'Play music'} <CirclePlay size={15} />
+                    </button>
+                  )}
+                </div>
+              </section>
+            </>
+          )}
+
+          {theme === 'sage-love-letter' && (
+            <>
+              <section className="iv-love-cover">
+                <p className="iv-eyebrow">Together with their families</p>
+                <h1>{data.celebrants}</h1>
+                <p className="iv-script">invite you to celebrate</p>
+                <ScrollParallax offset={15}>
+                  <div className="iv-love-cover__photo">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={data.heroImage} alt={data.celebrants} />
+                    <span className="iv-photo-caption">
+                      A day for the two of us, shared with all of you.
+                    </span>
+                  </div>
+                </ScrollParallax>
+                <div className="iv-love-date">
+                  <span>{data.date}</span><i /><span>{data.time}</span>
+                </div>
+                <p className="iv-love-quote">
+                  “{data.story || 'The best things in life become even more beautiful when they are shared.'}”
+                </p>
+                <a href="#iv-love-details" className="iv-outline-link">
+                  Explore the invitation <ChevronDown size={14} />
+                </a>
+              </section>
+
+              <section className="iv-love-details" id="iv-love-details">
+                <div className="iv-love-details__copy">
+                  <p className="iv-eyebrow">The day we have been dreaming of</p>
+                  <h2>We would be honoured<br /><em>to have you there.</em></h2>
+                  <p>
+                    Save the date and join us as we begin this next chapter surrounded by the people who made our story what it is.
+                  </p>
+                </div>
+                <div className="iv-love-location">
+                  <span className="iv-location-icon"><MapPin size={19} /></span>
+                  <p className="iv-eyebrow">The place</p>
+                  <h3>{data.venue}</h3>
+                  <p>{data.city}</p>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${data.venue}, ${data.city}`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open map <ChevronRight size={14} />
+                  </a>
+                </div>
+              </section>
+
+              <section className="iv-love-gallery">
+                <div className="iv-love-gallery__heading">
+                  <p className="iv-eyebrow">A few favourite frames</p>
+                  <h2>Our story, <em>in pictures.</em></h2>
+                </div>
+                <div className="iv-love-gallery__grid">
+                  {galleryPhotos.slice(0, 3).map((photo, index) => (
+                    <figure key={`${photo}-${index}`} className={`iv-love-photo iv-love-photo--${index + 1}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={photo}
+                        alt={`Photograph ${index + 1} for ${data.celebrants}`}
+                        loading="lazy"
+                      />
+                      <figcaption>
+                        {['The beginning', 'The in-between', 'The next chapter'][index]}
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
+
+          {theme === 'memorial' && (
+            <section className="iv-memorial-cover">
+              <p className="iv-eyebrow">In loving memory</p>
+              <ScrollParallax offset={10}>
+                <div className="iv-memorial-photo">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={data.heroImage} alt={data.celebrants} />
+                </div>
+              </ScrollParallax>
+              <h1>{data.celebrants}</h1>
+              <p className="iv-memorial-subtitle">{data.subtitle}</p>
+              <p className="iv-memorial-note">
+                {data.story || 'We gather to remember a life, honour a legacy and hold one another close.'}
+              </p>
+              <div className="iv-memorial-date">{data.date} · {data.time}</div>
+            </section>
+          )}
+
+          {/* Content sections passed down from page */}
+          <div className="iv-content-sections">{children}</div>
+
+          {/* Ending / Footer */}
+          <footer className="iv-ending">
+            <Logo size="sm" color="#c4a16a" />
+            <p>
+              {theme === 'memorial'
+                ? 'Held in memory. Held together.'
+                : 'Made with care, shared with love.'}
+            </p>
+            <button type="button" onClick={shareInvitation}>
+              {copied ? <Check size={14} /> : null}
+              {copied ? 'Link copied' : 'Share this invitation'}
+            </button>
+            <button
+              type="button"
+              className="iv-ending__back"
+              onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })}
+            >
+              Back to the beginning ↑
+            </button>
+          </footer>
+
+          {/* Fullscreen Photo Lightbox modal */}
+          {(theme === 'gift-box' || theme === 'sage-love-letter') && galleryIndex !== null && (
+            <div
+              className="iv-lightbox"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Photo viewer"
+              onClick={() => setGalleryIndex(null)}
+            >
+              <button type="button" onClick={() => setGalleryIndex(null)} aria-label="Close photo">
+                ×
+              </button>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={galleryPhotos[galleryIndex]}
+                alt={`${data.celebrants} memory ${galleryIndex + 1}`}
+                onClick={(event) => event.stopPropagation()}
+              />
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setGalleryIndex((current) =>
+                    current === null ? 0 : (current + 1) % galleryPhotos.length
+                  );
+                }}
+                aria-label="Next photo"
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </motion.main>
+      )}
+
+      {phase !== 'settled' && (
+        <div className="iv-opening-footer">
+          <span>DESIGNED TO BE OPENED</span>
+          <span>{isDemo ? 'LIVE PREVIEW' : 'A KADI INVITATION'}</span>
+        </div>
+      )}
+    </div>
+  );
+}

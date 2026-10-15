@@ -2,132 +2,53 @@ import React from 'react';
 import Link from 'next/link';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import {
-  Sparkles,
-  ArrowRight,
-  Layers,
-  Send,
-  Eye,
-  CheckCircle,
-  Share2,
-  Users,
-} from 'lucide-react';
+import { ArrowDown, ArrowUpRight } from 'lucide-react';
+
+const steps = [
+  { number: '01', title: 'Choose the feeling', description: 'Browse invitation suites for weddings, birthdays, baby showers, graduations, memorials and the gatherings that do not fit neatly into a category.' },
+  { number: '02', title: 'Make it yours', description: 'Bring in your names, photographs, date, venue and words. Colours, paper details and motion are designed to belong together.' },
+  { number: '03', title: 'Gather your people', description: 'Add guests one at a time or import a list. Give households their own invitation link and collect the answers you need.' },
+  { number: '04', title: 'Send the letter', description: 'Share the invitation by WhatsApp or link. Guests open it in their browser — no app download, account or installation required.' },
+  { number: '05', title: 'Keep the details together', description: 'Review replies, manage the guest list and update the practical information in one place.' },
+];
 
 export default function HowItWorksPage() {
-  const steps = [
-    {
-      number: '01',
-      title: 'Choose a Curated Suite',
-      description:
-        'Browse suites tailored for weddings, milestone birthdays, baby showers, graduations, or dignified memorials. Each design features a coordinated envelope, liner pattern, wax seal, and typography palette.',
-      icon: <Layers className="w-6 h-6 text-brand-purple" />,
-    },
-    {
-      number: '02',
-      title: 'Personalize Details & Real Photographs',
-      description:
-        'Input your hosts, schedule, directions, dress code, and gift registry. Upload your real photographs with automatic focal-point cropping. Customize your questions for meal preferences and guest counts.',
-      icon: <Sparkles className="w-6 h-6 text-brand-gold" />,
-    },
-    {
-      number: '03',
-      title: 'Import or Add Guest Households',
-      description:
-        'Add guests individually or upload a CSV spreadsheet. Group by family, assign plus-one limits, and generate unique, secure invitation tokens for each household.',
-      icon: <Users className="w-6 h-6 text-emerald-600" />,
-    },
-    {
-      number: '04',
-      title: 'Share Privately via WhatsApp & Web',
-      description:
-        'Copy your invitation link or use our native WhatsApp share button to send invitations directly from your phone. Guests tap the link and immediately experience the opening animation.',
-      icon: <Share2 className="w-6 h-6 text-brand-purple" />,
-    },
-    {
-      number: '05',
-      title: 'Track RSVPs in Real-Time',
-      description:
-        'Watch RSVPs stream into your host dashboard. View total attendee headcounts versus households, export responses to CSV for your caterer, and keep all event logistics under control.',
-      icon: <CheckCircle className="w-6 h-6 text-emerald-600" />,
-    },
-  ];
-
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="kadi-page min-h-screen flex flex-col">
       <PublicNavbar />
-
-      <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <Badge variant="purple" size="sm">
-            Simple 5-Step Process
-          </Badge>
-          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-brand-charcoal mt-3">
-            How Kadi Works
-          </h1>
-          <p className="text-sm sm:text-base text-brand-slate mt-4 leading-relaxed">
-            From picking a design to tracking your final guest headcount, here is how you create an unforgettable digital invitation experience.
-          </p>
-        </div>
-
-        {/* Steps List */}
-        <div className="space-y-8 relative before:absolute before:left-8 before:top-8 before:bottom-8 before:w-0.5 before:bg-slate-200 hidden sm:block">
-          {steps.map((step) => (
-            <div key={step.number} className="flex items-start gap-8 relative group">
-              <div className="w-16 h-16 rounded-2xl bg-white border-2 border-slate-200 shadow-md flex items-center justify-center font-serif text-lg font-bold text-brand-purple z-10 group-hover:border-brand-purple transition-colors">
-                {step.number}
-              </div>
-              <div className="flex-1 bg-brand-mist p-6 rounded-2xl border border-slate-200/80">
-                <div className="flex items-center gap-3 mb-2">
-                  {step.icon}
-                  <h3 className="text-lg font-serif font-bold text-brand-charcoal">
-                    {step.title}
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-brand-slate leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
+      <main className="flex-1">
+        <section className="bg-[#EDE5D9] pt-16 md:pt-24 pb-14 md:pb-20">
+          <div className="kadi-container grid md:grid-cols-12 gap-8 items-end">
+            <div className="md:col-span-8">
+              <div className="flex items-center gap-3 mb-6"><span className="kadi-ornament" /><p className="kadi-eyebrow text-[#934638]">From idea to opened letter</p></div>
+              <h1 className="kadi-display text-6xl sm:text-7xl md:text-[6.6rem]">A few thoughtful<br /><em className="text-[#934638]">little steps.</em></h1>
             </div>
-          ))}
-        </div>
-
-        {/* Mobile View */}
-        <div className="space-y-6 sm:hidden">
-          {steps.map((step) => (
-            <div key={step.number} className="bg-brand-mist p-6 rounded-2xl border border-slate-200/80">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-sm font-bold font-serif text-brand-purple">
-                  {step.number}.
-                </span>
-                <h3 className="text-base font-serif font-bold text-brand-charcoal">
-                  {step.title}
-                </h3>
-              </div>
-              <p className="text-xs text-brand-slate leading-relaxed">
-                {step.description}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="mt-16 p-8 rounded-3xl bg-brand-charcoal text-white text-center">
-          <h2 className="text-2xl font-serif font-bold">Ready to design your invitation?</h2>
-          <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-md mx-auto">
-            Choose any template and test the opening animation in full live preview before publishing.
-          </p>
-          <div className="mt-6 flex justify-center">
-            <Link href="/templates">
-              <Button size="lg" variant="gold" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Browse All Templates
-              </Button>
-            </Link>
+            <p className="md:col-span-4 text-sm md:text-base leading-7 text-[#756F64] max-w-sm md:pb-2">The invitation does the welcoming. Kadi takes care of the practical details that come after.</p>
           </div>
-        </div>
-      </main>
+          <div className="kadi-container mt-12"><a href="#the-process" className="kadi-link inline-flex items-center gap-2 text-sm">Follow the process <ArrowDown size={14} /></a></div>
+        </section>
 
+        <section id="the-process" className="bg-[#F6F2EA] py-10 md:py-16">
+          <div className="kadi-container">
+            {steps.map((step, index) => (
+              <article key={step.number} className="grid grid-cols-[44px_minmax(0,1fr)] md:grid-cols-12 gap-4 md:gap-8 py-8 md:py-10 border-b border-[rgba(39,38,32,.18)]">
+                <span className="font-serif italic text-2xl md:text-3xl text-[#B99A62] md:col-span-1">{step.number}</span>
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl tracking-[-.035em] md:col-span-4">{step.title}</h2>
+                <div className="col-start-2 md:col-start-7 md:col-span-5 flex items-start justify-between gap-5">
+                  <p className="text-sm leading-7 text-[#756F64] max-w-xl">{step.description}</p>
+                  {index === 0 && <span className="hidden lg:block font-serif italic text-2xl text-[#934638]">begin</span>}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+        <section className="bg-[#272620] text-[#F6F2EA] py-16 md:py-20">
+          <div className="kadi-container grid md:grid-cols-12 gap-7 items-end">
+            <div className="md:col-span-8"><p className="kadi-eyebrow text-[#B99A62] mb-5">Start with the moment</p><h2 className="kadi-display text-5xl md:text-6xl">The rest can unfold from there.</h2></div>
+            <div className="md:col-span-4"><Link href="/templates" className="kadi-button bg-[#F6F2EA] !text-[#272620] !border-[#F6F2EA] hover:!bg-[#E8DDCE] hover:!border-[#E8DDCE]">Explore the collection <ArrowUpRight size={15} /></Link></div>
+          </div>
+        </section>
+      </main>
       <PublicFooter />
     </div>
   );

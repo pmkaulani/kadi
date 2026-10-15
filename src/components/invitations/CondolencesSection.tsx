@@ -72,10 +72,10 @@ export function CondolencesSection({
   };
 
   return (
-    <section className="w-full p-6 sm:p-12 bg-event-sage-light/30 border-t border-slate-200">
-      <div className="max-w-xl mx-auto text-center">
+    <section className="w-full px-0 py-14 sm:py-20 bg-transparent border-t border-black/15">
+      <div className="max-w-4xl mx-auto">
         {/* Virtual Candle Memorial */}
-        <div className="mb-10 p-6 rounded-2xl bg-white shadow-sm border border-emerald-900/10">
+        <div className="mb-10 py-6 border-y border-black/15">
           <div className="relative inline-block mb-3">
             <Flame
               className={`w-10 h-10 transition-all duration-500 ${
@@ -103,10 +103,10 @@ export function CondolencesSection({
 
         {/* Condolences Book */}
         <div>
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-slate bg-slate-100 px-3 py-1 rounded-full">
+          <span className="text-[10px] font-semibold uppercase tracking-[.2em] text-brand-slate">
             Tributes & Condolences
           </span>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-brand-charcoal mt-3">
+          <h2 className="text-3xl sm:text-4xl font-serif font-medium tracking-[-.04em] text-brand-charcoal mt-3">
             Words of Comfort
           </h2>
           <p className="text-xs text-brand-slate mt-1 mb-6">
@@ -114,9 +114,9 @@ export function CondolencesSection({
           </p>
 
           {/* Form */}
-          <form onSubmit={handleTributeSubmit} className="space-y-4 mb-8 text-left bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <form onSubmit={handleTributeSubmit} className="space-y-4 mb-8 text-left py-5 border-y border-black/15 bg-transparent">
             {isSent && (
-              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+              <div className="p-3 border-l-2 border-emerald-700 bg-transparent text-emerald-800 text-xs flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>Your message of comfort has been added to the family tribute book.</span>
               </div>
@@ -131,7 +131,7 @@ export function CondolencesSection({
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
                 required
-                className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-brand-charcoal focus:outline-none focus:ring-2 focus:ring-emerald-700"
+                className="w-full rounded-sm border border-black/20 bg-transparent p-3 text-xs text-brand-charcoal focus:outline-none focus:ring-2 focus:ring-emerald-700"
               />
             </div>
 
@@ -145,7 +145,7 @@ export function CondolencesSection({
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 required
-                className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-brand-charcoal focus:outline-none focus:ring-2 focus:ring-emerald-700 resize-none"
+                className="w-full rounded-sm border border-black/20 bg-transparent p-3 text-xs text-brand-charcoal focus:outline-none focus:ring-2 focus:ring-emerald-700 resize-none"
               />
             </div>
 
@@ -164,7 +164,7 @@ export function CondolencesSection({
           {/* Tribute Stream */}
           <div className="space-y-4 text-left">
             {tributes.map((tribute) => (
-              <div key={tribute.id} className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div key={tribute.id} className="py-5 border-b border-black/15">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100 text-xs">
                   <span className="font-semibold text-brand-charcoal">{tribute.author}</span>
                   <span className="text-[10px] text-slate-400">{tribute.date}</span>

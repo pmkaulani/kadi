@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Playfair_Display } from 'next/font/google';
+import { Great_Vibes, Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
@@ -14,10 +14,17 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
+const greatVibes = Great_Vibes({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-great-vibes',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'Kadi — Invitations that feel like an occasion',
+  title: 'Kadi — Invitations, with feeling',
   description:
-    'Mobile-first animated digital invitations with physical envelope openings, guest management, real-time RSVP, and event details in one link.',
+    'Thoughtfully designed digital invitations with tactile envelope openings, cinematic photography and simple guest replies.',
   keywords: [
     'digital invitation',
     'Kenya wedding invitation',
@@ -33,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#6B4EFF',
+  themeColor: '#F6F2EA',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -45,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${greatVibes.variable}`}>
       <body className="font-sans min-h-screen bg-brand-mist text-brand-charcoal antialiased flex flex-col selection:bg-brand-purple selection:text-white">
         {children}
       </body>

@@ -1,0 +1,298 @@
+ok......look into everything in the app...and see what needs to be improved or changed.............the preview is not changeing when the user makes changes.........the envelope doesnt look like anything like the references and animations........the landing page need to be longer...look professional.....You are a senior product designer and frontend engineer who has shipped \
+apps at Apple, Linear, and Vercel. I have already built a working MVP of a \
+digital invitation platform for the Kenyan market. It handles weddings, \
+birthdays, funerals, and other life events. It works. It is functional.\
+\
+The problem: it looks like it was vibe coded. Generic gradients, random \
+shadows, inconsistent spacing, ugly stock photos, no polish. I need you to \
+redesign it so it looks like a real, premium, intentional product — \
+specifically in the Apple design language.\
+\
+Do NOT regenerate my entire app. I want you to give me design direction, \
+component specs, and code for specific screens and components. Treat this \
+as a design system + UI overhaul brief.\
+\
+═══════════════════════════════════════════════════════════\
+CORE DIRECTION\
+═══════════════════════════════════════════════════════════\
+\
+Apply Apple's Human Interface Guidelines as the north star:\
+\- Clarity, deference, depth.\
+\- Generous whitespace. Content breathes.\
+\- Subtle depth via translucent materials (not heavy drop shadows).\
+\- Rounded corners are consistent (I'll use a 12 / 16 / 24 scale).\
+\- Motion is purposeful, spring-based, never decorative.\
+\- Typography is confident: large headings, tight tracking, generous line height.\
+\- Color is restrained. One accent color. Everything else is neutral.\
+\- No gradients slapped on buttons. No neon. No glassmorphism abuse.\
+\- Every interactive element has a hover, press, and focus state.\
+\
+Specifically:\
+\- Font: SF Pro Display for headings, SF Pro Text for body. If not available, \
+&#x20; use Inter with tightened tracking. NEVER use default browser fonts.\
+\- Background: not pure white. Use a very subtle warm off-white (#FAFAF7 or \
+&#x20; similar) for light mode. For dark mode, use true iOS-style #000000 with \
+&#x20; layered greys (#1C1C1E, #2C2C2E, #3A3A3C).\
+\- Buttons: pill-shaped for primary actions, 44px minimum height. Press state \
+&#x20; scales to 0.97 with a spring. No gradient fills. Solid accent or bordered.\
+\- Cards: soft shadow (0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)), \
+&#x20; 16px radius, subtle border.\
+\- Modals: bottom sheet on mobile, centered dialog on desktop. Backdrop blur \
+&#x20; of 20px with 60% opacity black.\
+\- Transitions: use cubic-bezier(0.32, 0.72, 0, 1) for most motion. 300ms.\
+\- Loading: skeleton screens, never spinners on full pages. Spinners only \
+&#x20; inside buttons.\
+\
+═══════════════════════════════════════════════════════════\
+1\. LIVE PREVIEW SYSTEM (CRITICAL)\
+═══════════════════════════════════════════════════════════\
+\
+This is the feature I care most about. When a host is customizing an \
+invitation, they must see EXACTLY what the guest will see, in real time, \
+with all animations and the full invite flow.\
+\
+Build a split-screen editor:\
+\
+LEFT PANEL — Controls\
+\- Accordion sections: Event Details, Design, Content Blocks, RSVP \
+&#x20; Questions, Contributions, Music, Animations.\
+\- Every control updates the preview on the right instantly (debounced \
+&#x20; 150ms).\
+\- Changes are optimistic and saved automatically. Show "Saving..." → \
+&#x20; "All changes saved" in the top right.\
+\
+RIGHT PANEL — Live Preview\
+\- A phone frame (iPhone 15 Pro dimensions: 393 × 852).\
+\- Inside the phone: the actual invitation rendered as a guest would \
+&#x20; see it.\
+\- A floating toolbar above the phone:\
+&#x20; \- "Preview as" dropdown: pick a specific guest. The invitation \
+&#x20;   updates to show THEIR name. If guest is a couple, show both \
+&#x20;   names. This proves personalization works.\
+&#x20; \- "Restart animation" button — replays the envelope opening.\
+&#x20; \- "Device" toggle: iPhone / Android / Desktop.\
+&#x20; \- "Share preview link" — generates a read-only link the host can \
+&#x20;   send to family for feedback.\
+\
+The preview must run the FULL invite flow:\
+1\. Envelope appears, pulses. Guest taps. Envelope opens with spring \
+&#x20;  animation. Card slides out.\
+2\. Hero section fades in with the couple's names / event title.\
+3\. Scroll down: Our Story, Ceremony, Reception, Program, Gallery, \
+&#x20;  Gift Registry, RSVP, FAQ.\
+4\. Countdown timer ticks live (days, hours, minutes, seconds).\
+5\. "Add to Calendar" button opens a real .ics download or Google \
+&#x20;  Calendar link.\
+6\. Map embed is interactive.\
+7\. RSVP form works — submit and see the success state.\
+8\. Contribution flow triggers the M-Pesa STK Push simulation.\
+9\. Music plays if enabled.\
+10\. Background animation runs (petals, confetti, candles, etc.).\
+\
+All of this must be the REAL invitation component, not a mockup. Same \
+code, same data, same animations.\
+\
+═══════════════════════════════════════════════════════════\
+2\. MAXIMUM CREATIVE CONTROL\
+═══════════════════════════════════════════════════════════\
+\
+The host must feel like a designer, not a form-filler. Give them:\
+\
+CONTENT BLOCKS (drag-and-drop builder)\
+\- Host can add, remove, reorder, and duplicate any block.\
+\- Block library: Hero, Text, Photo, Photo Gallery, Video (YouTube/\
+&#x20; Vimeo), Map, Countdown, RSVP Form, Gift Registry, Program/Timeline, \
+&#x20; Quote, Divider, Button, FAQ, Custom HTML (advanced), Music Player, \
+&#x20; Guestbook, Live Stream Embed.\
+\- Each block has settings: padding, background color, text alignment, \
+&#x20; max width, animation on scroll.\
+\- Drag handle appears on hover. Drop zones highlight in accent color.\
+\
+TYPOGRAPHY CONTROL\
+\- Font pairing presets (10+ curated pairs — e.g., Playfair + Inter, \
+&#x20; Cormorant + Lato, DM Serif + DM Sans).\
+\- Custom font upload (Pro tier).\
+\- Size scale slider.\
+\- Letter spacing slider for headings.\
+\- Line height slider for body.\
+\
+COLOR CONTROL\
+\- Preset palettes (20+ curated for weddings, birthdays, memorials).\
+\- Custom palette: pick 5 colors (primary, secondary, accent, background, \
+&#x20; text).\
+\- Auto-contrast checker — warns if text becomes unreadable.\
+\- Gradient builder for hero backgrounds (optional, off by default).\
+\
+IMAGE CONTROL\
+\- Upload from device.\
+\- Unsplash integration (search "Kenyan wedding", "African birthday" etc.).\
+\- AI image generation (optional, Pro tier) with prompt like "Kenyan \
+&#x20; wedding couple, golden hour, Nairobi".\
+\- Filters: warm, cool, black & white, sepia, vintage, cinematic.\
+\- Crop, zoom, reposition.\
+\- Focal point picker for responsive cropping.\
+\
+ANIMATION CONTROL\
+\- Envelope opening style: 6 presets (floral bloom, confetti burst, \
+&#x20; minimal fade, classic wax seal, gold foil, video envelope).\
+\- Background animation: none, floating petals, confetti, bokeh, \
+&#x20; falling leaves, soft snow, candle flicker, dove flight.\
+\- Scroll animations: fade up, slide in, scale in, parallax, none.\
+\- Transition speed: slow / medium / fast.\
+\- Music: upload or choose from library, set start time, fade in/out.\
+\- "Preview animation" button replays it without leaving the editor.\
+\
+LAYOUT CONTROL\
+\- Single column vs two column.\
+\- Section spacing: compact / comfortable / spacious.\
+\- Corner radius: square / soft / round / pill.\
+\- Border style: none / thin / thick / dotted.\
+\
+═══════════════════════════════════════════════════════════\
+3\. COUNTDOWN & CALENDAR (MUST BE PERFECT)\
+═══════════════════════════════════════════════════════════\
+\
+COUNTDOWN\
+\- Live tick, updates every second.\
+\- Flip-clock animation on digit change (like iOS timer).\
+\- Displays: days, hours, minutes, seconds.\
+\- Auto-hides after event date passes, replaced with "Today is the day!" \
+&#x20; or "This event has passed."\
+\- Customizable label: "Counting down to our wedding" etc.\
+\- Can be placed anywhere in the invitation as a block.\
+\- Timezone-aware. If guest is in a different timezone, show a small \
+&#x20; note: "Times shown in EAT (Nairobi)."\
+\
+ADD TO CALENDAR\
+\- One button with a dropdown: Apple Calendar (.ics), Google Calendar, \
+&#x20; Outlook, Yahoo.\
+\- Pre-fills: title, description, location, start time, end time, \
+&#x20; reminder (1 day before, 1 hour before).\
+\- For funerals: adds the funeral service AND the burial as separate \
+&#x20; events if they're at different times/locations.\
+\- .ics file must work offline.\
+\
+MAP\
+\- Embedded map (Google Maps or Mapbox) with a pin on the venue.\
+\- "Open in Google Maps" and "Open in Apple Maps" buttons.\
+\- "Get Directions" opens the native maps app on mobile.\
+\- For events with multiple locations (ceremony + reception), show both \
+&#x20; pins and a toggle between them.\
+\
+═══════════════════════════════════════════════════════════\
+4\. KENYAN AUTHENTICITY (NON-NEGOTIABLE)\
+═══════════════════════════════════════════════════════════\
+\
+Every image in the app — templates, marketing, empty states, \
+placeholders — must feature Black Kenyan people.\
+\
+\- Weddings: Kenyan couples in traditional and modern attire. Kikuyu, \
+&#x20; Luo, Luhya, Kamba, Kisii, Swahili, Maasai, Somali, Indian-Kenyan, \
+&#x20; and mixed heritage. Real bodies, real skin tones, real joy.\
+\- Birthdays: Kenyan children, teenagers, adults, elders. Nairobi \
+&#x20; apartments, upcountry homes, beach parties in Diani. Not American \
+&#x20; suburban birthday parties.\
+\- Funerals: Kenyan families in somber, dignified moments. Not stock \
+&#x20; "sad person" photos. Real gatherings, real grief, real community.\
+\- Locations: Nairobi, Mombasa, Kisumu, Nakuru, Eldoret, Diani, \
+&#x20; Maasai Mara. Kenyan churches, mosques, gardens, homes.\
+\- Attire: Kitenge, Ankara, Maasai shukas, kanzus, vitenge, modern \
+&#x20; Kenyan fashion. Not Western suits and white dresses unless it's a \
+&#x20; specific template.\
+\
+Use these as the image sources:\
+\- Unsplash: search "Kenyan wedding", "Nairobi family", "African \
+&#x20; celebration", "Kenyan church", "Mombasa beach wedding".\
+\- Pexels: same searches.\
+\- If you generate images with AI, use prompts that explicitly specify \
+&#x20; "Black Kenyan" and the specific ethnic group, attire, and setting.\
+\- When in doubt, use an illustrated placeholder with Kenyan patterns \
+&#x20; (kikoi stripes, Maasai beadwork) instead of a wrong-race photo.\
+\
+Also Kenyan-ize the copy:\
+\- "Karibu" not "Welcome"\
+\- "Asante" not "Thank you" (in warm contexts)\
+\- "Pole sana" for condolences\
+\- Prices in KES\
+\- Dates in DD MMM YYYY format\
+\- Phone format +254 7XX XXX XXX\
+\- Mention M-Pesa, not "mobile money"\
+\- Reference Kenyan venues, caterers, traditions where relevant\
+\
+═══════════════════════════════════════════════════════════\
+5\. ANTI-"VIBE CODED" RULES\
+═══════════════════════════════════════════════════════════\
+\
+These are the tells that scream "AI generated this." Eliminate them:\
+\
+❌ NO default Tailwind gradients (from-purple-500 to-pink-500)\
+❌ NO emoji as icons in buttons\
+❌ NO inconsistent border radii (pick 4 values and stick to them)\
+❌ NO random spacing (use a 4/8/12/16/24/32/48/64 scale only)\
+❌ NO multiple accent colors fighting each other\
+❌ NO generic hero sections with "Empower your events" copy\
+❌ NO lorem ipsum anywhere\
+❌ NO empty states with just an icon and "No data"\
+❌ NO loading spinners on full pages\
+❌ NO "Coming soon" placeholders\
+❌ NO stock photos with white people\
+❌ NO purple-to-blue gradients anywhere\
+❌ NO fonts other than the ones specified in the design system\
+❌ NO shadows that don't match the design system\
+❌ NO buttons without hover/press/focus/disabled states\
+❌ NO forms without inline validation\
+❌ NO toast notifications for every action\
+\
+✅ DO use a consistent icon set (SF Symbols or Lucide)\
+✅ DO use real Kenyan names in mock data (Wanjiku, Otieno, Kamau, \
+&#x20;  Achieng, Mwangi, Njeri, Hassan, Fatuma)\
+✅ DO use real Kenyan places (Nairobi Chapel, The Alchemist, \
+&#x20;  Sarova Stanley, Diani Beach, Maasai Mara)\
+✅ DO use real Kenyan phone numbers in mock data\
+✅ DO test every screen at 375px width (iPhone SE)\
+✅ DO test every screen in dark mode\
+✅ DO test every screen with reduced motion enabled\
+\
+═══════════════════════════════════════════════════════════\
+6\. LANDING PAGE (LIGHT TOUCH)\
+═══════════════════════════════════════════════════════════\
+\
+The landing page exists but needs polish, not a rebuild. Apply the \
+same design system to it: consistent typography, spacing, buttons, \
+cards, and motion. Make sure it feels like it belongs to the same \
+product as the editor and the invitation itself. No new structure \
+needed — just refinement so it stops looking vibe coded.\
+\
+═══════════════════════════════════════════════════════════\
+7\. WHAT I WANT FROM YOU\
+═══════════════════════════════════════════════════════════\
+\
+Give me the following, in this order:\
+\
+1\. A design system spec: exact colors (hex), spacing scale, radius \
+&#x20;  scale, shadow definitions, typography scale, motion curves.\
+\
+2\. The live preview editor: full JSX/Tailwind code for the split-screen \
+&#x20;  editor with the phone frame on the right and controls on the left. \
+&#x20;  Include the "Preview as guest" dropdown and the animation replay \
+&#x20;  button.\
+\
+3\. The invitation component itself: a fully working React component \
+&#x20;  that renders the entire invitation from a config object, with all \
+&#x20;  sections, animations, countdown, calendar, and RSVP flow.\
+\
+4\. The content block builder: code for the drag-and-drop block system \
+&#x20;  with the block library and per-block settings panels.\
+\
+5\. A list of 20 specific improvements to make the app stop looking \
+&#x20;  vibe coded, with before/after examples.\
+\
+Do not summarize. Do not give me theory. Give me code I can paste into \
+my Next.js + Tailwind project. Use TypeScript. Use Framer Motion for \
+animations. Use Radix or shadcn/ui for primitives. Assume I have \
+Tailwind v4 and the latest Next.js App Router.\
+\
+If a section is too large for one response, say so and start with the \
+design system + live preview editor. I will prompt you for the rest.\
+\
+Begin.
