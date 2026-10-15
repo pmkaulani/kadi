@@ -144,34 +144,34 @@ export function RSVPSection({
     <section
       id="rsvp-section"
       aria-label="RSVP Form"
-      className="w-full px-4 sm:px-6 py-14 sm:py-20 bg-transparent border-t border-[rgba(39,38,32,0.12)]"
+      className="w-full py-8 sm:py-12 bg-transparent border-t border-[#B99A62]/30"
     >
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--event-primary,#934638)]">
             RSVP Information
           </span>
-          <h2 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--event-ink,#272620)] mt-2">
+          <h2 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--event-ink,#272620)] mt-1.5">
             Will you be joining us?
           </h2>
-          <p className="text-xs sm:text-sm text-[#8C8375] mt-1.5">
+          <p className="text-xs sm:text-sm text-[#8C8375] mt-1">
             Kindly respond by <strong className="text-[var(--event-ink,#272620)]">{deadline}</strong>
           </p>
         </div>
 
         {isSubmitted ? (
-          <div className="p-6 sm:p-8 rounded-2xl bg-white border border-emerald-200 shadow-sm text-center animate-in fade-in duration-200">
-            <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto mb-3" />
-            <h3 className="text-2xl font-serif font-semibold text-emerald-950">
+          <div className="p-6 sm:p-8 rounded-sm bg-transparent border border-[#B99A62]/35 text-center animate-in fade-in duration-200">
+            <CheckCircle2 className="w-12 h-12 text-emerald-700 mx-auto mb-3" />
+            <h3 className="text-2xl font-serif font-semibold text-[#272620]">
               {attending === 'yes' ? 'Your RSVP is Confirmed!' : 'Response Recorded'}
             </h3>
-            <p className="text-xs sm:text-sm text-emerald-800 mt-2">
+            <p className="text-xs sm:text-sm text-[#756F64] mt-2">
               Thank you, <strong>{fullName}</strong>. We have recorded your attendance response as{' '}
               <strong className="capitalize">{attending === 'yes' ? `${attendeeCount} attending` : attending}</strong>.
             </p>
 
             {attending === 'yes' && additionalGuestNames.filter(Boolean).length > 0 && (
-              <p className="text-xs text-emerald-700 mt-1">
+              <p className="text-xs text-[#756F64] mt-1">
                 Named guests: {additionalGuestNames.filter(Boolean).join(', ')}
               </p>
             )}
@@ -189,14 +189,14 @@ export function RSVPSection({
             <Button
               variant="outline"
               size="sm"
-              className="mt-6 border-emerald-600 text-emerald-900 hover:bg-emerald-50"
+              className="mt-6 border-[#934638] text-[#934638] hover:bg-[#FAF4EB]"
               onClick={() => setIsSubmitted(false)}
             >
               Update Response
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 sm:p-8 rounded-2xl border border-[rgba(39,38,32,0.12)] shadow-xs">
+          <form onSubmit={handleSubmit} className="space-y-6 bg-transparent p-0 relative">
             {/* Hidden honeypot field */}
             <input
               type="text"
@@ -381,7 +381,7 @@ export function RSVPSection({
                 type="checkbox"
                 checked={hasConsent}
                 onChange={(e) => setHasConsent(e.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-gray-300 text-[var(--event-primary,#934638)] focus:ring-[var(--event-primary,#934638)]"
+                className="mt-1 h-4 w-4 rounded border-[rgba(39,38,32,0.3)] bg-[#FAF8F5] accent-[#934638] focus:ring-[#934638] cursor-pointer"
               />
               <label htmlFor="consent-checkbox" className="text-xs text-[#8C8375] leading-relaxed cursor-pointer select-none">
                 I agree to share my attendance response and contact information with the event hosts for planning and event coordination.

@@ -64,7 +64,7 @@ export function CeremonyReceptionSection({
   };
 
   return (
-    <section className="w-full py-16 sm:py-24 px-4 sm:px-6 bg-transparent border-t border-[rgba(39,38,32,0.14)]">
+    <section className="w-full py-8 sm:py-12 bg-transparent border-t border-[#B99A62]/30">
       <div className="max-w-5xl mx-auto">
         <SectionIntro
           eyebrow="Where & When"
@@ -72,13 +72,13 @@ export function CeremonyReceptionSection({
           subtitle="Join us for the exchange of vows and the evening celebration."
         />
 
-        <StaggerGroup className={`grid gap-8 mt-12 ${!isSameVenue && reception ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'}`}>
-          {/* Ceremony Card */}
+        <StaggerGroup className={`grid gap-6 mt-8 ${!isSameVenue && reception ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'}`}>
+          {/* Ceremony */}
           {ceremony && (
             <StaggerItem>
-              <div className="border border-[rgba(39,38,32,0.18)] bg-[#FBF8F1] p-6 sm:p-9 shadow-sm flex flex-col justify-between h-full">
+              <div className="border-0 bg-transparent p-0 flex flex-col justify-between h-full">
                 <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-[rgba(39,38,32,0.14)]">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-[#B99A62]/20">
                     <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#934638]">
                       {isSameVenue ? 'Ceremony & Reception' : 'The Solemn Ceremony'}
                     </span>
@@ -154,12 +154,12 @@ export function CeremonyReceptionSection({
             </StaggerItem>
           )}
 
-          {/* Separate Reception Card */}
+          {/* Separate Reception */}
           {!isSameVenue && reception && (
             <StaggerItem>
-              <div className="border border-[rgba(39,38,32,0.18)] bg-[#FBF8F1] p-6 sm:p-9 shadow-sm flex flex-col justify-between h-full">
+              <div className="border-0 bg-transparent p-0 flex flex-col justify-between h-full">
                 <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-[rgba(39,38,32,0.14)]">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-[#B99A62]/20">
                     <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#934638]">
                       The Evening Reception
                     </span>

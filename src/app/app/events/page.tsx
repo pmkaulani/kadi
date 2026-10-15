@@ -35,6 +35,7 @@ import {
   Music,
   Heart,
   Save,
+  LogOut,
 } from 'lucide-react';
 
 function EventsDashboardContent() {
@@ -1343,6 +1344,42 @@ function EventsDashboardContent() {
               <span>Save Workspace Settings</span>
             </button>
           </form>
+
+          {/* Account & Session Management / Mobile & Desktop Sign Out */}
+          <div className="bg-white border border-[rgba(39,38,32,0.12)] rounded-lg p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-[rgba(39,38,32,0.08)] pb-3">
+              <h3 className="font-serif text-lg text-[#272620] font-medium">
+                Host Account & Session
+              </h3>
+              <span className="text-[10px] font-mono uppercase bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-semibold">
+                Active Session
+              </span>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#934638] text-[#FAF8F5] flex items-center justify-center font-serif text-sm font-semibold tracking-wider">
+                  PK
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#272620]">Peter Kaulani</p>
+                  <p className="text-[11px] text-[#756F64]">peter@kaulani.com · Verified Host Account</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                  } catch {}
+                  router.push('/login');
+                }}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold border border-red-200 transition-colors"
+              >
+                <LogOut size={14} />
+                <span>Sign Out of Account</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

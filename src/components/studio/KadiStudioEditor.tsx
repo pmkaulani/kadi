@@ -31,6 +31,9 @@ import {
   RefreshCw,
   Eye,
   EyeOff,
+  Signal,
+  Wifi,
+  Battery,
 } from 'lucide-react';
 import type { EventEntity, EventDesignEntity } from '@/lib/db/types';
 import type { TemplateDefinition } from '@/lib/templates/types';
@@ -521,7 +524,7 @@ export function KadiStudioEditor({
                 saveStatus === 'saved'
                   ? 'rgba(16, 185, 129, 0.3)'
                   : saveStatus === 'saving'
-                    ? 'rgba(59, 130, 246, 0.3)'
+                    ? 'rgba(147, 70, 56, 0.3)'
                     : saveStatus === 'error'
                       ? 'rgba(239, 68, 68, 0.4)'
                       : 'rgba(245, 158, 11, 0.3)',
@@ -529,7 +532,7 @@ export function KadiStudioEditor({
                 saveStatus === 'saved'
                   ? '#ECFDF5'
                   : saveStatus === 'saving'
-                    ? '#EFF6FF'
+                    ? '#FAF4EB'
                     : saveStatus === 'error'
                       ? '#FEF2F2'
                       : '#FFFBEB',
@@ -537,7 +540,7 @@ export function KadiStudioEditor({
                 saveStatus === 'saved'
                   ? '#065F46'
                   : saveStatus === 'saving'
-                    ? '#1E40AF'
+                    ? '#934638'
                     : saveStatus === 'error'
                       ? '#991B1B'
                       : '#92400E',
@@ -552,7 +555,7 @@ export function KadiStudioEditor({
             )}
             {saveStatus === 'saving' && (
               <>
-                <RefreshCw size={12} className="animate-spin text-blue-600" />
+                <RefreshCw size={12} className="animate-spin text-[#934638]" />
                 <span>Saving…</span>
               </>
             )}
@@ -1223,25 +1226,46 @@ export function KadiStudioEditor({
           </AnimatePresence>
 
           {/* Preview Viewport Canvas */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex items-start justify-center">
+          <div className="flex-1 overflow-y-auto p-2 sm:p-6 flex items-center justify-center bg-[#ECE7DE]/50 min-h-0">
             <div
               className={`transition-all duration-300 w-full ${
                 device === 'iphone'
-                  ? 'max-w-[400px] shadow-2xl rounded-[40px] border-[8px] border-[#272620] bg-white overflow-hidden my-auto'
+                  ? 'max-w-[390px] h-[720px] max-h-[calc(100vh-140px)] shadow-2xl rounded-[44px] border-[8px] sm:border-[10px] border-[#1C1B18] bg-[#1C1B18] flex flex-col overflow-hidden my-auto ring-1 ring-black/20'
                   : device === 'android'
-                    ? 'max-w-[420px] shadow-2xl rounded-[32px] border-[7px] border-[#333333] bg-white overflow-hidden my-auto'
-                    : 'max-w-[1080px] shadow-md rounded-lg bg-white overflow-hidden my-2'
+                    ? 'max-w-[400px] h-[720px] max-h-[calc(100vh-140px)] shadow-2xl rounded-[36px] border-[7px] sm:border-[9px] border-[#242320] bg-[#242320] flex flex-col overflow-hidden my-auto ring-1 ring-black/20'
+                    : 'max-w-[1040px] h-[740px] max-h-[calc(100vh-140px)] shadow-md rounded-xl bg-white border border-[rgba(39,38,32,0.12)] flex flex-col overflow-hidden my-auto'
               }`}
             >
-              {/* Device camera cutout indicator for mobile frames */}
-              {(device === 'iphone' || device === 'android') && (
-                <div className="h-6 bg-[#272620] w-full flex items-center justify-center shrink-0">
-                  <div className="w-16 h-3 bg-black rounded-full" />
+              {/* iPhone Status Bar + Dynamic Island */}
+              {device === 'iphone' && (
+                <div className="h-8 bg-[#1C1B18] w-full px-5 flex items-center justify-between text-[11px] font-semibold text-white/80 shrink-0 select-none">
+                  <span className="font-mono text-[10px]">9:41</span>
+                  {/* Dynamic Island Pill */}
+                  <div className="w-20 h-4 bg-black rounded-full flex items-center justify-end px-1.5">
+                    <div className="w-2 h-2 rounded-full bg-[#1A1A1A] border border-white/10" />
+                  </div>
+                  <div className="flex items-center gap-1.5 text-white/70">
+                    <Signal size={11} />
+                    <Wifi size={11} />
+                    <Battery size={13} className="text-white/80" />
+                  </div>
                 </div>
               )}
 
-              {/* The Canonical Draft Preview Component */}
-              <div className="min-h-[600px] w-full bg-[#FAF8F5]">
+              {/* Android Status Bar */}
+              {device === 'android' && (
+                <div className="h-7 bg-[#242320] w-full px-5 flex items-center justify-between text-[10px] font-medium text-white/70 shrink-0 select-none">
+                  <span className="font-mono">10:00</span>
+                  <div className="w-3 h-3 bg-black rounded-full border border-white/10" />
+                  <div className="flex items-center gap-1.5">
+                    <Wifi size={11} />
+                    <Battery size={12} />
+                  </div>
+                </div>
+              )}
+
+              {/* The Canonical Draft Preview Component with smooth internal scrolling */}
+              <div className="flex-1 overflow-y-auto overscroll-contain bg-[#FAF8F5] relative">
                 <DraftInvitationPreview
                   template={activeTemplate}
                   values={draft.values}
@@ -1250,6 +1274,13 @@ export function KadiStudioEditor({
                   restartKey={replayKey}
                 />
               </div>
+
+              {/* Mobile Home Indicator Bar */}
+              {(device === 'iphone' || device === 'android') && (
+                <div className="h-4 bg-[#1C1B18] w-full flex items-center justify-center shrink-0 select-none">
+                  <div className="w-28 h-1 bg-white/30 rounded-full" />
+                </div>
+              )}
             </div>
           </div>
         </main>

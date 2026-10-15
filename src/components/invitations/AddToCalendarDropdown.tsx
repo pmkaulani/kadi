@@ -157,7 +157,7 @@ export function AddToCalendarDropdown({
                 className="w-full text-left px-3 py-2 text-xs rounded-lg flex items-center justify-between text-[#272620] hover:bg-[#FAF8F5] transition-colors"
               >
                 <div className="flex items-center gap-2.5">
-                  <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+                  <ExternalLink className="w-3.5 h-3.5 text-[#934638]" />
                   <div>
                     <span className="font-semibold block">Google Calendar</span>
                     <span className="text-[10px] text-[#8C8375] block">Open in browser tab</span>

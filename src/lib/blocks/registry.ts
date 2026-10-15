@@ -79,7 +79,7 @@ export const BLOCK_DEFINITIONS: Record<InvitationBlockType, BlockDefinition<any>
     icon: 'Image',
     defaultSettings: { ...DEFAULT_COMMON_SETTINGS, maxWidth: 'wide' },
     defaultContent: () => ({
-      imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80',
       caption: 'A cherished moment together',
       altText: 'Portrait of celebrants',
       aspectRatio: '16:9',
@@ -97,11 +97,11 @@ export const BLOCK_DEFINITIONS: Record<InvitationBlockType, BlockDefinition<any>
       subtitle: 'Snapshots from our journey',
       images: [
         {
-          url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
+          url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80',
           caption: 'Where it all began',
         },
         {
-          url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80',
+          url: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=800&q=80',
           caption: 'Celebration moments',
         },
       ],

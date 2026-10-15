@@ -74,7 +74,7 @@ export class EventService {
       heroImage:
         payload.heroImage ||
         template?.sampleData.heroImage ||
-        'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80',
       rsvpDeadline: payload.rsvpDeadline || '1 December 2026',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -144,14 +144,14 @@ export class EventService {
           primary: '#934638',
           secondary: '#B99A62',
           accent: '#A94F51',
-          envelope: '#252042',
-          flap: '#2D2752',
+          envelope: '#4A0E17',
+          flap: '#5A101D',
           cardBackground: '#FCFCF9',
         },
         linerId: 'gold-foil',
         sealShape: 'diamond',
         sealMonogram: 'K',
-        sealColor: '#D4AF37',
+        sealColor: '#8B1524',
         visibleSections: ['hero', 'schedule', 'venue', 'rsvp'],
       };
     }

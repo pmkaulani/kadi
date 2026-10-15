@@ -150,11 +150,11 @@ export function VenueSection({
   return (
     <section
       aria-label="Venue and Location"
-      className="w-full px-4 sm:px-6 py-12 sm:py-16 bg-[#FAF8F5]/50 border-t border-[rgba(39,38,32,0.1)]"
+      className="w-full py-8 sm:py-12 bg-transparent border-t border-[#B99A62]/30"
     >
-      <div className="max-w-5xl mx-auto space-y-8">
+      <div className="max-w-5xl mx-auto space-y-6">
         {/* Section Header */}
-        <div className="text-center max-w-xl mx-auto space-y-2">
+        <div className="text-center max-w-xl mx-auto space-y-1.5">
           <div className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] font-semibold text-[var(--event-primary,#934638)]">
             <Compass className="w-3.5 h-3.5" />
             <span>Locations & Itinerary</span>
@@ -170,13 +170,13 @@ export function VenueSection({
         {/* Multi-Location Switcher Tabs (Ceremony vs Reception or Church Service vs Burial) */}
         {isMultiLocation && (
           <div className="flex items-center justify-center">
-            <div className="inline-flex p-1 bg-white rounded-xl border border-[rgba(39,38,32,0.12)] shadow-2xs gap-1 max-w-full overflow-x-auto">
+            <div className="inline-flex p-1 bg-[#FAF7F0] rounded-lg border border-[#B99A62]/30 shadow-2xs gap-1 max-w-full overflow-x-auto">
               {locations.map((loc, idx) => (
                 <button
                   key={loc.id || idx}
                   type="button"
                   onClick={() => setActiveIdx(idx)}
-                  className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap select-none ${
+                  className={`px-4 py-2 text-xs font-semibold rounded-md transition-all flex items-center gap-1.5 whitespace-nowrap select-none ${
                     activeIdx === idx
                       ? 'bg-[var(--event-primary,#934638)] text-white shadow-xs'
                       : 'text-[#6D6558] hover:text-[#272620] hover:bg-black/[0.03]'
@@ -190,10 +190,10 @@ export function VenueSection({
           </div>
         )}
 
-        {/* Venue Information Card & Map Grid */}
+        {/* Venue Information & Map Grid */}
         <div className="grid md:grid-cols-12 gap-6 items-stretch">
-          {/* Left Column: Venue Details Card */}
-          <div className={`${embedUrl ? 'md:col-span-5' : 'md:col-span-8 md:col-start-3'} flex flex-col justify-between bg-white p-6 sm:p-8 rounded-2xl border border-[rgba(39,38,32,0.12)] shadow-xs space-y-6`}>
+          {/* Left Column: Venue Details */}
+          <div className={`${embedUrl ? 'md:col-span-5' : 'md:col-span-8 md:col-start-3'} flex flex-col justify-between bg-transparent p-0 space-y-6`}>
             <div className="space-y-4">
               {/* Venue Label Badge */}
               <div className="flex items-center justify-between">

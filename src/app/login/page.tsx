@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/ui/Logo';
 import { Input } from '@/components/ui/Input';
 import { TEMPLATES } from '@/lib/templates/catalogue';
-import { ArrowUpRight, Mail, Lock, User, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, Mail, Lock, User, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,7 +41,10 @@ export default function LoginPage() {
 
     try {
       const endpoint = mode === 'signin' ? '/api/auth/login' : '/api/auth/signup';
-      const payload = mode === 'signin' ? { email: email.trim(), password } : { email: email.trim(), name: name.trim(), password };
+      const payload =
+        mode === 'signin'
+          ? { email: email.trim(), password }
+          : { email: email.trim(), name: name.trim(), password };
 
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -56,7 +59,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Session cookie is set by server via Set-Cookie
       router.push('/app/events');
     } catch {
       setError('A connection error occurred. Please check your network and try again.');
@@ -91,52 +93,60 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F6F2EA] text-[#272620] grid lg:grid-cols-2">
-      <section className="relative min-h-[290px] lg:min-h-screen bg-[#EDE5D9] overflow-hidden flex flex-col justify-between p-6 sm:p-10 lg:p-14 xl:p-16">
+    <main className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-[#F6F2EA] text-[#272620] grid lg:grid-cols-2">
+      {/* Left Column: Visual Brand & Editorial Preview */}
+      <section className="relative bg-[#EDE5D9] overflow-hidden flex flex-col justify-between p-6 sm:p-8 lg:p-10 xl:p-12">
         <Link href="/" aria-label="Kadi home" className="relative z-10 self-start">
-          <Logo size="lg" />
+          <Logo size="md" />
         </Link>
-        <div className="relative z-10 max-w-xl py-8">
-          <p className="kadi-eyebrow text-[#934638] mb-5">Your private invitation studio</p>
-          <h1 className="kadi-display text-5xl sm:text-6xl xl:text-7xl">
-            Make room for <em className="text-[#934638]">the moment.</em>
+
+        <div className="relative z-10 max-w-lg py-4 my-auto">
+          <p className="kadi-eyebrow text-[#934638] mb-2 text-[10px] tracking-[0.2em] font-bold uppercase">
+            Your Private Invitation Studio
+          </p>
+          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-[#272620] leading-tight">
+            Make room for <em className="text-[#934638] italic font-normal">the moment.</em>
           </h1>
-          <p className="text-sm sm:text-base text-[#756F64] leading-7 max-w-md mt-6">
+          <p className="text-xs sm:text-sm text-[#756F64] leading-relaxed max-w-sm mt-3">
             Design the letter. Gather your people. Keep every important detail in one place.
           </p>
-          <div className="mt-10 max-w-[410px] p-3 bg-[#FBF8F1] shadow-[0_22px_60px_rgba(39,32,24,.12)] -rotate-[2deg]">
-            <div className="relative aspect-[4/3] overflow-hidden bg-[#D9C8B6]">
+
+          <div className="mt-6 max-w-[320px] p-2.5 bg-[#FAF8F5] shadow-lg rounded-sm -rotate-1 border border-black/5">
+            <div className="relative aspect-[16/10] overflow-hidden bg-[#D9C8B6] rounded-xs">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={preview.sampleData.heroImage}
-                alt="Example invitation photography"
+                src={preview.sampleData.heroImage || 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=800&q=80'}
+                alt="Stationery aesthetic flatlay"
                 className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#272620]/65 via-transparent to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5 text-[#fffaf2]">
-                <p className="kadi-eyebrow text-white/75">A moment worth gathering for</p>
-                <p className="font-serif text-3xl sm:text-4xl mt-2 leading-none">The day begins here.</p>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#272620]/75 via-transparent to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 text-[#FAF8F5]">
+                <p className="text-[9px] uppercase tracking-wider text-white/80 font-medium">Fine Digital Stationery</p>
+                <p className="font-serif text-lg mt-0.5 leading-none">The day begins here.</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="relative z-10 border-t border-[rgba(39,38,32,.18)] pt-4 flex items-center justify-between gap-4 text-[10px] uppercase tracking-[.15em] text-[#756F64]">
+
+        <div className="relative z-10 border-t border-[rgba(39,38,32,.14)] pt-3 flex items-center justify-between gap-4 text-[10px] uppercase tracking-[.15em] text-[#756F64]">
           <span>Invitations, with feeling.</span>
           <span>Kenya · Mobile first</span>
         </div>
       </section>
 
-      <section className="flex items-center justify-center px-6 sm:px-10 lg:px-14 py-12 lg:py-20">
-        <div className="w-full max-w-[430px]">
+      {/* Right Column: Clean, Screen-Fitting Form Container */}
+      <section className="flex flex-col justify-center px-6 sm:px-10 lg:px-12 xl:px-16 py-6 lg:py-8 overflow-y-auto">
+        <div className="w-full max-w-[380px] mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs text-[#756F64] hover:text-[#934638] mb-10"
+            className="inline-flex items-center gap-1.5 text-xs text-[#756F64] hover:text-[#934638] mb-3 transition-colors"
           >
-            <span aria-hidden="true">←</span> Back to Kadi
+            <ArrowLeft size={13} />
+            <span>Back to Kadi</span>
           </Link>
 
-          <div className="border-b border-[rgba(39,38,32,.2)] pb-6 mb-7">
-            <div className="flex gap-4 border-b border-[rgba(39,38,32,.12)] pb-3 mb-5">
+          <div className="border-b border-[rgba(39,38,32,.14)] pb-3 mb-4">
+            <div className="flex gap-4 border-b border-[rgba(39,38,32,.1)] pb-2 mb-3">
               <button
                 type="button"
                 onClick={() => {
@@ -167,26 +177,23 @@ export default function LoginPage() {
               </button>
             </div>
 
-            <p className="kadi-eyebrow text-[#934638] mb-2">
-              {mode === 'signin' ? 'Welcome back' : 'Start your studio'}
-            </p>
-            <h2 className="kadi-display text-4xl sm:text-5xl">
-              {mode === 'signin' ? 'Step back into your studio.' : 'Begin your invitation.'}
+            <h2 className="font-serif text-2xl sm:text-3xl font-medium text-[#272620]">
+              {mode === 'signin' ? 'Welcome back.' : 'Begin your invitation.'}
             </h2>
-            <p className="text-sm text-[#756F64] leading-6 mt-3">
+            <p className="text-xs text-[#756F64] leading-relaxed mt-1">
               {mode === 'signin'
                 ? 'Your invitations, guest replies and event details are waiting.'
-                : 'Create an isolated host workspace to design invitations and manage guest lists.'}
+                : 'Create a host workspace to design invitations and manage guest lists.'}
             </p>
           </div>
 
           {error && (
-            <p role="alert" className="text-sm text-[#934638] border-l-2 border-[#934638] pl-3 py-1 mb-5">
+            <p role="alert" className="text-xs text-[#934638] border-l-2 border-[#934638] pl-2.5 py-1 mb-3 bg-red-50/50">
               {error}
             </p>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {mode === 'signup' && (
               <Input
                 label="Full Name or Host Title"
@@ -194,7 +201,7 @@ export default function LoginPage() {
                 placeholder="e.g. Peter Kaulani"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                leftIcon={<User className="w-4 h-4" />}
+                leftIcon={<User className="w-3.5 h-3.5" />}
                 required
               />
             )}
@@ -204,7 +211,7 @@ export default function LoginPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              leftIcon={<Mail className="w-4 h-4" />}
+              leftIcon={<Mail className="w-3.5 h-3.5" />}
               required
             />
             <Input
@@ -213,49 +220,52 @@ export default function LoginPage() {
               placeholder={mode === 'signup' ? 'At least 8 characters' : 'Your password'}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              leftIcon={<Lock className="w-4 h-4" />}
+              leftIcon={<Lock className="w-3.5 h-3.5" />}
               required
             />
             <button
               type="submit"
               disabled={isLoading}
-              className="kadi-button w-full justify-between mt-3 disabled:opacity-60"
+              className="kadi-button w-full justify-between mt-2 py-2.5 !min-h-[40px] text-xs font-semibold disabled:opacity-60 shadow-sm"
             >
               <span>
                 {isLoading
                   ? 'Verifying session…'
                   : mode === 'signin'
-                    ? 'Sign in to your studio'
-                    : 'Create your workspace'}
+                    ? 'Sign in to Studio'
+                    : 'Create Workspace'}
               </span>
-              <ArrowUpRight size={16} />
+              <ArrowUpRight size={15} />
             </button>
           </form>
 
-          <div className="mt-8 pt-5 border-t border-[rgba(39,38,32,.15)]">
-            <div className="flex items-center justify-between mb-2">
-              <p className="kadi-eyebrow text-[#8D867A]">Quick demo access</p>
-              <span className="inline-flex items-center gap-1 text-[11px] text-[#756F64]">
-                <ShieldCheck size={12} className="text-emerald-700" />
-                Verified host-1 session
+          {/* Quick Demo Access Box */}
+          <div className="mt-4 pt-3 border-t border-[rgba(39,38,32,.12)]">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#8D867A]">
+                Quick Demo Access
+              </span>
+              <span className="inline-flex items-center gap-1 text-[10px] text-emerald-800 font-medium">
+                <ShieldCheck size={11} className="text-emerald-700" />
+                Verified Peter Kaulani
               </span>
             </div>
-            <p className="text-xs text-[#756F64] leading-5 mb-3">
-              Explore the studio as Peter Kaulani (<code className="text-[11px] bg-black/5 px-1 py-0.5 rounded">host@kadi.co.ke</code>).
+            <p className="text-[11px] text-[#756F64] leading-tight mb-2">
+              Explore the studio as <code className="text-[10px] bg-black/5 px-1 py-0.5 rounded font-mono">host@kadi.co.ke</code>.
             </p>
             <button
               type="button"
               onClick={handleDemoSignIn}
               disabled={isLoading}
-              className="kadi-button kadi-button--quiet w-full justify-between disabled:opacity-60"
+              className="kadi-button kadi-button--quiet w-full justify-between py-2 !min-h-[36px] text-xs disabled:opacity-60"
             >
               <span>Sign in with demo credentials</span>
-              <ArrowUpRight size={16} />
+              <ArrowUpRight size={14} />
             </button>
           </div>
 
-          <p className="text-[11px] text-[#8D867A] mt-6 leading-5">
-            Sessions are secured with encrypted HTTP-only cookies. Guests and invitees RSVP without accounts.
+          <p className="text-[10px] text-[#8D867A] mt-3 leading-tight text-center">
+            Secured with encrypted HTTP-only session cookies.
           </p>
         </div>
       </section>

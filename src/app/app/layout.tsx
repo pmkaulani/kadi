@@ -192,20 +192,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Right Action Cluster */}
           <div className="flex items-center gap-3 sm:gap-4 ml-auto relative">
-            {/* Mobile-only User Profile Avatar matching Phone 1 */}
-            <Link
-              href="/app/events?tab=settings"
-              className="sm:hidden relative w-8 h-8 rounded-full overflow-hidden border border-black/15 shadow-sm transition-transform active:scale-95 shrink-0"
-              aria-label="User profile settings"
+            {/* Mobile-only User Profile Avatar with interactive account sheet */}
+            <button
+              type="button"
+              onClick={() => setProfileOpen(!profileOpen)}
+              className="sm:hidden relative w-8 h-8 rounded-full bg-[#934638] text-[#FAF8F5] flex items-center justify-center font-serif text-xs font-semibold tracking-wider border border-[rgba(39,38,32,0.15)] shadow-xs transition-transform active:scale-95 shrink-0 select-none"
+              aria-label="User profile settings and sign out"
+              aria-expanded={profileOpen}
             >
-              <Image
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80"
-                alt="Peter Kaulani"
-                fill
-                sizes="32px"
-                className="object-cover"
-              />
-            </Link>
+              PK
+            </button>
 
             {/* Notification Bell with interactive dropdown (desktop/tablet) */}
             <div className="relative hidden sm:block">
@@ -261,14 +257,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 className="flex items-center gap-2 pl-2 pr-3 py-1 bg-white/60 hover:bg-white border border-[rgba(39,38,32,0.12)] rounded-full text-xs text-[#272620] transition-colors"
                 aria-expanded={profileOpen}
               >
-                <div className="relative w-6 h-6 rounded-full overflow-hidden bg-[#794A32] text-white flex items-center justify-center font-serif text-[11px] font-semibold">
-                  <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80"
-                    alt="Peter Kaulani"
-                    fill
-                    sizes="24px"
-                    className="object-cover"
-                  />
+                <div className="w-6 h-6 rounded-full bg-[#934638] text-[#FAF8F5] flex items-center justify-center font-serif text-[10px] font-semibold select-none">
+                  PK
                 </div>
                 <span className="font-medium">Peter Kaulani</span>
                 <ChevronDown size={13} className="text-[#8C8375]" />
@@ -311,6 +301,76 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
               )}
             </div>
+
+            {/* Mobile Profile & Sign Out Bottom Sheet / Modal */}
+            {profileOpen && (
+              <div className="sm:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-200">
+                <div
+                  className="fixed inset-0"
+                  onClick={() => setProfileOpen(false)}
+                  aria-hidden="true"
+                />
+                <div className="relative bg-[#FAF8F5] border-t border-[rgba(39,38,32,0.18)] rounded-t-2xl p-5 shadow-2xl z-10 space-y-4 animate-in slide-in-from-bottom duration-200">
+                  <div className="flex items-center justify-between border-b border-[rgba(39,38,32,0.1)] pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#934638] text-[#FAF8F5] flex items-center justify-center font-serif text-sm font-semibold tracking-wider">
+                        PK
+                      </div>
+                      <div>
+                        <p className="font-serif text-sm font-bold text-[#272620]">Peter Kaulani</p>
+                        <p className="text-xs text-[#756F64]">peter@kaulani.com</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setProfileOpen(false)}
+                      className="p-1 rounded-full text-[#756F64] hover:bg-black/5"
+                      aria-label="Close menu"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Link
+                      href="/app/events"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-[#272620] hover:bg-white"
+                    >
+                      <User size={15} className="text-[#934638]" />
+                      <span>My Invitations & Events</span>
+                    </Link>
+                    <Link
+                      href="/app/templates"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-[#272620] hover:bg-white"
+                    >
+                      <Compass size={15} className="text-[#934638]" />
+                      <span>Explore Templates</span>
+                    </Link>
+                    <Link
+                      href="/app/events?tab=settings"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-[#272620] hover:bg-white"
+                    >
+                      <Settings size={15} className="text-[#934638]" />
+                      <span>Account Settings</span>
+                    </Link>
+                  </div>
+
+                  <div className="pt-2 border-t border-[rgba(39,38,32,0.1)]">
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-sm transition-colors"
+                    >
+                      <LogOut size={15} />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Prominent Create Action Button (desktop/tablet only, on mobile it is in the bottom bar) */}
             <div className="hidden sm:inline-flex">

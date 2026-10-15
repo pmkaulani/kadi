@@ -121,6 +121,46 @@
     outline-offset: 2px;
   }
 
+  /* Universal Warm Stationery Checkbox & Radio Styling (Strictly Non-Blue) */
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: #934638 !important;
+    cursor: pointer;
+  }
+
+  /* Universal Custom Select Styling (Strictly Non-OS) */
+  select,
+  .kadi-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238C8375' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem 1rem;
+    padding-right: 2.25rem !important;
+    background-color: #FAF8F5;
+    color: #272620;
+    border: 1px solid rgba(39, 38, 32, 0.2);
+    border-radius: 0.75rem;
+    font-family: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  }
+
+  select:focus,
+  .kadi-select:focus {
+    outline: none;
+    border-color: #934638;
+    box-shadow: 0 0 0 2px rgba(147, 70, 56, 0.18);
+    background-color: #FFFFFF;
+  }
+
+  select option {
+    background-color: #FAF8F5;
+    color: #272620;
+    padding: 8px 12px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       scroll-behavior: auto !important;
@@ -266,6 +306,13 @@
   margin: 0 auto clamp(14px, 2.5vh, 28px);
   padding: 0 12px;
   box-sizing: border-box;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.is-opening .iv-opening-copy,
+.card-rising .iv-opening-copy {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
 }
 .iv-eyebrow {
   margin: 0;
@@ -796,6 +843,14 @@
   background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 3px);
   filter: drop-shadow(0 -3px 6px rgba(0, 0, 0, 0.25));
 }
+.iv-pocket-filigree-corners {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
 .iv-pocket-gold-rule {
   position: absolute;
   left: 6%;
@@ -831,8 +886,8 @@
   -webkit-transform-style: preserve-3d;
   transition: z-index 0.3s ease;
 }
-.is-opening .iv-envelope-flap-hinge,
-.card-rising .iv-envelope-flap-hinge {
+.card-rising .iv-envelope-flap-hinge,
+.is-settling .iv-envelope-flap-hinge {
   z-index: 1;
 }
 .iv-envelope-flap-face,
@@ -914,6 +969,24 @@
   border: 1px solid rgba(220, 174, 107, 0.75);
   transform: rotate(-8deg);
   z-index: -1;
+}
+
+/* Dried Botanical Floral Sprig tucked behind Wax Seal */
+.iv-seal-floral-sprig {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 56px;
+  pointer-events: none;
+  z-index: -1;
+  filter: drop-shadow(0 2px 5px rgba(15, 3, 5, 0.55));
+}
+.iv-floral-sprig-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
 /* Silk Ribbon / Cord & Dangling Antique Gold Coin Medallion Charm */
@@ -2317,4 +2390,87 @@
     padding-bottom: calc(5.8rem + env(safe-area-inset-bottom)) !important;
   }
 }
+
+/* ==========================================================================
+   Continuous Luxury Stationery Suite (Matches "THE LETTER" Master Reference)
+   ========================================================================== */
+.kadi-stationery-suite {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(16px, 4vw, 44px) clamp(12px, 3vw, 24px) 64px;
+  background-color: #1A1614;
+  background-image: 
+    radial-gradient(ellipse at 50% 12%, rgba(147, 70, 56, 0.16) 0%, transparent 65%),
+    radial-gradient(circle at 85% 85%, rgba(185, 154, 98, 0.1) 0%, transparent 55%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 6px);
+}
+
+.kadi-stationery-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  background-color: #FAF7F0;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.65) 0%, transparent 75%),
+    repeating-linear-gradient(0deg, rgba(39, 38, 32, 0.015) 0px, rgba(39, 38, 32, 0.015) 1px, transparent 1px, transparent 4px);
+  color: #272620;
+  box-shadow: 
+    0 24px 70px -15px rgba(0, 0, 0, 0.5),
+    0 10px 28px -10px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(185, 154, 98, 0.3);
+  border-radius: 4px;
+  padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 44px);
+}
+
+/* Master Ornate Double Hairline Gold Border with Corner Scrolls */
+.kadi-stationery-border {
+  position: absolute;
+  inset: clamp(10px, 2.5vw, 18px);
+  border: 1px solid rgba(185, 154, 98, 0.45);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+.kadi-stationery-border::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(185, 154, 98, 0.22);
+}
+
+/* Corner Rosettes / Flourishes */
+.kadi-stationery-corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: #B99A62;
+  border-style: solid;
+}
+.kadi-stationery-corner--tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+.kadi-stationery-corner--tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+.kadi-stationery-corner--bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+.kadi-stationery-corner--br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+/* Remove card fragmentation inside the continuous stationery letter */
+.kadi-stationery-sheet .iv-content-sections > section {
+  padding-inline: 0 !important;
+  border-top-color: rgba(185, 154, 98, 0.25) !important;
+}
+
+.kadi-stationery-sheet [class*="bg-white"],
+.kadi-stationery-sheet [class*="bg-[#FAF7F0]"],
+.kadi-stationery-sheet [class*="shadow-"] {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.kadi-stationery-sheet [class*="rounded-2xl"],
+.kadi-stationery-sheet [class*="rounded-xl"] {
+  border-radius: 4px !important;
+}
+
 

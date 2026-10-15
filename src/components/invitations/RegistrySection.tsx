@@ -109,24 +109,24 @@ export function RegistrySection({
   return (
     <section
       aria-label="Gift Registry and Contributions"
-      className="w-full px-4 sm:px-6 py-14 sm:py-20 bg-transparent border-t border-[rgba(39,38,32,0.12)]"
+      className="w-full py-8 sm:py-12 bg-transparent border-t border-[#B99A62]/30"
     >
       <div className="max-w-2xl mx-auto text-center">
-        <div className="w-10 h-10 rounded-full bg-[var(--event-primary,#934638)]/10 text-[var(--event-primary,#934638)] flex items-center justify-center mx-auto mb-3">
+        <div className="w-10 h-10 rounded-full bg-[var(--event-primary,#934638)]/10 text-[var(--event-primary,#934638)] flex items-center justify-center mx-auto mb-2.5">
           <Gift className="w-5 h-5" />
         </div>
         <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--event-primary,#934638)]">
           Gift Registry & Harambee
         </span>
-        <h2 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--event-ink,#272620)] mt-2">
+        <h2 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight text-[var(--event-ink,#272620)] mt-1.5">
           Blessings & Contributions
         </h2>
-        <p className="text-xs sm:text-sm text-[#8C8375] mt-2 max-w-lg mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#8C8375] mt-1.5 max-w-lg mx-auto leading-relaxed">
           {note}
         </p>
 
-        {/* Direct M-Pesa Instructions Card */}
-        <div className="mt-8 p-5 sm:p-7 rounded-2xl bg-white border border-[rgba(39,38,32,0.12)] shadow-xs text-left">
+        {/* Direct M-Pesa Instructions */}
+        <div className="mt-6 p-4 sm:p-6 rounded-sm bg-transparent border-t border-b border-[#B99A62]/30 text-left relative">
           <div className="flex items-center justify-between pb-4 border-b border-[rgba(39,38,32,0.08)]">
             <div className="flex items-center gap-2.5">
               <Smartphone className="w-5 h-5 text-emerald-600" />

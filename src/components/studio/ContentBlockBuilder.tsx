@@ -761,7 +761,7 @@ function BlockContentEditor({
                   images: [
                     ...images,
                     {
-                      url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
+                      url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80',
                       caption: 'New Photo',
                     },
                   ],

@@ -23,7 +23,7 @@ export function ScheduleSection({
   if (!items || items.length === 0) return null;
 
   return (
-    <section className="w-full px-4 sm:px-6 py-16 sm:py-24 bg-transparent border-t border-[rgba(39,38,32,0.14)]">
+    <section className="w-full py-8 sm:py-12 bg-transparent border-t border-[#B99A62]/30">
       <div className="max-w-5xl mx-auto grid md:grid-cols-12 gap-8 md:gap-12">
         <div className="md:col-span-4">
           <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-[#934638] mb-4">The order of the day</p>

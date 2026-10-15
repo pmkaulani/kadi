@@ -26,7 +26,7 @@ export function StorySection({
   if (!milestones || milestones.length === 0) return null;
 
   return (
-    <section className="w-full py-16 sm:py-24 px-4 sm:px-6 bg-transparent border-t border-[rgba(39,38,32,0.14)]">
+    <section className="w-full py-8 sm:py-12 bg-transparent border-t border-[#B99A62]/30">
       <div className="max-w-4xl mx-auto">
         <SectionIntro eyebrow={eyebrow} title={title} subtitle={subtitle} />
 

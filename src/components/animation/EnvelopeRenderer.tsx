@@ -67,7 +67,7 @@ export function getExperienceTheme(template: TemplateDefinition): ExperienceThem
   if (template.category === 'memorial' || template.category === 'funeral') return 'memorial';
   if (template.category === 'birthday') return template.id === 'milestone-gold' ? 'ruby-disco' : 'gift-box';
   if (template.category === 'baby-shower' || template.category === 'welcome-baby' || template.id === 'sweet-beginnings') return 'pastel-garden';
-  if (template.category === 'wedding' || template.category === 'engagement' || template.category === 'anniversary' || template.category === 'bridal-shower') return 'sage-love-letter';
+  if (template.category === 'wedding' || template.category === 'engagement' || template.category === 'anniversary' || template.category === 'bridal-shower') return 'savannah-twilight';
   if (template.category === 'graduation') return 'graduation';
   if (template.category === 'housewarming') return 'housewarming';
   if (template.category === 'corporate' || template.category === 'product-launch' || template.category === 'fundraiser') return 'corporate';
@@ -791,11 +791,24 @@ export function EnvelopeRenderer({
                 </span>
               </motion.span>
 
-              {/* Layer 6: Front Mitred Pocket with Left, Right, Bottom Panels, Gold Rule & Fleuron */}
+              {/* Layer 6: Front Mitred Pocket with Left, Right, Bottom Panels, Gold Filigree & Rule */}
               <span className="iv-envelope-pocket" style={renderStyle}>
                 <span className="iv-pocket-fold iv-pocket-fold--left" />
                 <span className="iv-pocket-fold iv-pocket-fold--right" />
                 <span className="iv-pocket-fold iv-pocket-fold--bottom" />
+                {motionStyle !== 'minimal-fade' && (
+                  <svg className="iv-pocket-filigree-corners" viewBox="0 0 500 340" fill="none" preserveAspectRatio="none">
+                    {/* Bottom-left corner baroque scroll */}
+                    <path d="M 8 332 C 16 312 28 300 48 296 C 36 304 32 316 36 328 C 42 320 54 318 64 324" stroke="#dab76f" strokeWidth="1.4" strokeLinecap="round" />
+                    <path d="M 12 328 C 24 320 38 322 46 332" stroke="#f3e5c8" strokeWidth="0.8" strokeDasharray="2 2" />
+                    {/* Bottom-right corner baroque scroll */}
+                    <path d="M 492 332 C 484 312 472 300 452 296 C 464 304 468 316 464 328 C 458 320 446 318 436 324" stroke="#dab76f" strokeWidth="1.4" strokeLinecap="round" />
+                    <path d="M 488 328 C 476 320 462 322 454 332" stroke="#f3e5c8" strokeWidth="0.8" strokeDasharray="2 2" />
+                    {/* Mitred throat gold accent line with decorative center */}
+                    <path d="M 10 10 L 250 186 L 490 10" stroke="#dab76f" strokeWidth="1.4" strokeOpacity="0.85" />
+                    <path d="M 18 16 L 250 178 L 482 16" stroke="#f3e5c8" strokeWidth="0.8" strokeOpacity="0.5" strokeDasharray="3 2" />
+                  </svg>
+                )}
                 <span className="iv-pocket-gold-rule" />
                 <span className="iv-pocket-fleuron">❦</span>
                 <span className="iv-pocket-crease-shadow" />
@@ -817,14 +830,25 @@ export function EnvelopeRenderer({
                     <span className="iv-flap-gold-frame" />
                     {motionStyle !== 'minimal-fade' && (
                       <svg className="iv-flap-filigree-border" viewBox="0 0 500 320" fill="none" preserveAspectRatio="none">
-                        <path d="M 14 10 L 250 274 L 486 10" stroke="#dab76f" strokeWidth="1.6" strokeOpacity="0.9" />
-                        <path d="M 24 16 L 250 262 L 476 16" stroke="#f3e5c8" strokeWidth="0.8" strokeOpacity="0.5" strokeDasharray="3 2" />
-                        {/* Top corners baroque scrolls */}
-                        <path d="M 16 26 C 28 16 42 20 52 32 C 45 38 36 36 30 29 C 24 40 38 50 54 46" stroke="#dab76f" strokeWidth="1.2" strokeLinecap="round" />
-                        <path d="M 484 26 C 472 16 458 20 448 32 C 455 38 464 36 470 29 C 476 40 462 50 446 46" stroke="#dab76f" strokeWidth="1.2" strokeLinecap="round" />
+                        {/* Outer border track */}
+                        <path d="M 14 10 L 250 274 L 486 10" stroke="#dab76f" strokeWidth="1.8" strokeOpacity="0.95" />
+                        <path d="M 24 16 L 250 260 L 476 16" stroke="#f3e5c8" strokeWidth="0.9" strokeOpacity="0.6" strokeDasharray="3 2" />
+                        {/* Top corner baroque scrolls */}
+                        <path d="M 16 26 C 28 16 42 20 52 32 C 45 38 36 36 30 29 C 24 40 38 50 54 46" stroke="#dab76f" strokeWidth="1.4" strokeLinecap="round" />
+                        <path d="M 484 26 C 472 16 458 20 448 32 C 455 38 464 36 470 29 C 476 40 462 50 446 46" stroke="#dab76f" strokeWidth="1.4" strokeLinecap="round" />
+                        {/* Left edge running botanical filigree vine */}
+                        <path d="M 52 50 Q 80 82 108 114 Q 136 146 164 178 Q 192 210 220 242" stroke="#dab76f" strokeWidth="1" strokeOpacity="0.8" />
+                        <circle cx="80" cy="82" r="2.5" fill="#dab76f" />
+                        <circle cx="136" cy="146" r="2.5" fill="#dab76f" />
+                        <circle cx="192" cy="210" r="2.5" fill="#dab76f" />
+                        {/* Right edge running botanical filigree vine */}
+                        <path d="M 448 50 Q 420 82 392 114 Q 364 146 336 178 Q 308 210 280 242" stroke="#dab76f" strokeWidth="1" strokeOpacity="0.8" />
+                        <circle cx="420" cy="82" r="2.5" fill="#dab76f" />
+                        <circle cx="364" cy="146" r="2.5" fill="#dab76f" />
+                        <circle cx="308" cy="210" r="2.5" fill="#dab76f" />
                         {/* Flap Tip Gold Royal Fleur-de-lis above seal */}
                         <path d="M 238 238 C 244 222 250 212 250 202 C 250 212 256 222 262 238 C 256 242 252 248 250 258 C 248 248 244 242 238 238 Z" fill="#dab76f" />
-                        <circle cx="250" cy="196" r="3" fill="#f3e5c8" />
+                        <circle cx="250" cy="196" r="3.5" fill="#f3e5c8" />
                       </svg>
                     )}
                   </span>
@@ -843,7 +867,7 @@ export function EnvelopeRenderer({
                 </span>
               </motion.span>
 
-              {/* Layer 9: Victorian Physical Wax Seal with Dangling Antique Gold Charm */}
+              {/* Layer 9: Victorian Physical Wax Seal with Dangling Antique Gold Charm & Dried Flower Sprig */}
               <span className="iv-seal-anchor" aria-hidden="true">
                 <motion.span
                   className={`iv-victorian-seal ${motionStyle === 'minimal-fade' ? 'iv-victorian-seal--minimal' : ''}`}
@@ -860,6 +884,35 @@ export function EnvelopeRenderer({
                   }
                   transition={{ duration: 0.3, ease: 'easeOut' }}
                 >
+                  {/* Dried Botanical Flower Sprig tucked behind the wax seal (matching hero-envelope.webp) */}
+                  {motionStyle !== 'minimal-fade' && (
+                    <span className="iv-seal-floral-sprig" aria-hidden="true">
+                      <svg viewBox="0 0 50 60" fill="none" className="iv-floral-sprig-svg">
+                        <path d="M 25 58 Q 23 38 25 20" stroke="#4A3B2A" strokeWidth="1.8" strokeLinecap="round" />
+                        <path d="M 24 38 Q 32 26 36 14" stroke="#4A3B2A" strokeWidth="1.2" strokeLinecap="round" />
+                        <path d="M 24 42 Q 16 30 12 18" stroke="#4A3B2A" strokeWidth="1.2" strokeLinecap="round" />
+                        {/* Pink / lavender heather florets */}
+                        <circle cx="36" cy="13" r="2.4" fill="#D38C9C" />
+                        <circle cx="33" cy="18" r="2.2" fill="#BA6E7F" />
+                        <circle cx="38" cy="21" r="2.0" fill="#E2A6B4" />
+                        <circle cx="12" cy="17" r="2.4" fill="#D38C9C" />
+                        <circle cx="15" cy="23" r="2.2" fill="#BA6E7F" />
+                        <circle cx="9" cy="25" r="2.0" fill="#E2A6B4" />
+                        {/* Dried chamomile blossom */}
+                        <g transform="translate(25, 14)">
+                          <circle cx="0" cy="0" r="3.5" fill="#E5AA38" />
+                          <circle cx="0" cy="-6.5" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
+                          <circle cx="5.6" cy="-3.2" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
+                          <circle cx="5.6" cy="3.2" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
+                          <circle cx="0" cy="6.5" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
+                          <circle cx="-5.6" cy="3.2" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
+                          <circle cx="-5.6" cy="-3.2" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
+                          <circle cx="0" cy="0" r="2.2" fill="#C4871B" />
+                        </g>
+                      </svg>
+                    </span>
+                  )}
+
                   <span className="iv-wax-rim" aria-hidden="true" />
                   <span className="iv-wax-monogram">
                     {sealMonogram === 'K&W' ? 'W&O' : sealMonogram}
@@ -908,34 +961,93 @@ export function EnvelopeRenderer({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.55 }}
         >
-          {theme === 'savannah-twilight' && (
-            <section className="iv-wedding-hero-cover">
-              <div className="iv-wedding-hero-frame">
-                <div className="iv-wedding-hero-photo-wrap">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={data.heroImage || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80'}
-                    alt={data.celebrants}
-                    className="iv-wedding-hero-photo"
-                  />
-                  <div className="iv-wedding-hero-overlay" />
+          {(theme === 'savannah-twilight' || theme === 'sage-love-letter') && (
+            <div className="kadi-stationery-suite">
+              <article className="kadi-stationery-sheet">
+                {/* Master Ornate Double Hairline Gold Border with Corner Scrolls */}
+                <div className="kadi-stationery-border">
+                  <span className="kadi-stationery-corner kadi-stationery-corner--tl" />
+                  <span className="kadi-stationery-corner kadi-stationery-corner--tr" />
+                  <span className="kadi-stationery-corner kadi-stationery-corner--bl" />
+                  <span className="kadi-stationery-corner kadi-stationery-corner--br" />
                 </div>
-                <div className="iv-wedding-hero-copy">
-                  <span className="iv-wedding-hero-kicker">A CELEBRATION OF LOVE</span>
-                  <h1 className="iv-wedding-hero-names">{data.celebrants}</h1>
-                  <div className="iv-wedding-hero-divider">✦ ─── ❦ ─── ✦</div>
-                  <p className="iv-wedding-hero-meta">
-                    <span>{data.date}</span>
-                    <span className="iv-bullet">·</span>
-                    <span>{data.venue}{data.city ? `, ${data.city}` : ''}</span>
+
+                {/* Top Formal Monogram Crest inside Laurel Wreath */}
+                <header className="text-center relative z-10 pt-2 pb-6 space-y-3">
+                  <div className="iv-letter-crest mx-auto mb-2">
+                    <span className="iv-crest-laurel iv-crest-laurel--left">❧</span>
+                    <span className="iv-crest-monogram">{sealMonogram === 'K&W' ? 'W&O' : sealMonogram}</span>
+                    <span className="iv-crest-laurel iv-crest-laurel--right">❧</span>
+                  </div>
+
+                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[#934638]">
+                    {data.hosts || 'TOGETHER WITH THEIR FAMILIES'}
                   </p>
-                  <a href="#ceremony" className="iv-wedding-hero-scroll">
-                    <span>Scroll to explore</span>
-                    <ChevronDown size={14} className="animate-bounce" />
-                  </a>
+
+                  <p className="text-xs sm:text-sm font-serif italic text-[#756F64]">
+                    joyfully invite you to celebrate the wedding of
+                  </p>
+
+                  {guestName && (
+                    <div className="py-1">
+                      <p className="font-serif text-lg sm:text-2xl text-[#272620] font-medium italic underline decoration-[#B99A62]/40 underline-offset-4">
+                        {guestName}
+                      </p>
+                    </div>
+                  )}
+
+                  <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#934638] font-medium tracking-tight my-2">
+                    {data.celebrants}
+                  </h1>
+
+                  <div className="text-center text-[#B99A62] text-sm my-3 select-none">
+                    ✦ ─── ❦ ─── ✦
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-[#272620] font-medium pt-1">
+                    <span className="flex items-center gap-1.5">
+                      <CalendarDays size={13} className="text-[#934638]" />
+                      {data.date}
+                    </span>
+                    <span className="text-[#B99A62]">·</span>
+                    <span className="flex items-center gap-1.5">
+                      <Clock3 size={13} className="text-[#934638]" />
+                      {data.time}
+                    </span>
+                    <span className="text-[#B99A62]">·</span>
+                    <span className="flex items-center gap-1.5">
+                      <MapPin size={13} className="text-[#934638]" />
+                      {data.venue}{data.city ? `, ${data.city}` : ''}
+                    </span>
+                  </div>
+                </header>
+
+                {/* Flowing Content Sections on Continuous Stationery Sheet */}
+                <div id="iv-content-start" className="iv-content-sections relative z-10 pt-4 border-t border-[#B99A62]/30">
+                  {children}
                 </div>
-              </div>
-            </section>
+
+                {/* Ending / Footer inside the Stationery Document */}
+                <footer className="iv-ending relative z-10 pt-8 mt-8 border-t border-[#B99A62]/30">
+                  <Logo size="sm" color="#c4a16a" />
+                  <p className="font-serif italic text-sm text-[#756F64] mt-2">
+                    Made with care, shared with love.
+                  </p>
+                  <button type="button" onClick={shareInvitation} aria-label="Share this invitation link">
+                    {copied ? <Check size={14} /> : null}
+                    {copied ? 'Link copied' : 'Share this invitation'}
+                  </button>
+                  <button
+                    type="button"
+                    className="iv-ending__back"
+                    onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })}
+                    aria-label="Scroll back to top of invitation"
+                  >
+                    Back to the beginning ↑
+                  </button>
+                </footer>
+              </article>
+            </div>
           )}
 
           {theme === 'ruby-disco' && (
@@ -1167,79 +1279,6 @@ export function EnvelopeRenderer({
             </>
           )}
 
-          {theme === 'sage-love-letter' && (
-            <>
-              <section className="iv-love-cover">
-                <p className="iv-eyebrow">Together with their families</p>
-                <h1>{data.celebrants}</h1>
-                <p className="iv-script">invite you to celebrate</p>
-                <ScrollParallax offset={15}>
-                  <div className="iv-love-cover__photo">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={data.heroImage} alt={data.celebrants} />
-                    <span className="iv-photo-caption">
-                      A day for the two of us, shared with all of you.
-                    </span>
-                  </div>
-                </ScrollParallax>
-                <div className="iv-love-date">
-                  <span>{data.date}</span><i /><span>{data.time}</span>
-                </div>
-                <p className="iv-love-quote">
-                  “{data.story || 'The best things in life become even more beautiful when they are shared.'}”
-                </p>
-                <a href="#iv-love-details" className="iv-outline-link">
-                  Explore the invitation <ChevronDown size={14} />
-                </a>
-              </section>
-
-              <section className="iv-love-details" id="iv-love-details">
-                <div className="iv-love-details__copy">
-                  <p className="iv-eyebrow">The day we have been dreaming of</p>
-                  <h2>We would be honoured<br /><em>to have you there.</em></h2>
-                  <p>
-                    Save the date and join us as we begin this next chapter surrounded by the people who made our story what it is.
-                  </p>
-                </div>
-                <div className="iv-love-location">
-                  <span className="iv-location-icon"><MapPin size={19} /></span>
-                  <p className="iv-eyebrow">The place</p>
-                  <h3>{data.venue}</h3>
-                  <p>{data.city}</p>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${data.venue}, ${data.city}`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open map <ChevronRight size={14} />
-                  </a>
-                </div>
-              </section>
-
-              <section className="iv-love-gallery">
-                <div className="iv-love-gallery__heading">
-                  <p className="iv-eyebrow">A few favourite frames</p>
-                  <h2>Our story, <em>in pictures.</em></h2>
-                </div>
-                <div className="iv-love-gallery__grid">
-                  {galleryPhotos.slice(0, 3).map((photo, index) => (
-                    <figure key={`${photo}-${index}`} className={`iv-love-photo iv-love-photo--${index + 1}`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={photo}
-                        alt={`Photograph ${index + 1} for ${data.celebrants}`}
-                        loading="lazy"
-                      />
-                      <figcaption>
-                        {['The beginning', 'The in-between', 'The next chapter'][index]}
-                      </figcaption>
-                    </figure>
-                  ))}
-                </div>
-              </section>
-            </>
-          )}
-
           {theme === 'memorial' && (
             <section className="iv-memorial-cover">
               <p className="iv-eyebrow">In loving memory</p>
@@ -1295,30 +1334,33 @@ export function EnvelopeRenderer({
             </section>
           )}
 
-          {/* Content sections passed down from page */}
-          <div id="iv-content-start" className="iv-content-sections">{children}</div>
+          {/* Content sections & footer for other occasion themes */}
+          {theme !== 'savannah-twilight' && theme !== 'sage-love-letter' && (
+            <>
+              <div id="iv-content-start" className="iv-content-sections max-w-4xl mx-auto px-4 sm:px-6">{children}</div>
 
-          {/* Ending / Footer */}
-          <footer className="iv-ending">
-            <Logo size="sm" color="#c4a16a" />
-            <p>
-              {theme === 'memorial'
-                ? 'Held in memory. Held together.'
-                : 'Made with care, shared with love.'}
-            </p>
-            <button type="button" onClick={shareInvitation} aria-label="Share this invitation link">
-              {copied ? <Check size={14} /> : null}
-              {copied ? 'Link copied' : 'Share this invitation'}
-            </button>
-            <button
-              type="button"
-              className="iv-ending__back"
-              onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })}
-              aria-label="Scroll back to top of invitation"
-            >
-              Back to the beginning ↑
-            </button>
-          </footer>
+              <footer className="iv-ending">
+                <Logo size="sm" color="#c4a16a" />
+                <p>
+                  {theme === 'memorial'
+                    ? 'Held in memory. Held together.'
+                    : 'Made with care, shared with love.'}
+                </p>
+                <button type="button" onClick={shareInvitation} aria-label="Share this invitation link">
+                  {copied ? <Check size={14} /> : null}
+                  {copied ? 'Link copied' : 'Share this invitation'}
+                </button>
+                <button
+                  type="button"
+                  className="iv-ending__back"
+                  onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })}
+                  aria-label="Scroll back to top of invitation"
+                >
+                  Back to the beginning ↑
+                </button>
+              </footer>
+            </>
+          )}
 
           {/* Fullscreen Photo Lightbox modal */}
           {(theme === 'gift-box' || theme === 'sage-love-letter') && galleryIndex !== null && (

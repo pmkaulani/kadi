@@ -138,7 +138,7 @@ export default function EventCommandCenterPage() {
   const [editorSealMonogram, setEditorSealMonogram] = useState(design?.sealMonogram || 'K&W');
   const [editorSealColor, setEditorSealColor] = useState(design?.sealColor || '#D4AF37');
   const [editorEnvelopeColor, setEditorEnvelopeColor] = useState(
-    design?.palette?.envelope || '#252042'
+    design?.palette?.envelope || '#4A0E17'
   );
   const [editorSections, setEditorSections] = useState<string[]>(() => {
     return (
