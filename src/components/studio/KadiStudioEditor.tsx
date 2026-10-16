@@ -34,6 +34,7 @@ import {
   Signal,
   Wifi,
   Battery,
+  Lock,
 } from 'lucide-react';
 import type { EventEntity, EventDesignEntity } from '@/lib/db/types';
 import type { TemplateDefinition } from '@/lib/templates/types';
@@ -1227,61 +1228,233 @@ export function KadiStudioEditor({
 
           {/* Preview Viewport Canvas */}
           <div className="flex-1 overflow-y-auto p-2 sm:p-6 flex items-center justify-center bg-[#ECE7DE]/50 min-h-0">
-            <div
-              className={`transition-all duration-300 w-full ${
-                device === 'iphone'
-                  ? 'max-w-[390px] h-[720px] max-h-[calc(100vh-140px)] shadow-2xl rounded-[44px] border-[8px] sm:border-[10px] border-[#1C1B18] bg-[#1C1B18] flex flex-col overflow-hidden my-auto ring-1 ring-black/20'
-                  : device === 'android'
-                    ? 'max-w-[400px] h-[720px] max-h-[calc(100vh-140px)] shadow-2xl rounded-[36px] border-[7px] sm:border-[9px] border-[#242320] bg-[#242320] flex flex-col overflow-hidden my-auto ring-1 ring-black/20'
-                    : 'max-w-[1040px] h-[740px] max-h-[calc(100vh-140px)] shadow-md rounded-xl bg-white border border-[rgba(39,38,32,0.12)] flex flex-col overflow-hidden my-auto'
-              }`}
-            >
-              {/* iPhone Status Bar + Dynamic Island */}
-              {device === 'iphone' && (
-                <div className="h-8 bg-[#1C1B18] w-full px-5 flex items-center justify-between text-[11px] font-semibold text-white/80 shrink-0 select-none">
-                  <span className="font-mono text-[10px]">9:41</span>
-                  {/* Dynamic Island Pill */}
-                  <div className="w-20 h-4 bg-black rounded-full flex items-center justify-end px-1.5">
-                    <div className="w-2 h-2 rounded-full bg-[#1A1A1A] border border-white/10" />
-                  </div>
-                  <div className="flex items-center gap-1.5 text-white/70">
-                    <Signal size={11} />
-                    <Wifi size={11} />
-                    <Battery size={13} className="text-white/80" />
-                  </div>
-                </div>
-              )}
-
-              {/* Android Status Bar */}
-              {device === 'android' && (
-                <div className="h-7 bg-[#242320] w-full px-5 flex items-center justify-between text-[10px] font-medium text-white/70 shrink-0 select-none">
-                  <span className="font-mono">10:00</span>
-                  <div className="w-3 h-3 bg-black rounded-full border border-white/10" />
-                  <div className="flex items-center gap-1.5">
-                    <Wifi size={11} />
-                    <Battery size={12} />
-                  </div>
-                </div>
-              )}
-
-              {/* The Canonical Draft Preview Component with smooth internal scrolling */}
-              <div className="flex-1 overflow-y-auto overscroll-contain bg-[#FAF8F5] relative">
-                <DraftInvitationPreview
-                  template={activeTemplate}
-                  values={draft.values}
-                  design={draft.design}
-                  guestName={guestSalutation}
-                  restartKey={replayKey}
+            {device === 'iphone' && (
+              /* Realistic iPhone Hardware Chassis */
+              <div className="relative mx-auto my-auto w-full max-w-[380px] sm:max-w-[392px] h-[720px] sm:h-[750px] max-h-[calc(100vh-140px)] transition-all duration-300">
+                {/* Physical Hardware Buttons - Left Side */}
+                {/* Action button */}
+                <div
+                  className="absolute -left-[3.5px] top-[95px] w-[3.5px] h-[24px] bg-gradient-to-r from-[#181715] via-[#4A4742] to-[#2E2C28] rounded-l-[2px] shadow-[-1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
+                  aria-hidden="true"
                 />
-              </div>
+                {/* Volume Up */}
+                <div
+                  className="absolute -left-[3.5px] top-[138px] w-[3.5px] h-[48px] bg-gradient-to-r from-[#181715] via-[#4A4742] to-[#2E2C28] rounded-l-[2px] shadow-[-1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
+                  aria-hidden="true"
+                />
+                {/* Volume Down */}
+                <div
+                  className="absolute -left-[3.5px] top-[198px] w-[3.5px] h-[48px] bg-gradient-to-r from-[#181715] via-[#4A4742] to-[#2E2C28] rounded-l-[2px] shadow-[-1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
+                  aria-hidden="true"
+                />
+                {/* Left Antenna bands */}
+                <div className="absolute -left-[3.5px] top-[60px] w-[3.5px] h-[3px] bg-[#0E0D0C] pointer-events-none z-10" aria-hidden="true" />
+                <div className="absolute -left-[3.5px] bottom-[60px] w-[3.5px] h-[3px] bg-[#0E0D0C] pointer-events-none z-10" aria-hidden="true" />
 
-              {/* Mobile Home Indicator Bar */}
-              {(device === 'iphone' || device === 'android') && (
-                <div className="h-4 bg-[#1C1B18] w-full flex items-center justify-center shrink-0 select-none">
-                  <div className="w-28 h-1 bg-white/30 rounded-full" />
+                {/* Physical Hardware Buttons - Right Side */}
+                {/* Power / Side Button */}
+                <div
+                  className="absolute -right-[3.5px] top-[148px] w-[3.5px] h-[68px] bg-gradient-to-l from-[#181715] via-[#4A4742] to-[#2E2C28] rounded-r-[2px] shadow-[1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
+                  aria-hidden="true"
+                />
+                {/* Right Antenna bands */}
+                <div className="absolute -right-[3.5px] top-[60px] w-[3.5px] h-[3px] bg-[#0E0D0C] pointer-events-none z-10" aria-hidden="true" />
+                <div className="absolute -right-[3.5px] bottom-[60px] w-[3.5px] h-[3px] bg-[#0E0D0C] pointer-events-none z-10" aria-hidden="true" />
+
+                {/* Titanium Natural Chassis Outer Shell */}
+                <div className="w-full h-full rounded-[50px] sm:rounded-[54px] p-[10px] sm:p-[11px] bg-gradient-to-b from-[#4A4843] via-[#1E1D1A] to-[#363430] shadow-[0_25px_65px_-12px_rgba(0,0,0,0.55),0_12px_24px_-8px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.25),inset_0_-1px_1px_rgba(0,0,0,0.9)] ring-1 ring-black/50 flex flex-col relative select-none">
+                  {/* Micro Speaker Ear Grill in top bezel */}
+                  <div
+                    className="w-14 h-[3px] bg-[#0F0E0D] rounded-full mx-auto mb-1 border border-white/5 shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)] shrink-0"
+                    aria-hidden="true"
+                  />
+
+                  {/* OLED Screen Bezel & Display Area */}
+                  <div className="rounded-[40px] sm:rounded-[44px] bg-black overflow-hidden flex flex-col flex-1 relative ring-1 ring-black/60 shadow-inner">
+                    {/* Screen Glass ambient diagonal reflection */}
+                    <div
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.025] to-white/[0.06] rounded-[inherit] z-25"
+                      aria-hidden="true"
+                    />
+
+                    {/* Floating Dynamic Island */}
+                    <div
+                      className="absolute top-2.5 sm:top-3 left-1/2 -translate-x-1/2 w-[114px] h-[28px] bg-black rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.6)] ring-0.5 ring-white/10 flex items-center justify-between px-2.5 z-30 select-none pointer-events-none"
+                      aria-hidden="true"
+                    >
+                      {/* Front camera lens */}
+                      <div className="w-3 h-3 rounded-full bg-[#060C16] ring-1 ring-[#1E3A5F]/50 flex items-center justify-center relative overflow-hidden">
+                        <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-[#1E40AF] to-[#60A5FA] opacity-75 blur-[0.2px]" />
+                        <div className="absolute top-0.5 right-0.5 w-0.5 h-0.5 rounded-full bg-white/70" />
+                      </div>
+                      {/* TrueDepth FaceID sensor */}
+                      <div className="w-2 h-2 rounded-full bg-[#0D0D0E] ring-1 ring-white/5" />
+                    </div>
+
+                    {/* Floating Status Bar with Time, Cellular, Wifi, and Battery */}
+                    <div
+                      className="absolute top-0 inset-x-0 h-10 px-6 pt-2 flex items-center justify-between text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] z-20 pointer-events-none select-none"
+                      aria-hidden="true"
+                    >
+                      <span className="font-mono text-[11px] font-bold tracking-tight">9:41</span>
+                      <div className="flex items-center gap-1.5">
+                        <Signal size={12} className="stroke-[2.5]" />
+                        <Wifi size={12} className="stroke-[2.5]" />
+                        <div className="flex items-center">
+                          <div className="w-[19px] h-[10px] rounded-[3px] border border-white/80 p-[1px] flex items-center">
+                            <div className="w-full h-full bg-white rounded-[1.5px]" />
+                          </div>
+                          <div className="w-[1.5px] h-[4px] bg-white/80 rounded-r-[1px] -ml-[0.5px]" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Scrollable Content Viewport with clean mobile scrollbar */}
+                    <div className="flex-1 overflow-y-auto overscroll-contain bg-[#FAF8F5] relative [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.2)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-black/20 [&::-webkit-scrollbar-thumb]:rounded-full pt-8">
+                      <DraftInvitationPreview
+                        template={activeTemplate}
+                        values={draft.values}
+                        design={draft.design}
+                        guestName={guestSalutation}
+                        restartKey={replayKey}
+                      />
+                    </div>
+
+                    {/* Floating Home Indicator Bar */}
+                    <div
+                      className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-[4.5px] bg-white/70 backdrop-blur-md rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.4)] pointer-events-none z-30 ring-0.5 ring-black/10"
+                      aria-hidden="true"
+                    />
+                    {/* Bottom gradient vignette for home indicator contrast */}
+                    <div
+                      className="absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-black/25 to-transparent pointer-events-none z-20"
+                      aria-hidden="true"
+                    />
+                  </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+
+            {device === 'android' && (
+              /* Realistic Flagship Android Hardware Chassis */
+              <div className="relative mx-auto my-auto w-full max-w-[370px] sm:max-w-[396px] h-[720px] sm:h-[750px] max-h-[calc(100vh-140px)] transition-all duration-300">
+                {/* Physical Hardware Buttons - Right Side */}
+                {/* Power Button */}
+                <div
+                  className="absolute -right-[3.5px] top-[140px] w-[3.5px] h-[36px] bg-gradient-to-l from-[#18191B] via-[#4E5156] to-[#2B2D31] rounded-r-[2px] shadow-[1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
+                  aria-hidden="true"
+                />
+                {/* Volume Rocker */}
+                <div
+                  className="absolute -right-[3.5px] top-[190px] w-[3.5px] h-[72px] bg-gradient-to-l from-[#18191B] via-[#4E5156] to-[#2B2D31] rounded-r-[2px] shadow-[1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
+                  aria-hidden="true"
+                />
+
+                {/* Flagship Android Chassis Outer Shell */}
+                <div className="w-full h-full rounded-[44px] sm:rounded-[48px] p-[10px] sm:p-[11px] bg-gradient-to-b from-[#3E4146] via-[#1A1C1E] to-[#2E3136] shadow-[0_25px_65px_-12px_rgba(0,0,0,0.55),0_12px_24px_-8px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_-1px_1px_rgba(0,0,0,0.9)] ring-1 ring-black/50 flex flex-col relative select-none">
+                  {/* Micro Speaker Ear Grill in top bezel */}
+                  <div
+                    className="w-12 h-[2.5px] bg-[#0E0F11] rounded-full mx-auto mb-1 border border-white/5 shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)] shrink-0"
+                    aria-hidden="true"
+                  />
+
+                  {/* OLED Screen Bezel & Display Area */}
+                  <div className="rounded-[36px] sm:rounded-[39px] bg-black overflow-hidden flex flex-col flex-1 relative ring-1 ring-black/60 shadow-inner">
+                    {/* Screen Glass ambient diagonal reflection */}
+                    <div
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-white/[0.05] rounded-[inherit] z-25"
+                      aria-hidden="true"
+                    />
+
+                    {/* Centered Punch-Hole Camera */}
+                    <div
+                      className="absolute top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-black ring-1 ring-white/15 flex items-center justify-center z-30 shadow-md pointer-events-none select-none"
+                      aria-hidden="true"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-[#081119] ring-0.5 ring-emerald-500/30 flex items-center justify-center relative overflow-hidden">
+                        <div className="w-0.5 h-0.5 rounded-full bg-white/70 absolute top-0.5 right-0.5" />
+                      </div>
+                    </div>
+
+                    {/* Floating Status Bar with Time, Wifi, and Battery */}
+                    <div
+                      className="absolute top-0 inset-x-0 h-9 px-6 pt-1.5 flex items-center justify-between text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] z-20 pointer-events-none select-none"
+                      aria-hidden="true"
+                    >
+                      <span className="font-mono text-[11px] font-semibold">10:00</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[9px] font-mono tracking-tight text-white/80">5G</span>
+                        <Wifi size={12} className="stroke-[2.5]" />
+                        <Battery size={13} className="text-white" />
+                      </div>
+                    </div>
+
+                    {/* Scrollable Content Viewport with clean mobile scrollbar */}
+                    <div className="flex-1 overflow-y-auto overscroll-contain bg-[#FAF8F5] relative [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.2)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-black/20 [&::-webkit-scrollbar-thumb]:rounded-full pt-6">
+                      <DraftInvitationPreview
+                        template={activeTemplate}
+                        values={draft.values}
+                        design={draft.design}
+                        guestName={guestSalutation}
+                        restartKey={replayKey}
+                      />
+                    </div>
+
+                    {/* Floating Android Gesture Bar */}
+                    <div
+                      className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-[4px] bg-white/70 backdrop-blur-md rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.4)] pointer-events-none z-30 ring-0.5 ring-black/10"
+                      aria-hidden="true"
+                    />
+                    {/* Bottom gradient vignette */}
+                    <div
+                      className="absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-black/25 to-transparent pointer-events-none z-20"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {device === 'desktop' && (
+              /* Sleek Desktop Browser Window Mockup */
+              <div className="w-full max-w-[1040px] h-[740px] max-h-[calc(100vh-140px)] shadow-2xl rounded-2xl bg-white border border-[rgba(39,38,32,0.14)] ring-1 ring-black/5 flex flex-col overflow-hidden my-auto">
+                {/* Browser Window Chrome Header */}
+                <div className="h-10 bg-[#FAF8F5] border-b border-[rgba(39,38,32,0.1)] px-4 flex items-center justify-between shrink-0 select-none">
+                  {/* Traffic light dots */}
+                  <div className="flex items-center gap-2" aria-hidden="true">
+                    <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]/50 shadow-2xs" />
+                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/50 shadow-2xs" />
+                    <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]/50 shadow-2xs" />
+                  </div>
+
+                  {/* Centered URL Bar */}
+                  <div className="flex items-center gap-1.5 px-4 py-1 bg-white border border-[rgba(39,38,32,0.12)] rounded-full text-xs text-[#756F64] shadow-2xs max-w-sm w-full mx-4 justify-center">
+                    <Lock size={11} className="text-[#934638]" />
+                    <span className="font-mono text-[11px] truncate">
+                      kadi.africa/e/{draft.values.title ? draft.values.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'invitation-preview'}
+                    </span>
+                  </div>
+
+                  {/* Window controls / badges */}
+                  <div className="flex items-center gap-2 text-[#756F64] text-xs">
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#EDE8E0] text-[#5A554C]">
+                      Desktop 1440px
+                    </span>
+                  </div>
+                </div>
+
+                {/* Content Viewport */}
+                <div className="flex-1 overflow-y-auto overscroll-contain bg-[#FAF8F5] relative">
+                  <DraftInvitationPreview
+                    template={activeTemplate}
+                    values={draft.values}
+                    design={draft.design}
+                    guestName={guestSalutation}
+                    restartKey={replayKey}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>
