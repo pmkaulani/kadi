@@ -18,6 +18,8 @@ export interface RSVPSummary {
 export interface SubmitRSVPPayload {
   eventId: string;
   guestToken?: string;
+  householdId?: string;
+  source?: string;
   primaryName: string;
   contact: string;
   status: 'yes' | 'no' | 'maybe';
@@ -63,6 +65,8 @@ export class RSVPService {
     // 1. Token validation & Cross-event boundary check
     let household = payload.guestToken
       ? GuestService.getGuestByToken(payload.guestToken)
+      : payload.householdId
+      ? GuestService.getGuestById(payload.householdId)
       : undefined;
 
     if (payload.guestToken && !household) {

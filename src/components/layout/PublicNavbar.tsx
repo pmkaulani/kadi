@@ -9,6 +9,7 @@ export function PublicNavbar({ variant = 'default' }: { variant?: 'default' | 'h
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const links = [
     { href: '/templates', label: 'The invitations' },
+    { href: '/discover', label: 'Discover' },
     { href: '/how-it-works', label: 'How it opens' },
     { href: '/pricing', label: 'Pricing' },
   ];

@@ -11,6 +11,7 @@ import {
   MessageAuditRecordEntity,
   InAppNotificationEntity,
   NotificationPreferencesEntity,
+  EventReportEntity,
 } from './types';
 
 // In-Memory Seed Storage for Sandbox Development & Testing
@@ -47,6 +48,11 @@ class MockDatabase {
       requireApproval: false,
       allowUntokenizedRsvp: true,
       allowedPlusOnesDefault: 1,
+      visibility: 'private',
+      hideExactVenueUntilRsvp: false,
+      pageViews: 142,
+      sourceViews: { wa: 88, qr: 32, direct: 22 },
+      sourceRsvps: { wa: 16, qr: 5, direct: 3 },
       customQuestions: [
         {
           id: 'q-song',
@@ -232,6 +238,39 @@ class MockDatabase {
       livestreamStatus: 'upcoming',
       createdAt: '2026-10-08T08:00:00Z',
       updatedAt: '2026-10-11T11:00:00Z',
+    },
+    {
+      id: 'event-corporate-1',
+      hostId: 'host-1',
+      title: 'East Africa FinTech Leadership Summit 2026',
+      subtitle: 'Shaping the Future of Digital Payments and Frontier Finance',
+      slug: 'fintech-leadership-summit-2026',
+      category: 'corporate',
+      status: 'published',
+      templateId: 'savannah-twilight',
+      templateVersion: '1.0.0',
+      hosts: 'East Africa FinTech Forum & Kadi Ventures',
+      celebrants: 'FinTech Founders & Financial Leaders',
+      date: 'Thursday, 19 November 2026',
+      time: '8:30 AM EAT',
+      timezone: 'Africa/Nairobi',
+      venue: 'Radisson Blu Hotel, Upper Hill',
+      address: 'Elgon Road, Upper Hill',
+      city: 'Nairobi, Kenya',
+      directionsNote: 'Complimentary valet parking for summit delegates.',
+      heroImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
+      rsvpDeadline: '15 November 2026',
+      maxCapacity: 350,
+      rsvpEnabled: true,
+      visibility: 'public',
+      publicListedAt: '2026-10-05T09:00:00Z',
+      hideExactVenueUntilRsvp: false,
+      tags: ['fintech', 'technology', 'finance', 'nairobi', 'summit'],
+      pageViews: 412,
+      sourceViews: { email: 180, wa: 140, direct: 92 },
+      sourceRsvps: { email: 48, wa: 35, direct: 18 },
+      createdAt: '2026-10-05T08:00:00Z',
+      updatedAt: '2026-10-12T14:00:00Z',
     },
   ];
 
@@ -514,6 +553,8 @@ class MockDatabase {
       digestFrequency: 'immediate',
     },
   ];
+
+  reports: EventReportEntity[] = [];
 }
 
 // Global singleton instance

@@ -49,6 +49,18 @@ function GuestInvitationContent() {
     return baseConfig;
   }, [event, template, design, guestHousehold, token, phaseParam, isDraft]);
 
+  // Privacy-safe anonymous page view attribution
+  React.useEffect(() => {
+    if (event && !isDraft && !isArchived) {
+      const source = searchParams.get('src') || 'direct';
+      fetch(`/api/events/${event.id}/insights`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source }),
+      }).catch(() => {});
+    }
+  }, [event, isDraft, isArchived, searchParams]);
+
   if (!event || !template || (isDraft && !isAuthorizedDraft) || isArchived || !config) {
     const isUnauthDraft = isDraft && !isAuthorizedDraft;
     return (

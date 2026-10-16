@@ -55,6 +55,14 @@ export interface EventEntity {
   allowUntokenizedRsvp?: boolean;
   allowedPlusOnesDefault?: number;
   customQuestions?: CustomRSVPQuestion[];
+  // Phase 16: Discovery, referral analytics and privacy controls
+  visibility?: 'private' | 'unlisted' | 'public';
+  hideExactVenueUntilRsvp?: boolean;
+  publicListedAt?: string;
+  tags?: string[];
+  pageViews?: number;
+  sourceViews?: Record<string, number>;
+  sourceRsvps?: Record<string, number>;
   // Rich data-driven section extensions
   ourStoryMilestones?: Array<{
     yearOrDate: string;
@@ -361,5 +369,16 @@ export interface NotificationPreferencesEntity {
   notifyOnReminderFailure: boolean;
   digestFrequency: 'immediate' | 'daily' | 'off';
 }
+
+export interface EventReportEntity {
+  id: string;
+  eventId: string;
+  reason: 'spam' | 'inappropriate' | 'copyright' | 'harassment' | 'fraud' | 'other';
+  details?: string;
+  reporterContact?: string;
+  createdAt: string;
+  status: 'pending' | 'reviewed' | 'dismissed';
+}
+
 
 

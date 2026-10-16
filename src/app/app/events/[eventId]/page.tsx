@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { EventService } from '@/lib/services/event-service';
 import { GuestService } from '@/lib/services/guest-service';
@@ -66,6 +66,7 @@ import { EventCheckInTab } from '@/components/events/EventCheckInTab';
 import { EventSettingsTab } from '@/components/events/EventSettingsTab';
 import { EventCsvImportModal } from '@/components/events/EventCsvImportModal';
 import { EventMessagesTab } from '@/components/events/EventMessagesTab';
+import { EventInsightsTab } from '@/components/events/EventInsightsTab';
 
 export type TabType =
   | 'overview'
@@ -73,6 +74,7 @@ export type TabType =
   | 'guests'
   | 'rsvps'
   | 'messages'
+  | 'insights'
   | 'contributions'
   | 'checkin'
   | 'settings'
@@ -81,22 +83,28 @@ export type TabType =
 export default function EventCommandCenterPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const eventId = params?.eventId as string;
+  const tabParam = (searchParams?.get('tab') || 'overview') as TabType;
 
-  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    if (
+      tabParam &&
+      ['overview', 'design', 'guests', 'rsvps', 'messages', 'insights', 'contributions', 'checkin', 'settings', 'share'].includes(tabParam)
+    ) {
+      return tabParam;
+    }
+    return 'overview';
+  });
 
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const searchParams = new URLSearchParams(window.location.search);
-      const tab = searchParams.get('tab') as TabType;
-      if (
-        tab &&
-        ['overview', 'design', 'guests', 'rsvps', 'messages', 'contributions', 'checkin', 'settings', 'share'].includes(tab)
-      ) {
-        setActiveTab(tab);
-      }
+    if (
+      tabParam &&
+      ['overview', 'design', 'guests', 'rsvps', 'messages', 'insights', 'contributions', 'checkin', 'settings', 'share'].includes(tabParam)
+    ) {
+      setActiveTab(tabParam);
     }
-  }, []);
+  }, [tabParam]);
 
   const switchTab = (tab: TabType) => {
     setActiveTab(tab);
@@ -511,6 +519,16 @@ export default function EventCommandCenterPage() {
           }`}
         >
           Messages &amp; Share
+        </button>
+        <button
+          onClick={() => switchTab('insights')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
+            activeTab === 'insights'
+              ? 'border-[#934638] text-[#934638] font-semibold'
+              : 'border-transparent text-[#756F64] hover:text-[#272620]'
+          }`}
+        >
+          Insights
         </button>
         <button
           onClick={() => switchTab('contributions')}
@@ -1365,6 +1383,15 @@ export default function EventCommandCenterPage() {
           </div>
         );
       })()}
+
+      {/* TAB: INSIGHTS & ATTRIBUTION */}
+      {activeTab === 'insights' && (
+        <EventInsightsTab
+          eventId={eventId}
+          eventSlug={event.slug}
+          onRefresh={refreshData}
+        />
+      )}
 
       {/* TAB 7: CHECK-IN DESK */}
       {activeTab === 'checkin' && (
