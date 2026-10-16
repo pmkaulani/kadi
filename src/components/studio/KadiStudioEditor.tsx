@@ -1269,62 +1269,26 @@ export function KadiStudioEditor({
           {/* Preview Viewport Canvas */}
           <div className="kadi-phone-canvas flex-1 overflow-hidden p-3 sm:p-5 flex items-center justify-center bg-[#ECE7DE]/50 min-h-0 relative">
             {device === 'iphone' && (
-              /* Realistic iPhone Hardware Chassis (Authentic 393:852 tall smartphone aspect ratio) */
+              /* Sleek, Luxury Modern iPhone 16 Pro Device Mockup */
               <div
-                className="kadi-phone-frame relative mx-auto my-auto aspect-[393/852] h-full max-h-[820px] max-w-[380px] w-auto transition-all duration-300 flex-none min-w-0"
+                className="kadi-phone-frame relative mx-auto my-auto aspect-[393/852] h-full max-h-[820px] max-w-[365px] w-auto transition-all duration-300 flex-none min-w-0"
                 style={{
-                  maxHeight: 'min(820px, calc(100% - 24px))',
+                  maxHeight: 'min(820px, calc(100% - 20px))',
                 }}
               >
-                {/* Physical Hardware Buttons - Left Side */}
-                {/* Action button */}
-                <div
-                  className="absolute -left-[3.5px] top-[14%] w-[3.5px] h-[3%] bg-gradient-to-r from-[#181715] via-[#4A4742] to-[#2E2C28] rounded-l-[2px] shadow-[-1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
-                  aria-hidden="true"
-                />
-                {/* Volume Up */}
-                <div
-                  className="absolute -left-[3.5px] top-[19%] w-[3.5px] h-[6%] bg-gradient-to-r from-[#181715] via-[#4A4742] to-[#2E2C28] rounded-l-[2px] shadow-[-1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
-                  aria-hidden="true"
-                />
-                {/* Volume Down */}
-                <div
-                  className="absolute -left-[3.5px] top-[27%] w-[3.5px] h-[6%] bg-gradient-to-r from-[#181715] via-[#4A4742] to-[#2E2C28] rounded-l-[2px] shadow-[-1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
-                  aria-hidden="true"
-                />
-                {/* Left Antenna bands */}
-                <div className="absolute -left-[3.5px] top-[9%] w-[3.5px] h-[3px] bg-[#0E0D0C] pointer-events-none z-10" aria-hidden="true" />
-                <div className="absolute -left-[3.5px] bottom-[9%] w-[3.5px] h-[3px] bg-[#0E0D0C] pointer-events-none z-10" aria-hidden="true" />
-
-                {/* Physical Hardware Buttons - Right Side */}
-                {/* Power / Side Button */}
-                <div
-                  className="absolute -right-[3.5px] top-[20%] w-[3.5px] h-[9%] bg-gradient-to-l from-[#181715] via-[#4A4742] to-[#2E2C28] rounded-r-[2px] shadow-[1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
-                  aria-hidden="true"
-                />
-                {/* Right Antenna bands */}
-                <div className="absolute -right-[3.5px] top-[9%] w-[3.5px] h-[3px] bg-[#0E0D0C] pointer-events-none z-10" aria-hidden="true" />
-                <div className="absolute -right-[3.5px] bottom-[9%] w-[3.5px] h-[3px] bg-[#0E0D0C] pointer-events-none z-10" aria-hidden="true" />
-
-                {/* Titanium Natural Chassis Outer Shell */}
-                <div className="w-full h-full rounded-[48px] sm:rounded-[52px] p-[9px] sm:p-[10px] bg-gradient-to-b from-[#4A4843] via-[#1E1D1A] to-[#363430] shadow-[0_25px_65px_-12px_rgba(0,0,0,0.55),0_12px_24px_-8px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.25),inset_0_-1px_1px_rgba(0,0,0,0.9)] ring-1 ring-black/50 flex flex-col relative select-none">
-                  {/* Micro Speaker Ear Grill in top bezel */}
-                  <div
-                    className="w-12 h-[3px] bg-[#0F0E0D] rounded-full mx-auto mb-1 border border-white/5 shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)] shrink-0"
-                    aria-hidden="true"
-                  />
-
+                {/* Clean, Concentric Matte Titanium Frame (No ugly protruding nubs!) */}
+                <div className="w-full h-full rounded-[44px] p-[10px] bg-[#1E1D1A] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.1)_inset,0_0_0_1px_rgba(0,0,0,0.85)] flex flex-col relative select-none">
                   {/* OLED Screen Bezel & Display Area */}
-                  <div className="rounded-[38px] sm:rounded-[42px] bg-black overflow-hidden flex flex-col flex-1 relative ring-1 ring-black/60 shadow-inner w-full min-w-0">
+                  <div className="rounded-[34px] bg-[#120608] overflow-hidden flex flex-col flex-1 relative ring-1 ring-black/80 shadow-inner w-full min-w-0">
                     {/* Screen Glass ambient diagonal reflection */}
                     <div
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.025] to-white/[0.06] rounded-[inherit] z-25"
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-white/[0.05] rounded-[inherit] z-25"
                       aria-hidden="true"
                     />
 
-                    {/* Floating Dynamic Island */}
+                    {/* Compact Dynamic Island */}
                     <div
-                      className="absolute top-2.5 sm:top-3 left-1/2 -translate-x-1/2 w-[108px] h-[26px] bg-black rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.6)] ring-0.5 ring-white/10 flex items-center justify-between px-2.5 z-30 select-none pointer-events-none"
+                      className="absolute top-2.5 left-1/2 -translate-x-1/2 w-[90px] h-[23px] bg-black rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.6)] ring-0.5 ring-white/10 flex items-center justify-end pr-2.5 z-30 select-none pointer-events-none"
                       aria-hidden="true"
                     >
                       {/* Front camera lens */}
@@ -1332,13 +1296,11 @@ export function KadiStudioEditor({
                         <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-[#1E40AF] to-[#60A5FA] opacity-75 blur-[0.2px]" />
                         <div className="absolute top-0.5 right-0.5 w-0.5 h-0.5 rounded-full bg-white/70" />
                       </div>
-                      {/* TrueDepth FaceID sensor */}
-                      <div className="w-2 h-2 rounded-full bg-[#0D0D0E] ring-1 ring-white/5" />
                     </div>
 
                     {/* Floating Status Bar with Time, Cellular, Wifi, and Battery */}
                     <div
-                      className="absolute top-0 inset-x-0 h-9 px-5 pt-1.5 flex items-center justify-between text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] z-20 pointer-events-none select-none"
+                      className="absolute top-0 inset-x-0 h-9 px-6 pt-1 flex items-center justify-between text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] z-20 pointer-events-none select-none"
                       aria-hidden="true"
                     >
                       <span className="font-mono text-[11px] font-bold tracking-tight">9:41</span>
@@ -1354,8 +1316,8 @@ export function KadiStudioEditor({
                       </div>
                     </div>
 
-                    {/* Scrollable Content Viewport with clean mobile scrollbar */}
-                    <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-[#FAF8F5] relative [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.2)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-black/20 [&::-webkit-scrollbar-thumb]:rounded-full pt-8 w-full min-w-0">
+                    {/* Scrollable Content Viewport (Dark background matching theme, zero scrollbars!) */}
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-[#120608] relative pt-8 w-full min-w-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                       <DraftInvitationPreview
                         template={activeTemplate}
                         values={draft.values}
@@ -1381,35 +1343,17 @@ export function KadiStudioEditor({
             )}
 
             {device === 'android' && (
-              /* Realistic Flagship Android Hardware Chassis (Authentic 412:915 tall aspect ratio) */
+              /* Sleek, Luxury Modern Android Flagship Device Mockup */
               <div
-                className="kadi-phone-frame relative mx-auto my-auto aspect-[412/915] h-full max-h-[820px] max-w-[370px] w-auto transition-all duration-300 flex-none min-w-0"
+                className="kadi-phone-frame relative mx-auto my-auto aspect-[412/915] h-full max-h-[820px] max-w-[365px] w-auto transition-all duration-300 flex-none min-w-0"
                 style={{
-                  maxHeight: 'min(820px, calc(100% - 24px))',
+                  maxHeight: 'min(820px, calc(100% - 20px))',
                 }}
               >
-                {/* Physical Hardware Buttons - Right Side */}
-                {/* Power Button */}
-                <div
-                  className="absolute -right-[3.5px] top-[19%] w-[3.5px] h-[5%] bg-gradient-to-l from-[#18191B] via-[#4E5156] to-[#2B2D31] rounded-r-[2px] shadow-[1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
-                  aria-hidden="true"
-                />
-                {/* Volume Rocker */}
-                <div
-                  className="absolute -right-[3.5px] top-[26%] w-[3.5px] h-[10%] bg-gradient-to-l from-[#18191B] via-[#4E5156] to-[#2B2D31] rounded-r-[2px] shadow-[1px_0_2px_rgba(0,0,0,0.4)] pointer-events-none z-10"
-                  aria-hidden="true"
-                />
-
-                {/* Flagship Android Chassis Outer Shell */}
-                <div className="w-full h-full rounded-[42px] sm:rounded-[46px] p-[9px] sm:p-[10px] bg-gradient-to-b from-[#3E4146] via-[#1A1C1E] to-[#2E3136] shadow-[0_25px_65px_-12px_rgba(0,0,0,0.55),0_12px_24px_-8px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_-1px_1px_rgba(0,0,0,0.9)] ring-1 ring-black/50 flex flex-col relative select-none">
-                  {/* Micro Speaker Ear Grill in top bezel */}
-                  <div
-                    className="w-11 h-[2.5px] bg-[#0E0F11] rounded-full mx-auto mb-1 border border-white/5 shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)] shrink-0"
-                    aria-hidden="true"
-                  />
-
+                {/* Clean, Concentric Matte Titanium Frame (No ugly protruding nubs!) */}
+                <div className="w-full h-full rounded-[40px] p-[9px] bg-[#1E1D1A] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.1)_inset,0_0_0_1px_rgba(0,0,0,0.85)] flex flex-col relative select-none">
                   {/* OLED Screen Bezel & Display Area */}
-                  <div className="rounded-[34px] sm:rounded-[37px] bg-black overflow-hidden flex flex-col flex-1 relative ring-1 ring-black/60 shadow-inner w-full min-w-0">
+                  <div className="rounded-[31px] bg-[#120608] overflow-hidden flex flex-col flex-1 relative ring-1 ring-black/80 shadow-inner w-full min-w-0">
                     {/* Screen Glass ambient diagonal reflection */}
                     <div
                       className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-white/[0.05] rounded-[inherit] z-25"
@@ -1428,7 +1372,7 @@ export function KadiStudioEditor({
 
                     {/* Floating Status Bar with Time, Wifi, and Battery */}
                     <div
-                      className="absolute top-0 inset-x-0 h-9 px-5 pt-1.5 flex items-center justify-between text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] z-20 pointer-events-none select-none"
+                      className="absolute top-0 inset-x-0 h-9 px-6 pt-1 flex items-center justify-between text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] z-20 pointer-events-none select-none"
                       aria-hidden="true"
                     >
                       <span className="font-mono text-[11px] font-semibold">10:00</span>
@@ -1439,8 +1383,8 @@ export function KadiStudioEditor({
                       </div>
                     </div>
 
-                    {/* Scrollable Content Viewport with clean mobile scrollbar */}
-                    <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-[#FAF8F5] relative [scrollbar-width:thin] [scrollbar-color:rgba(0,0,0,0.2)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-black/20 [&::-webkit-scrollbar-thumb]:rounded-full pt-6 w-full min-w-0">
+                    {/* Scrollable Content Viewport (Dark background matching theme, zero scrollbars!) */}
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-[#120608] relative pt-6 w-full min-w-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                       <DraftInvitationPreview
                         template={activeTemplate}
                         values={draft.values}

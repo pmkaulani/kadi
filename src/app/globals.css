@@ -363,10 +363,19 @@
   contain: layout;
 }
 
+.kadi-phone-frame * {
+  scrollbar-width: none !important;
+}
+.kadi-phone-frame *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 .kadi-phone-canvas .iv-envelope-hitarea,
 .kadi-phone-frame .iv-envelope-hitarea {
-  width: min(280px, 84%) !important;
-  max-width: 280px !important;
+  width: min(320px, 92%) !important;
+  max-width: 320px !important;
   aspect-ratio: 1.5 !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -374,7 +383,21 @@
 
 .kadi-phone-canvas .iv-envelope,
 .kadi-phone-frame .iv-envelope {
-  max-width: 280px !important;
+  max-width: 320px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.kadi-phone-canvas .iv-opening-stage,
+.kadi-phone-frame .iv-opening-stage {
+  padding-top: 28px !important;
+  padding-bottom: 20px !important;
+  min-height: auto !important;
+}
+
+.kadi-phone-canvas .iv-control-rail,
+.kadi-phone-frame .iv-control-rail {
+  display: none !important;
 }
 
 .kadi-phone-canvas .iv-tabletop-scene,
@@ -390,7 +413,8 @@
   padding-right: 0.875rem !important;
 }
 
-.kadi-phone-canvas .kadi-draft-preview {
+.kadi-phone-canvas .kadi-draft-preview,
+.kadi-phone-frame .kadi-draft-preview {
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
