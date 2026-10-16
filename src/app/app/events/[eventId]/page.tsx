@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
+import { DestructiveConfirmationModal } from '@/components/ui/DestructiveConfirmationModal';
+import { EmptyState } from '@/components/ui/EmptyState';
 import {
   Calendar,
   Clock,
@@ -711,9 +713,30 @@ export default function EventCommandCenterPage() {
           {/* Mobile Stacked Guest Cards (< 640px) */}
           <div className="sm:hidden space-y-3">
             {filteredGuests.length === 0 ? (
-              <div className="bg-white border border-[rgba(39,38,32,0.12)] rounded-lg p-6 text-center text-xs text-brand-slate">
-                No guests found. Click &ldquo;Add Household&rdquo; or &ldquo;Import CSV&rdquo; above.
-              </div>
+              guestSearch || guestGroupFilter !== 'all' ? (
+                <EmptyState
+                  variant="filtered"
+                  title="No matching guests found"
+                  description="No guests match your active search terms or group filters."
+                  primaryAction={{
+                    label: 'Clear Filters',
+                    onClick: () => {
+                      setGuestSearch('');
+                      setGuestGroupFilter('all');
+                    },
+                  }}
+                />
+              ) : (
+                <EmptyState
+                  variant="first-use"
+                  title="No guests added yet"
+                  description="Begin building your guest list by adding households or importing a spreadsheet."
+                  primaryAction={{
+                    label: 'Add Household',
+                    onClick: () => setIsAddGuestOpen(true),
+                  }}
+                />
+              )
             ) : (
               filteredGuests.map((g) => {
                 const personalUrl = `${canonicalUrl}?tok=${g.token}`;
@@ -832,8 +855,31 @@ export default function EventCommandCenterPage() {
                 <tbody className="divide-y divide-slate-100">
                   {filteredGuests.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center text-brand-slate">
-                        No guests found. Click &ldquo;Add Household&rdquo; or &ldquo;Import CSV&rdquo; above.
+                      <td colSpan={6} className="p-8">
+                        {guestSearch || guestGroupFilter !== 'all' ? (
+                          <EmptyState
+                            variant="filtered"
+                            title="No matching guests found"
+                            description="No guests match your active search terms or group filters."
+                            primaryAction={{
+                              label: 'Clear Filters',
+                              onClick: () => {
+                                setGuestSearch('');
+                                setGuestGroupFilter('all');
+                              },
+                            }}
+                          />
+                        ) : (
+                          <EmptyState
+                            variant="first-use"
+                            title="No guests added yet"
+                            description="Begin building your guest list by adding households or importing a spreadsheet."
+                            primaryAction={{
+                              label: 'Add Household',
+                              onClick: () => setIsAddGuestOpen(true),
+                            }}
+                          />
+                        )}
                       </td>
                     </tr>
                   ) : (
@@ -1669,41 +1715,17 @@ export default function EventCommandCenterPage() {
       </Modal>
 
       {/* MODAL: ARCHIVE CONFIRMATION */}
-      <Modal
+      <DestructiveConfirmationModal
         isOpen={isArchiveConfirmOpen}
         onClose={() => setIsArchiveConfirmOpen(false)}
-        title="Archive This Invitation?"
-        description="Seals this invitation from public RSVP submissions."
-        maxWidth="sm"
-      >
-        <div className="space-y-4 py-2">
-          <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs leading-relaxed">
-            Archiving <strong>{event.title}</strong> will immediately close public RSVPs and display an archived notice to anyone visiting the link. Your guest records, headcounts, and custom stationery designs remain completely preserved in your workspace.
-          </div>
-          <p className="text-xs text-[#756F64]">
-            You can restore this event to draft state at any time from this command center.
-          </p>
-          <div className="pt-3 border-t border-[rgba(39,38,32,0.1)] flex justify-end gap-2.5">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsArchiveConfirmOpen(false)}
-            >
-              Keep Active
-            </Button>
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              className="!bg-[#934638] hover:!bg-[#79362a]"
-              onClick={handleArchive}
-            >
-              Archive Event
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        onConfirm={handleArchive}
+        title={`Archive ${event.title}?`}
+        consequence="Archiving will immediately close public RSVPs and display an archived notice to anyone visiting the link. Your guest records, headcounts, and custom stationery designs remain completely preserved in your workspace."
+        isReversible={true}
+        confirmLabel="Archive Event"
+        cancelLabel="Keep Active"
+        requireKeyword="ARCHIVE"
+      />
     </div>
   );
 }

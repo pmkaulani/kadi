@@ -4,6 +4,7 @@ import { Button } from './Button';
 
 export interface EmptyStateProps {
   icon?: LucideIcon;
+  variant?: 'first-use' | 'filtered';
   title: string;
   description: string;
   primaryAction?: {
@@ -21,19 +22,32 @@ export interface EmptyStateProps {
 
 export function EmptyState({
   icon: Icon,
+  variant = 'first-use',
   title,
   description,
   primaryAction,
   secondaryAction,
   className = '',
 }: EmptyStateProps) {
+  const isFiltered = variant === 'filtered';
+
   return (
     <div
-      className={`flex flex-col items-center justify-center text-center p-8 sm:p-12 bg-white rounded-2xl border border-[rgba(29,29,31,0.08)] shadow-sm max-w-lg mx-auto ${className}`}
+      role="status"
+      aria-label={isFiltered ? 'Filtered search results empty' : 'First use empty state'}
+      className={`flex flex-col items-center justify-center text-center p-8 sm:p-12 bg-white rounded-2xl border ${
+        isFiltered ? 'border-dashed border-stone-300' : 'border-[rgba(29,29,31,0.08)]'
+      } shadow-sm max-w-lg mx-auto ${className}`}
     >
       {Icon && (
-        <div className="w-14 h-14 rounded-2xl bg-[#F3EAE2] text-[#794A32] flex items-center justify-center mb-4 shadow-sm">
-          <Icon size={26} strokeWidth={1.75} />
+        <div
+          className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-sm ${
+            isFiltered
+              ? 'bg-stone-100 text-stone-600'
+              : 'bg-[#F3EAE2] text-[#794A32]'
+          }`}
+        >
+          <Icon size={26} strokeWidth={1.75} aria-hidden="true" />
         </div>
       )}
       <h3 className="font-serif text-lg font-bold text-[#1D1D1F] tracking-tight">{title}</h3>

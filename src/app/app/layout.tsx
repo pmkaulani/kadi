@@ -26,6 +26,7 @@ import {
   X,
 } from 'lucide-react';
 import { WorkspaceBottomNav } from '@/components/app/WorkspaceBottomNav';
+import { OfflineBanner } from '@/components/ui/OfflineBanner';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/app/events', icon: Home, key: 'home' },
@@ -384,6 +385,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </header>
+
+        {/* Persistent Offline & Sync Status Banner */}
+        <OfflineBanner />
 
         {/* Content Body */}
         <main className="flex-1 w-full px-4 sm:px-8 lg:px-10 py-5 sm:py-8 pb-28 sm:pb-8 bg-[#F6F2EA]">
