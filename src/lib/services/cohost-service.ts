@@ -10,6 +10,7 @@ export type CoHostPermission =
   | 'export_data'
   | 'check_in'
   | 'manage_cohosts'
+  | 'manage_messages'
   | 'delete_event';
 
 export const ROLE_PERMISSIONS: Record<CoHostRole, CoHostPermission[]> = {
@@ -20,6 +21,7 @@ export const ROLE_PERMISSIONS: Record<CoHostRole, CoHostPermission[]> = {
     'export_data',
     'check_in',
     'manage_cohosts',
+    'manage_messages',
     'delete_event',
   ],
   manager: [
@@ -28,12 +30,14 @@ export const ROLE_PERMISSIONS: Record<CoHostRole, CoHostPermission[]> = {
     'view_rsvps',
     'export_data',
     'check_in',
+    'manage_messages',
   ],
   guest_manager: [
     'manage_guests',
     'view_rsvps',
     'export_data',
     'check_in',
+    'manage_messages',
   ],
   check_in_staff: [
     'check_in',

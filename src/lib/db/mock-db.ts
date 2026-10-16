@@ -7,6 +7,10 @@ import {
   CondolenceEntity,
   CoHostEntity,
   CheckInRecordEntity,
+  MessageJobEntity,
+  MessageAuditRecordEntity,
+  InAppNotificationEntity,
+  NotificationPreferencesEntity,
 } from './types';
 
 // In-Memory Seed Storage for Sandbox Development & Testing
@@ -429,6 +433,85 @@ class MockDatabase {
       checkedInAt: '2026-11-14T13:45:00Z',
       checkedInBy: 'Dan Kiptoo (Lead Usher)',
       status: 'checked_in',
+    },
+  ];
+
+  messageJobs: MessageJobEntity[] = [
+    {
+      id: 'msg-job-1',
+      eventId: 'event-wedding-1',
+      idempotencyKey: 'idem_initial_invites_wedding',
+      subject: 'The Wedding of Kevin & Wanjiku - Official Invitation',
+      body: 'Dear {GuestName},\n\nYou are warmly invited to celebrate the wedding of Kevin & Wanjiku.\n\nOpen invitation: {InvitationLink}',
+      channel: 'manual_whatsapp',
+      audienceFilter: 'all',
+      targetGuestIds: ['guest-1', 'guest-2', 'guest-3'],
+      successfulGuestIds: ['guest-1', 'guest-2', 'guest-3'],
+      failedGuestIds: [],
+      status: 'delivered',
+      createdAt: '2026-10-10T10:00:00Z',
+      sentAt: '2026-10-10T10:05:00Z',
+      createdBy: 'host-1',
+    },
+  ];
+
+  messageAudits: MessageAuditRecordEntity[] = [
+    {
+      id: 'audit-1',
+      eventId: 'event-wedding-1',
+      messageJobId: 'msg-job-1',
+      action: 'message_composed',
+      channel: 'manual_whatsapp',
+      details: 'Initial invitation composed for 3 households',
+      actorId: 'host-1',
+      timestamp: '2026-10-10T10:00:00Z',
+    },
+    {
+      id: 'audit-2',
+      eventId: 'event-wedding-1',
+      messageJobId: 'msg-job-1',
+      action: 'link_shared',
+      channel: 'manual_whatsapp',
+      details: 'Invitation link generated and shared via direct WhatsApp click-to-chat',
+      actorId: 'host-1',
+      timestamp: '2026-10-10T10:05:00Z',
+    },
+  ];
+
+  inAppNotifications: InAppNotificationEntity[] = [
+    {
+      id: 'notif-1',
+      eventId: 'event-wedding-1',
+      userId: 'host-1',
+      type: 'guest_response',
+      title: 'New RSVP Received',
+      message: 'Dr. Peter Otieno & Family confirmed attendance (3 guests).',
+      read: false,
+      createdAt: '2026-10-11T09:30:00Z',
+      link: '/app/events/event-wedding-1?tab=rsvps',
+    },
+    {
+      id: 'notif-2',
+      eventId: 'event-wedding-1',
+      userId: 'host-1',
+      type: 'success',
+      title: 'Event Published',
+      message: 'The Wedding of Kevin & Wanjiku is live and accepting RSVPs.',
+      read: true,
+      createdAt: '2026-10-01T12:00:00Z',
+      link: '/app/events/event-wedding-1?tab=overview',
+    },
+  ];
+
+  notificationPreferences: NotificationPreferencesEntity[] = [
+    {
+      eventId: 'event-wedding-1',
+      userId: 'host-1',
+      notifyOnRsvp: true,
+      notifyOnContribution: true,
+      notifyOnCheckIn: true,
+      notifyOnReminderFailure: true,
+      digestFrequency: 'immediate',
     },
   ];
 }

@@ -202,6 +202,9 @@ export interface GuestHouseholdEntity {
   status: RSVPStatus;
   checkedIn?: boolean;
   checkedInAt?: string;
+  hasConsented?: boolean;
+  optedOut?: boolean;
+  optedOutAt?: string;
   notes?: string;
   lastViewedAt?: string;
   createdAt: string;
@@ -272,4 +275,91 @@ export interface CheckInRecordEntity {
   undoneAt?: string;
   undoneBy?: string;
 }
+
+export type MessageChannel =
+  | 'whatsapp_cloud'
+  | 'sms'
+  | 'email'
+  | 'manual_whatsapp'
+  | 'manual_link';
+
+export type MessageDeliveryStatus =
+  | 'draft'
+  | 'scheduled'
+  | 'queued'
+  | 'sending'
+  | 'sent'
+  | 'delivered'
+  | 'failed'
+  | 'partial'
+  | 'unconfigured'
+  | 'cancelled';
+
+export type MessageAuditAction =
+  | 'link_shared'
+  | 'message_composed'
+  | 'message_sent'
+  | 'message_delivered'
+  | 'delivery_failed'
+  | 'reminder_scheduled'
+  | 'reminder_cancelled'
+  | 'event_updated';
+
+export interface MessageJobEntity {
+  id: string;
+  eventId: string;
+  idempotencyKey: string;
+  subject?: string;
+  body: string;
+  channel: MessageChannel;
+  audienceFilter: string; // 'all' | 'pending' | 'attending' | 'declined' | 'waitlisted' | 'checked_in' | 'group:<name>'
+  targetGuestIds: string[];
+  successfulGuestIds: string[];
+  failedGuestIds: string[];
+  status: MessageDeliveryStatus;
+  scheduledFor?: string; // ISO string with timezone awareness
+  timezone?: string;
+  createdAt: string;
+  sentAt?: string;
+  createdBy: string;
+  providerMessageIds?: Record<string, string>;
+  failureReason?: string;
+  isTestMessage?: boolean;
+}
+
+export interface MessageAuditRecordEntity {
+  id: string;
+  eventId: string;
+  messageJobId?: string;
+  guestId?: string;
+  action: MessageAuditAction;
+  channel?: MessageChannel;
+  details: string;
+  actorId: string;
+  timestamp: string;
+  meta?: Record<string, unknown>;
+}
+
+export interface InAppNotificationEntity {
+  id: string;
+  eventId: string;
+  userId: string;
+  type: 'success' | 'guest_response' | 'save_failure' | 'reminder_failure' | 'action_required';
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+  link?: string;
+}
+
+export interface NotificationPreferencesEntity {
+  eventId: string;
+  userId: string;
+  notifyOnRsvp: boolean;
+  notifyOnContribution: boolean;
+  notifyOnCheckIn: boolean;
+  notifyOnReminderFailure: boolean;
+  digestFrequency: 'immediate' | 'daily' | 'off';
+}
+
 
