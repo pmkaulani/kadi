@@ -21,3 +21,25 @@ export function isEdgeSessionPresent(token?: string): boolean {
     return false;
   }
 }
+
+export function getEdgeSessionPayload(token?: string): { id: string; role?: string; email?: string; exp: number } | null {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+
+  try {
+    let base64 = parts[0].replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) {
+      base64 += '=';
+    }
+    const jsonStr = atob(base64);
+    const payload = JSON.parse(jsonStr);
+    if (payload?.id && payload?.exp && Date.now() < payload.exp) {
+      return payload;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+

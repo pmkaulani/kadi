@@ -60,6 +60,11 @@ export interface EventEntity {
   hideExactVenueUntilRsvp?: boolean;
   publicListedAt?: string;
   tags?: string[];
+  // Phase 18: Admin moderation & operational state
+  moderationStatus?: 'active' | 'unlisted' | 'suspended';
+  moderationReason?: string;
+  moderatedAt?: string;
+  moderatedBy?: string;
   pageViews?: number;
   sourceViews?: Record<string, number>;
   sourceRsvps?: Record<string, number>;
@@ -379,6 +384,19 @@ export interface EventReportEntity {
   createdAt: string;
   status: 'pending' | 'reviewed' | 'dismissed';
 }
+
+export interface AdminAuditRecord {
+  id: string;
+  adminId: string;
+  adminEmail: string;
+  action: 'moderate_event' | 'dismiss_report' | 'update_plan' | 'resolve_ticket' | 'toggle_feature';
+  targetType: 'event' | 'report' | 'user' | 'support_ticket';
+  targetId: string;
+  reason?: string;
+  metadata?: Record<string, any>;
+  timestamp: string;
+}
+
 
 
 

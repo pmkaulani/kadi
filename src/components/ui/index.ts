@@ -15,3 +15,5 @@ export * from './RetryPanel';
 export * from './OfflineBanner';
 export * from './DestructiveConfirmationModal';
 export * from './AriaLiveAnnouncer';
+export * from './SupportInquiryModal';
+

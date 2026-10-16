@@ -24,9 +24,12 @@ import {
   LogOut,
   CheckCircle2,
   X,
+  LifeBuoy,
+  Shield,
 } from 'lucide-react';
 import { WorkspaceBottomNav } from '@/components/app/WorkspaceBottomNav';
 import { OfflineBanner } from '@/components/ui/OfflineBanner';
+import { SupportInquiryModal } from '@/components/ui/SupportInquiryModal';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/app/events', icon: Home, key: 'home' },
@@ -38,7 +41,7 @@ const NAV_ITEMS = [
   { label: 'Settings', href: '/app/events?tab=settings', icon: Settings, key: 'settings' },
 ];
 
-function SidebarNavigation() {
+function SidebarNavigation({ onOpenSupport }: { onOpenSupport?: () => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentTab = searchParams?.get('tab') || 'overview';
@@ -83,7 +86,14 @@ function SidebarNavigation() {
 
       {/* Quick Links & Seamlessly Embedded Decor */}
       <div className="mt-auto shrink-0 flex flex-col">
-        <div className="px-6 space-y-2 pb-3 pt-2">
+          <button
+            type="button"
+            onClick={onOpenSupport}
+            className="flex items-center gap-2 text-xs text-[#8c9288] hover:text-[#f5dfb8] transition-colors w-full text-left"
+          >
+            <LifeBuoy size={13} />
+            <span>Support Desk</span>
+          </button>
           <Link
             href="/faq"
             className="flex items-center gap-2 text-xs text-[#8c9288] hover:text-[#f5dfb8] transition-colors"
@@ -98,7 +108,13 @@ function SidebarNavigation() {
             <ArrowUpRight size={13} />
             <span>View public website</span>
           </Link>
-        </div>
+          <Link
+            href="/admin"
+            className="flex items-center gap-2 text-xs text-[#c4a16a]/80 hover:text-[#f5dfb8] transition-colors pt-1"
+          >
+            <Shield size={13} />
+            <span>Operations Desk</span>
+          </Link>
 
         {/* Embedded Botanical Decor: completely one with the sidebar, dissolving seamlessly into #111815 */}
         <div className="relative w-full h-48 overflow-hidden pointer-events-none shrink-0">
@@ -125,6 +141,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const notifications = [
     { id: 1, title: 'Sarah Wanjiru RSVPed Yes', time: '2 hours ago', unread: true },
@@ -162,7 +179,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Primary Navigation */}
         <Suspense fallback={<div className="p-4 text-xs text-[#8c9288]">Loading navigation...</div>}>
-          <SidebarNavigation />
+          <SidebarNavigation onOpenSupport={() => setIsSupportOpen(true)} />
         </Suspense>
       </aside>
 
@@ -288,6 +305,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       <Settings size={13} />
                       <span>Account Settings</span>
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        setIsSupportOpen(true);
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-1.5 hover:bg-[#FAF7F0] text-[#60584D] text-left"
+                    >
+                      <LifeBuoy size={13} />
+                      <span>Support Desk</span>
+                    </button>
+                    <Link
+                      href="/admin"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2 px-4 py-1.5 hover:bg-[#FAF7F0] text-[#934638] font-medium"
+                    >
+                      <Shield size={13} />
+                      <span>Operations Desk</span>
+                    </Link>
                   </div>
                   <div className="py-1">
                     <button
@@ -357,6 +393,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       <Settings size={15} className="text-[#934638]" />
                       <span>Account Settings</span>
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        setIsSupportOpen(true);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-[#272620] hover:bg-white text-left"
+                    >
+                      <LifeBuoy size={15} className="text-[#934638]" />
+                      <span>Support &amp; Help Desk</span>
+                    </button>
+                    <Link
+                      href="/admin"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-[#934638] hover:bg-white"
+                    >
+                      <Shield size={15} className="text-[#934638]" />
+                      <span>Operations Desk</span>
+                    </Link>
                   </div>
 
                   <div className="pt-2 border-t border-[rgba(39,38,32,0.1)]">
@@ -397,6 +452,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Workspace Mobile Bottom Navigation */}
         <WorkspaceBottomNav />
       </div>
+
+      {/* Safe Support & Content Reports Modal */}
+      <SupportInquiryModal
+        isOpen={isSupportOpen}
+        onClose={() => setIsSupportOpen(false)}
+        userEmail="host@kadi.africa"
+      />
     </div>
   );
 }
