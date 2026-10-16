@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EventService } from '@/lib/services/event-service';
 import { RSVPService } from '@/lib/services/rsvp-service';
+import { CoHostService } from '@/lib/services/cohost-service';
 import { getAuthSession } from '@/lib/auth/session';
 import { UpdateEventSchema } from '@/lib/validation/events';
 
@@ -19,15 +20,15 @@ export async function GET(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Strict ownership verification
-    if (event.hostId !== session.id) {
-      return NextResponse.json({ error: 'Forbidden: You do not own this event.' }, { status: 403 });
+    const userRole = CoHostService.getUserRoleForEvent(params.eventId, session);
+    if (!userRole) {
+      return NextResponse.json({ error: 'Forbidden: You do not have access to this event.' }, { status: 403 });
     }
 
     const design = EventService.getEventDesign(params.eventId);
     const rsvpSummary = RSVPService.getRSVPSummary(params.eventId);
 
-    return NextResponse.json({ success: true, event, design, rsvpSummary });
+    return NextResponse.json({ success: true, event, design, rsvpSummary, userRole });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -48,9 +49,9 @@ export async function PATCH(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Strict ownership verification
-    if (event.hostId !== session.id) {
-      return NextResponse.json({ error: 'Forbidden: You do not own this event.' }, { status: 403 });
+    const { allowed, role } = CoHostService.assertPermission(params.eventId, session, 'manage_event');
+    if (!allowed) {
+      return NextResponse.json({ error: `Forbidden: Role '${role}' cannot edit event details.` }, { status: 403 });
     }
 
     const body = await req.json();
@@ -86,9 +87,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Strict ownership verification
-    if (event.hostId !== session.id) {
-      return NextResponse.json({ error: 'Forbidden: You do not own this event.' }, { status: 403 });
+    const { allowed, role } = CoHostService.assertPermission(params.eventId, session, 'delete_event');
+    if (!allowed) {
+      return NextResponse.json({ error: `Forbidden: Only the owner can delete this event.` }, { status: 403 });
     }
 
     const deleted = EventService.deleteEvent(params.eventId);

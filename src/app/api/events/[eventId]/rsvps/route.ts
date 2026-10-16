@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { RSVPService } from '@/lib/services/rsvp-service';
 import { EventService } from '@/lib/services/event-service';
+import { CoHostService } from '@/lib/services/cohost-service';
 import { getAuthSession } from '@/lib/auth/session';
 
 export async function GET(
@@ -18,8 +19,9 @@ export async function GET(
       return NextResponse.json({ error: 'Event not found.' }, { status: 404 });
     }
 
-    if (event.hostId !== session.id) {
-      return NextResponse.json({ error: 'Forbidden: You do not own this event.' }, { status: 403 });
+    const { allowed, role } = CoHostService.assertPermission(params.eventId, session, 'view_rsvps');
+    if (!allowed) {
+      return NextResponse.json({ error: `Forbidden: Role '${role}' cannot view RSVP responses.` }, { status: 403 });
     }
 
     const submissions = RSVPService.listRSVPs(params.eventId);

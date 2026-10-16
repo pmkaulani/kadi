@@ -55,7 +55,7 @@ export class EventService {
 
     const newEvent: EventEntity = {
       ...payload,
-      id: `event-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      id: payload.id || `event-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       hostId: payload.hostId || 'host-1',
       title: payload.title || 'New Event Invitation',
       subtitle: payload.subtitle || 'You are warmly invited to celebrate with us',
@@ -178,23 +178,45 @@ export class EventService {
   /**
    * Duplicates an event cleanly as a draft.
    * NON-NEGOTIABLE RULE: Duplicating an event MUST NOT duplicate guest tokens,
-   * RSVPs, payment records, consent or delivery history.
+   * RSVPs, payment records, consent, check-ins, co-hosts or delivery history.
    */
-  static duplicateEvent(id: string, newHostId?: string): EventEntity {
+  static duplicateEvent(
+    id: string,
+    newHostIdOrOptions?: string | { newHostId?: string; copyDates?: boolean }
+  ): EventEntity {
     const original = this.getEventById(id);
     if (!original) throw new Error('Original event not found');
 
+    const options =
+      typeof newHostIdOrOptions === 'string'
+        ? { newHostId: newHostIdOrOptions, copyDates: true }
+        : newHostIdOrOptions || { copyDates: true };
+
     const duplicateTitle = `Copy of ${original.title}`;
+    const copyDates = options.copyDates !== false;
+
     const newEvent = this.createEvent({
       ...original,
       id: undefined,
       slug: undefined,
-      hostId: newHostId || original.hostId,
+      hostId: options.newHostId || original.hostId,
       title: duplicateTitle,
       status: 'draft',
+      date: copyDates ? original.date : 'TBD Date',
+      time: copyDates ? original.time : 'TBD Time',
+      rsvpDeadline: copyDates ? original.rsvpDeadline : 'TBD Deadline',
       createdAt: undefined,
       updatedAt: undefined,
     });
+
+    // Also copy design cleanly
+    const originalDesign = this.getEventDesign(id);
+    if (originalDesign) {
+      mockDb.designs[newEvent.id] = {
+        ...JSON.parse(JSON.stringify(originalDesign)),
+        eventId: newEvent.id,
+      };
+    }
 
     return newEvent;
   }

@@ -262,6 +262,7 @@ export function InvitationSectionsRenderer({
             defaultGuestName={guestName}
             allowedPlusOnes={previewMode ? 1 : undefined}
             previewMode={previewMode}
+            customQuestions={event.customQuestions}
           />
         );
 

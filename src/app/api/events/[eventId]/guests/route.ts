@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GuestService } from '@/lib/services/guest-service';
 import { EventService } from '@/lib/services/event-service';
+import { CoHostService } from '@/lib/services/cohost-service';
 import { getAuthSession } from '@/lib/auth/session';
 
 export async function GET(
@@ -18,8 +19,9 @@ export async function GET(
       return NextResponse.json({ error: 'Event not found.' }, { status: 404 });
     }
 
-    if (event.hostId !== session.id) {
-      return NextResponse.json({ error: 'Forbidden: You do not own this event.' }, { status: 403 });
+    const role = CoHostService.getUserRoleForEvent(params.eventId, session);
+    if (!role) {
+      return NextResponse.json({ error: 'Forbidden: You do not have access to this event.' }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -29,7 +31,7 @@ export async function GET(
     const guests = GuestService.listGuests(params.eventId, search, group);
     const groups = GuestService.getGroups(params.eventId);
 
-    return NextResponse.json({ success: true, guests, groups });
+    return NextResponse.json({ success: true, guests, groups, userRole: role });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -50,8 +52,12 @@ export async function POST(
       return NextResponse.json({ error: 'Event not found.' }, { status: 404 });
     }
 
-    if (event.hostId !== session.id) {
-      return NextResponse.json({ error: 'Forbidden: You do not own this event.' }, { status: 403 });
+    const { allowed, role } = CoHostService.assertPermission(params.eventId, session, 'manage_guests');
+    if (!allowed) {
+      return NextResponse.json(
+        { error: `Forbidden: Role '${role}' cannot add guests.` },
+        { status: 403 }
+      );
     }
 
     const body = await req.json();

@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
       dietaryRequirements: body.dietaryRequirements,
       songRequest: body.songRequest,
       noteToHost: body.noteToHost,
+      customAnswers: body.customAnswers,
     });
 
     return NextResponse.json({ success: true, submission }, { status: 201 });

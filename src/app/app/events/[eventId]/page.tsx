@@ -62,8 +62,20 @@ import { CondolencesSection } from '@/components/invitations/CondolencesSection'
 import { RSVPSection } from '@/components/invitations/RSVPSection';
 import { RegistrySection } from '@/components/invitations/RegistrySection';
 import { ClosingSection } from '@/components/invitations/ClosingSection';
+import { EventCheckInTab } from '@/components/events/EventCheckInTab';
+import { EventSettingsTab } from '@/components/events/EventSettingsTab';
+import { EventCsvImportModal } from '@/components/events/EventCsvImportModal';
 
-type TabType = 'overview' | 'guests' | 'rsvps' | 'design' | 'share' | 'contributions';
+export type TabType =
+  | 'overview'
+  | 'design'
+  | 'guests'
+  | 'rsvps'
+  | 'messages'
+  | 'contributions'
+  | 'checkin'
+  | 'settings'
+  | 'share';
 
 export default function EventCommandCenterPage() {
   const params = useParams();
@@ -71,6 +83,28 @@ export default function EventCommandCenterPage() {
   const eventId = params?.eventId as string;
 
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const tab = searchParams.get('tab') as TabType;
+      if (
+        tab &&
+        ['overview', 'design', 'guests', 'rsvps', 'messages', 'contributions', 'checkin', 'settings', 'share'].includes(tab)
+      ) {
+        setActiveTab(tab);
+      }
+    }
+  }, []);
+
+  const switchTab = (tab: TabType) => {
+    setActiveTab(tab);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', tab);
+      window.history.replaceState(null, '', url.toString());
+    }
+  };
   const [copiedLink, setCopiedLink] = useState(false);
 
   // Load Domain Entities
@@ -425,67 +459,88 @@ export default function EventCommandCenterPage() {
         </div>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-6 overflow-x-auto whitespace-nowrap border-b border-[rgba(39,38,32,.2)] scrollbar-none pb-px">
+      {/* Tabs Navigation (Desktop & Mobile) */}
+      <div className="flex items-center gap-1 sm:gap-6 overflow-x-auto whitespace-nowrap border-b border-[rgba(39,38,32,.2)] scrollbar-none pb-px">
         <button
-          onClick={() => setActiveTab('overview')}
-          className={`px-0 py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
+          onClick={() => switchTab('overview')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
             activeTab === 'overview'
               ? 'border-[#934638] text-[#934638] font-semibold'
               : 'border-transparent text-[#756F64] hover:text-[#272620]'
           }`}
         >
-          Overview & Stats
+          Overview
         </button>
         <button
-          onClick={() => setActiveTab('guests')}
-          className={`px-0 py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
-            activeTab === 'guests'
-              ? 'border-[#934638] text-[#934638] font-semibold'
-              : 'border-transparent text-[#756F64] hover:text-[#272620]'
-          }`}
-        >
-          Guest Households ({summary.totalHouseholds})
-        </button>
-        <button
-          onClick={() => setActiveTab('rsvps')}
-          className={`px-0 py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
-            activeTab === 'rsvps'
-              ? 'border-[#934638] text-[#934638] font-semibold'
-              : 'border-transparent text-[#756F64] hover:text-[#272620]'
-          }`}
-        >
-          RSVP Responses ({summary.attendingAttendeeCount} Attending)
-        </button>
-        <button
-          onClick={() => setActiveTab('design')}
-          className={`px-0 py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
+          onClick={() => switchTab('design')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
             activeTab === 'design'
               ? 'border-[#934638] text-[#934638] font-semibold'
               : 'border-transparent text-[#756F64] hover:text-[#272620]'
           }`}
         >
-          Design & 3D Envelope Studio
+          Invitation &amp; Design
         </button>
         <button
-          onClick={() => setActiveTab('share')}
-          className={`px-0 py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
-            activeTab === 'share'
+          onClick={() => switchTab('guests')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
+            activeTab === 'guests'
               ? 'border-[#934638] text-[#934638] font-semibold'
               : 'border-transparent text-[#756F64] hover:text-[#272620]'
           }`}
         >
-          WhatsApp & Share Hub
+          Guests ({summary.totalHouseholds})
         </button>
         <button
-          onClick={() => setActiveTab('contributions')}
-          className={`px-0 py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
+          onClick={() => switchTab('rsvps')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
+            activeTab === 'rsvps'
+              ? 'border-[#934638] text-[#934638] font-semibold'
+              : 'border-transparent text-[#756F64] hover:text-[#272620]'
+          }`}
+        >
+          RSVPs ({summary.attendingAttendeeCount})
+        </button>
+        <button
+          onClick={() => switchTab('share')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
+            activeTab === 'share' || (activeTab as any) === 'messages'
+              ? 'border-[#934638] text-[#934638] font-semibold'
+              : 'border-transparent text-[#756F64] hover:text-[#272620]'
+          }`}
+        >
+          Messages &amp; Share
+        </button>
+        <button
+          onClick={() => switchTab('contributions')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
             activeTab === 'contributions'
               ? 'border-[#934638] text-[#934638] font-semibold'
               : 'border-transparent text-[#756F64] hover:text-[#272620]'
           }`}
         >
-          Direct M-Pesa Setup
+          Contributions
+        </button>
+        <button
+          onClick={() => switchTab('checkin')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all inline-flex items-center gap-1.5 ${
+            activeTab === 'checkin'
+              ? 'border-[#934638] text-[#934638] font-semibold'
+              : 'border-transparent text-[#756F64] hover:text-[#272620]'
+          }`}
+        >
+          <span>Check-in</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        </button>
+        <button
+          onClick={() => switchTab('settings')}
+          className={`px-3 sm:px-0 py-3 sm:py-3.5 border-b-2 text-xs font-medium whitespace-nowrap transition-all ${
+            activeTab === 'settings'
+              ? 'border-[#934638] text-[#934638] font-semibold'
+              : 'border-transparent text-[#756F64] hover:text-[#272620]'
+          }`}
+        >
+          Settings
         </button>
       </div>
 
@@ -1465,6 +1520,24 @@ export default function EventCommandCenterPage() {
         );
       })()}
 
+      {/* TAB 7: CHECK-IN DESK */}
+      {activeTab === 'checkin' && (
+        <EventCheckInTab
+          eventId={eventId}
+          eventTitle={event.title}
+          guests={guests}
+          onRefresh={refreshData}
+        />
+      )}
+
+      {/* TAB 8: SETTINGS & POLICIES */}
+      {activeTab === 'settings' && (
+        <EventSettingsTab
+          event={event}
+          onRefresh={refreshData}
+        />
+      )}
+
       {/* MODAL: ADD GUEST */}
       <Modal
         isOpen={isAddGuestOpen}
@@ -1542,41 +1615,17 @@ export default function EventCommandCenterPage() {
         </form>
       </Modal>
 
-      {/* MODAL: CSV IMPORT */}
-      <Modal
+      {/* ENHANCED MODAL: CSV IMPORT WITH LIVE VALIDATION PREVIEW */}
+      <EventCsvImportModal
         isOpen={isCsvModalOpen}
         onClose={() => setIsCsvModalOpen(false)}
-        title="Import Guests via CSV / Spreadsheet"
-        description="Paste your comma-separated guest records below. First row must be headers."
-        maxWidth="lg"
-      >
-        <div className="space-y-4 pt-2">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-brand-slate mb-1">
-              CSV Data (Name, Phone, Group, PlusOnes)
-            </label>
-            <textarea
-              rows={8}
-              value={csvText}
-              onChange={(e) => setCsvText(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 bg-slate-50 font-mono text-xs p-3 text-brand-charcoal focus:outline-none focus:ring-2 focus:ring-brand-purple"
-            />
-          </div>
-
-          <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-900 text-xs">
-            <strong>Note:</strong> Importing contacts will NOT send any messages automatically. You control exactly when and how to share links.
-          </div>
-
-          <div className="pt-4 flex justify-end gap-3">
-            <Button type="button" variant="ghost" size="sm" onClick={() => setIsCsvModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="button" variant="primary" size="md" onClick={handleImportCsv}>
-              Parse & Import Guests
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        eventId={eventId}
+        existingGuests={guests}
+        onImportSuccess={() => {
+          refreshData();
+          setIsCsvModalOpen(false);
+        }}
+      />
 
       {/* MODAL: TEST STK PUSH SIMULATION */}
       <Modal

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { RSVPService } from '@/lib/services/rsvp-service';
 import { EventService } from '@/lib/services/event-service';
+import { CoHostService } from '@/lib/services/cohost-service';
 import { getAuthSession } from '@/lib/auth/session';
 
 export async function GET(
@@ -21,10 +22,11 @@ export async function GET(
       return NextResponse.json({ error: 'Event not found.' }, { status: 404 });
     }
 
-    // Strict host authorization: Only the verified owner can export guest RSVP data
-    if (event.hostId !== session.id) {
+    // Enforce least privilege: Only roles with export_data permission (Owner, Manager, Guest Manager) can export
+    const { allowed, role } = CoHostService.assertPermission(params.eventId, session, 'export_data');
+    if (!allowed) {
       return NextResponse.json(
-        { error: 'Forbidden: You do not own this event.' },
+        { error: `Forbidden: Role '${role}' is not authorized to export guest RSVP data.` },
         { status: 403 }
       );
     }

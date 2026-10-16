@@ -12,6 +12,7 @@ export interface RSVPSectionProps {
   defaultGuestName?: string;
   allowedPlusOnes?: number;
   previewMode?: boolean;
+  customQuestions?: import('@/lib/db/types').CustomRSVPQuestion[];
 }
 
 export function RSVPSection({
@@ -21,6 +22,7 @@ export function RSVPSection({
   defaultGuestName = '',
   allowedPlusOnes = 1,
   previewMode = false,
+  customQuestions = [],
 }: RSVPSectionProps) {
   const [attending, setAttending] = useState<'yes' | 'no' | 'maybe' | null>(null);
   const [fullName, setFullName] = useState(defaultGuestName);
@@ -30,6 +32,7 @@ export function RSVPSection({
   const [dietaryRequirements, setDietaryRequirements] = useState('');
   const [songRequest, setSongRequest] = useState('');
   const [noteToHost, setNoteToHost] = useState('');
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string | string[]>>({});
   const [hasConsent, setHasConsent] = useState(false);
   const [honeypot, setHoneypot] = useState('');
 
@@ -93,6 +96,24 @@ export function RSVPSection({
       return;
     }
 
+    // Custom RSVP Questions validation
+    if (customQuestions && customQuestions.length > 0) {
+      for (const q of customQuestions) {
+        if (q.required) {
+          const ans = customAnswers[q.id];
+          const isEmpty =
+            ans === undefined ||
+            ans === null ||
+            (typeof ans === 'string' && ans.trim() === '') ||
+            (Array.isArray(ans) && ans.length === 0);
+          if (isEmpty) {
+            setErrorMessage(`Please answer required question: "${q.prompt}"`);
+            return;
+          }
+        }
+      }
+    }
+
     // Preview mode: In-memory simulation only, never hit network API
     if (previewMode) {
       setIsSimulatedPreview(true);
@@ -122,6 +143,7 @@ export function RSVPSection({
           dietaryRequirements: dietaryRequirements.trim() || undefined,
           songRequest: songRequest.trim() || undefined,
           noteToHost: noteToHost.trim() || undefined,
+          customAnswers,
         }),
       });
 
@@ -356,6 +378,74 @@ export function RSVPSection({
                     className="w-full rounded-xl border border-[rgba(39,38,32,0.18)] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#272620] placeholder:text-[#8C8375]/60 focus:outline-none focus:border-[var(--event-primary,#934638)]"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Custom Host Questions */}
+            {customQuestions && customQuestions.length > 0 && (
+              <div className="space-y-4 pt-2 border-t border-[rgba(39,38,32,0.08)]">
+                {customQuestions.map((q) => (
+                  <div key={q.id}>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C8375] mb-1.5 flex items-center gap-1.5">
+                      <span>{q.prompt}</span>
+                      {q.required && <span className="text-rose-600 font-bold">*</span>}
+                    </label>
+
+                    {q.type === 'text' && (
+                      <input
+                        type="text"
+                        placeholder="Your response..."
+                        value={(customAnswers[q.id] as string) || ''}
+                        onChange={(e) =>
+                          setCustomAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
+                        }
+                        className="w-full rounded-xl border border-[rgba(39,38,32,0.18)] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#272620] placeholder:text-[#8C8375]/60 focus:outline-none focus:border-[var(--event-primary,#934638)]"
+                      />
+                    )}
+
+                    {q.type === 'choice' && (
+                      <select
+                        value={(customAnswers[q.id] as string) || ''}
+                        onChange={(e) =>
+                          setCustomAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
+                        }
+                        className="w-full rounded-xl border border-[rgba(39,38,32,0.18)] bg-white px-3.5 py-2 text-xs sm:text-sm text-[#272620] focus:outline-none focus:border-[var(--event-primary,#934638)]"
+                      >
+                        <option value="">Select an option...</option>
+                        {q.options?.map((opt, i) => (
+                          <option key={i} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+
+                    {q.type === 'checkboxes' && (
+                      <div className="space-y-2 pt-1">
+                        {q.options?.map((opt, i) => {
+                          const currentArr = (customAnswers[q.id] as string[]) || [];
+                          const checked = currentArr.includes(opt);
+                          return (
+                            <label key={i} className="flex items-center gap-2 text-xs text-[#272620] cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={(e) => {
+                                  const nextArr = e.target.checked
+                                    ? [...currentArr, opt]
+                                    : currentArr.filter((item) => item !== opt);
+                                  setCustomAnswers((prev) => ({ ...prev, [q.id]: nextArr }));
+                                }}
+                                className="h-4 w-4 rounded border-stone-300 text-[#934638] focus:ring-[#934638]"
+                              />
+                              <span>{opt}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
 

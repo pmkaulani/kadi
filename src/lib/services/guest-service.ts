@@ -11,6 +11,16 @@ function generateHighEntropyToken(): string {
   return token;
 }
 
+// Pass code generation for on-the-day check-in and QR codes
+export function generatePassCode(prefix = 'pass'): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let rand = '';
+  for (let i = 0; i < 14; i++) {
+    rand += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `${prefix}_${rand}`;
+}
+
 // Deterministic token hash computation
 export function computeTokenHash(token: string): string {
   let hash = 0;
@@ -115,6 +125,10 @@ export class GuestService {
     return guest;
   }
 
+  static getGuestByPassCode(eventId: string, passCode: string): GuestHouseholdEntity | undefined {
+    return mockDb.guests.find((g) => g.eventId === eventId && g.passCode === passCode);
+  }
+
   static addGuest(
     eventId: string,
     data: {
@@ -128,6 +142,7 @@ export class GuestService {
   ): GuestHouseholdEntity {
     const token = generateHighEntropyToken();
     const tokenHash = computeTokenHash(token);
+    const passCode = generatePassCode();
 
     const normalizedPhone = data.contactPhone
       ? normalizeKenyanPhoneNumber(data.contactPhone)
@@ -143,7 +158,9 @@ export class GuestService {
       allowedPlusOnes: data.allowedPlusOnes !== undefined ? Math.max(0, Number(data.allowedPlusOnes)) : 1,
       token,
       tokenHash,
+      passCode,
       status: 'pending',
+      checkedIn: false,
       notes: data.notes,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

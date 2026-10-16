@@ -26,6 +26,7 @@ export interface SubmitRSVPPayload {
   dietaryRequirements?: string;
   songRequest?: string;
   noteToHost?: string;
+  customAnswers?: Record<string, string | string[]>;
 }
 
 /**
@@ -72,8 +73,26 @@ export class RSVPService {
       throw new Error('Cross-event token error: This invitation token belongs to a different event.');
     }
 
-    // 2. Untokenized policy check
+    // 2. Event and Untokenized policy check
     const event = EventService.getEventById(payload.eventId);
+    if (!event) {
+      throw new Error('Event not found for RSVP submission.');
+    }
+
+    if (event.rsvpEnabled === false) {
+      throw new Error('RSVP submissions are currently closed for this celebration.');
+    }
+
+    if (event.rsvpDeadline) {
+      const deadlineDate = new Date(event.rsvpDeadline);
+      if (!isNaN(deadlineDate.getTime())) {
+        deadlineDate.setHours(23, 59, 59, 999);
+        if (Date.now() > deadlineDate.getTime()) {
+          throw new Error('The RSVP deadline for this celebration has passed.');
+        }
+      }
+    }
+
     const allowUntokenized = (payload as any).allowUntokenizedRsvp !== undefined
       ? (payload as any).allowUntokenizedRsvp
       : (event as any)?.allowUntokenizedRsvp !== false;
@@ -94,7 +113,46 @@ export class RSVPService {
       }
     }
 
-    // 4. Duplicate Submit / Replay protection & Resubmission update
+    // 4. Custom RSVP Questions validation
+    if (event.customQuestions && event.customQuestions.length > 0) {
+      for (const q of event.customQuestions) {
+        if (q.required) {
+          const ans = payload.customAnswers?.[q.id];
+          const isEmpty =
+            ans === undefined ||
+            ans === null ||
+            (typeof ans === 'string' && ans.trim() === '') ||
+            (Array.isArray(ans) && ans.length === 0);
+          if (isEmpty) {
+            throw new Error(`Please answer the required question: "${q.prompt}"`);
+          }
+        }
+      }
+    }
+
+    // 5. Max Capacity and Waitlist enforcement
+    let isWaitlisted = false;
+    if (event.maxCapacity && payload.status === 'yes') {
+      const otherSubmissions = mockDb.rsvps.filter(
+        (r) =>
+          r.eventId === payload.eventId &&
+          r.status === 'yes' &&
+          !r.isWaitlisted &&
+          (household ? r.householdId !== household.id : r.contact.trim().toLowerCase() !== payload.contact.trim().toLowerCase())
+      );
+      const currentAttendingCount = otherSubmissions.reduce((sum, r) => sum + r.attendeeCount, 0);
+      if (currentAttendingCount + payload.attendeeCount > event.maxCapacity) {
+        if (event.capacityWaitlist) {
+          isWaitlisted = true;
+        } else {
+          throw new Error(
+            `Event has reached maximum capacity (${event.maxCapacity} guests). No additional attendees can be accommodated.`
+          );
+        }
+      }
+    }
+
+    // 6. Duplicate Submit / Replay protection & Resubmission update
     const existingIdx = mockDb.rsvps.findIndex((r) => {
       if (r.eventId !== payload.eventId) return false;
       if (household && r.householdId === household.id) return true;
@@ -125,6 +183,9 @@ export class RSVPService {
         dietaryRequirements: payload.dietaryRequirements?.trim() || undefined,
         songRequest: payload.songRequest?.trim() || undefined,
         noteToHost: payload.noteToHost?.trim() || undefined,
+        customAnswers: payload.customAnswers,
+        isWaitlisted,
+        isApproved: !event.requireApproval,
         submittedAt: new Date().toISOString(),
       };
       submission = mockDb.rsvps[existingIdx];
@@ -140,12 +201,15 @@ export class RSVPService {
         dietaryRequirements: payload.dietaryRequirements?.trim() || undefined,
         songRequest: payload.songRequest?.trim() || undefined,
         noteToHost: payload.noteToHost?.trim() || undefined,
+        customAnswers: payload.customAnswers,
+        isWaitlisted,
+        isApproved: !event.requireApproval,
         submittedAt: new Date().toISOString(),
       };
       mockDb.rsvps.unshift(submission);
     }
 
-    // 5. Update household state & attendees list
+    // 7. Update household state & attendees list
     if (household) {
       GuestService.updateGuest(household.id, {
         status: payload.status,
@@ -231,32 +295,49 @@ export class RSVPService {
 
   /**
    * Generates sanitized CSV export protected against CSV formula injection.
+   * Dynamically includes event-defined custom RSVP question answers.
    */
   static exportRSVPsCSV(eventId: string): string {
     const submissions = this.listRSVPs(eventId);
-    const headers = [
+    const event = EventService.getEventById(eventId);
+    const customQuestions = event?.customQuestions || [];
+
+    const baseHeaders = [
       'Submission ID',
       'Primary Guest Name',
       'Contact',
       'Response',
       'Attendee Count',
+      'Status (Waitlisted)',
       'Dietary Requirements',
       'Song Request',
       'Note to Host',
-      'Submitted At',
     ];
 
-    const rows = submissions.map((s) => [
-      sanitizeCsvCell(s.id),
-      sanitizeCsvCell(s.primaryName),
-      sanitizeCsvCell(s.contact),
-      sanitizeCsvCell(s.status.toUpperCase()),
-      s.attendeeCount,
-      sanitizeCsvCell(s.dietaryRequirements || ''),
-      sanitizeCsvCell(s.songRequest || ''),
-      sanitizeCsvCell(s.noteToHost || ''),
-      sanitizeCsvCell(s.submittedAt),
-    ]);
+    const questionHeaders = customQuestions.map((q) => q.prompt);
+    const headers = [...baseHeaders, ...questionHeaders, 'Submitted At'];
+
+    const rows = submissions.map((s) => {
+      const baseCells = [
+        sanitizeCsvCell(s.id),
+        sanitizeCsvCell(s.primaryName),
+        sanitizeCsvCell(s.contact),
+        sanitizeCsvCell(s.status.toUpperCase()),
+        s.attendeeCount,
+        sanitizeCsvCell(s.isWaitlisted ? 'Waitlisted' : 'Confirmed'),
+        sanitizeCsvCell(s.dietaryRequirements || ''),
+        sanitizeCsvCell(s.songRequest || ''),
+        sanitizeCsvCell(s.noteToHost || ''),
+      ];
+
+      const questionCells = customQuestions.map((q) => {
+        const val = s.customAnswers?.[q.id];
+        if (Array.isArray(val)) return sanitizeCsvCell(val.join('; '));
+        return sanitizeCsvCell(val !== undefined && val !== null ? String(val) : '');
+      });
+
+      return [...baseCells, ...questionCells, sanitizeCsvCell(s.submittedAt)];
+    });
 
     return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
   }

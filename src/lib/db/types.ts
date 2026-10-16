@@ -48,6 +48,13 @@ export interface EventEntity {
   mpesaNumber?: string;
   mpesaRecipient?: string;
   mpesaReference?: string;
+  // Registration policy & custom questions extensions
+  rsvpEnabled?: boolean;
+  capacityWaitlist?: boolean;
+  requireApproval?: boolean;
+  allowUntokenizedRsvp?: boolean;
+  allowedPlusOnesDefault?: number;
+  customQuestions?: CustomRSVPQuestion[];
   // Rich data-driven section extensions
   ourStoryMilestones?: Array<{
     yearOrDate: string;
@@ -173,6 +180,14 @@ export interface EventDesignEntity {
   };
 }
 
+export interface CustomRSVPQuestion {
+  id: string;
+  prompt: string;
+  type: 'text' | 'choice' | 'checkboxes';
+  options?: string[];
+  required?: boolean;
+}
+
 export interface GuestHouseholdEntity {
   id: string;
   eventId: string;
@@ -183,7 +198,10 @@ export interface GuestHouseholdEntity {
   allowedPlusOnes: number;
   token: string; // High-entropy unhashed token for link generation
   tokenHash: string; // SHA-256 for secure verification
+  passCode?: string; // Random check-in pass ID for physical/QR check-in
   status: RSVPStatus;
+  checkedIn?: boolean;
+  checkedInAt?: string;
   notes?: string;
   lastViewedAt?: string;
   createdAt: string;
@@ -211,6 +229,9 @@ export interface RSVPSubmissionEntity {
   dietaryRequirements?: string;
   songRequest?: string;
   noteToHost?: string;
+  customAnswers?: Record<string, string | string[]>;
+  isWaitlisted?: boolean;
+  isApproved?: boolean;
   submittedAt: string;
 }
 
@@ -222,3 +243,33 @@ export interface CondolenceEntity {
   status: 'approved' | 'pending';
   createdAt: string;
 }
+
+export type CoHostRole = 'owner' | 'manager' | 'guest_manager' | 'check_in_staff';
+export type CoHostStatus = 'pending' | 'accepted' | 'revoked';
+
+export interface CoHostEntity {
+  id: string;
+  eventId: string;
+  email: string;
+  name?: string;
+  role: CoHostRole;
+  status: CoHostStatus;
+  inviteToken: string;
+  invitedAt: string;
+  acceptedAt?: string;
+  invitedBy?: string;
+}
+
+export interface CheckInRecordEntity {
+  id: string;
+  eventId: string;
+  guestId: string;
+  passCode: string;
+  guestName: string;
+  checkedInAt: string;
+  checkedInBy: string;
+  status: 'checked_in' | 'undone';
+  undoneAt?: string;
+  undoneBy?: string;
+}
+

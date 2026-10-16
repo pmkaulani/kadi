@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GuestService } from '@/lib/services/guest-service';
 import { EventService } from '@/lib/services/event-service';
+import { CoHostService } from '@/lib/services/cohost-service';
 import { getAuthSession } from '@/lib/auth/session';
 
 export async function PATCH(
@@ -18,8 +19,9 @@ export async function PATCH(
       return NextResponse.json({ error: 'Event not found.' }, { status: 404 });
     }
 
-    if (event.hostId !== session.id) {
-      return NextResponse.json({ error: 'Forbidden: You do not own this event.' }, { status: 403 });
+    const { allowed, role } = CoHostService.assertPermission(params.eventId, session, 'manage_guests');
+    if (!allowed) {
+      return NextResponse.json({ error: `Forbidden: Role '${role}' cannot edit guests.` }, { status: 403 });
     }
 
     const guest = GuestService.getGuestById(params.guestId);
@@ -61,8 +63,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Event not found.' }, { status: 404 });
     }
 
-    if (event.hostId !== session.id) {
-      return NextResponse.json({ error: 'Forbidden: You do not own this event.' }, { status: 403 });
+    const { allowed, role } = CoHostService.assertPermission(params.eventId, session, 'manage_guests');
+    if (!allowed) {
+      return NextResponse.json({ error: `Forbidden: Role '${role}' cannot delete guests.` }, { status: 403 });
     }
 
     const guest = GuestService.getGuestById(params.guestId);

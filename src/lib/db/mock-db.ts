@@ -5,6 +5,8 @@ import {
   AttendeeEntity,
   RSVPSubmissionEntity,
   CondolenceEntity,
+  CoHostEntity,
+  CheckInRecordEntity,
 } from './types';
 
 // In-Memory Seed Storage for Sandbox Development & Testing
@@ -36,6 +38,26 @@ class MockDatabase {
       rsvpDeadline: '1 November 2026',
       maxCapacity: 250,
       allowsChildren: true,
+      rsvpEnabled: true,
+      capacityWaitlist: true,
+      requireApproval: false,
+      allowUntokenizedRsvp: true,
+      allowedPlusOnesDefault: 1,
+      customQuestions: [
+        {
+          id: 'q-song',
+          prompt: 'Which song will get you on the dancefloor?',
+          type: 'text',
+          required: false,
+        },
+        {
+          id: 'q-shuttle',
+          prompt: 'Do you require reserved seating on the Safari Park shuttle from CBD?',
+          type: 'choice',
+          options: ['Yes, need shuttle transport', 'No, private transport'],
+          required: false,
+        },
+      ],
       mpesaType: 'till',
       mpesaNumber: '8249102',
       mpesaRecipient: 'Kevin Kamau',
@@ -277,7 +299,10 @@ class MockDatabase {
       allowedPlusOnes: 3,
       token: 'tok_wanjiku_fam_84a9f',
       tokenHash: 'hash_84a9f',
+      passCode: 'pass_peter_otieno_84a9f',
       status: 'attending',
+      checkedIn: true,
+      checkedInAt: '2026-11-14T13:45:00Z',
       notes: 'Uncle from Kisumu',
       createdAt: '2026-10-02T10:00:00Z',
       updatedAt: '2026-10-05T12:00:00Z',
@@ -292,7 +317,9 @@ class MockDatabase {
       allowedPlusOnes: 1,
       token: 'tok_grace_brian_19d4e',
       tokenHash: 'hash_19d4e',
+      passCode: 'pass_grace_mwangi_19d4e',
       status: 'attending',
+      checkedIn: false,
       createdAt: '2026-10-02T10:05:00Z',
       updatedAt: '2026-10-06T15:20:00Z',
     },
@@ -305,7 +332,9 @@ class MockDatabase {
       allowedPlusOnes: 1,
       token: 'tok_hon_kiprono_77c2a',
       tokenHash: 'hash_77c2a',
+      passCode: 'pass_hon_kiprono_77c2a',
       status: 'pending',
+      checkedIn: false,
       createdAt: '2026-10-02T10:10:00Z',
       updatedAt: '2026-10-02T10:10:00Z',
     },
@@ -344,6 +373,10 @@ class MockDatabase {
       dietaryRequirements: 'One vegetarian meal, one lactose-free',
       songRequest: 'Sauti Sol — Suzanna',
       noteToHost: 'Congratulations Kevin & Wanjiku! We look forward to celebrating your great day.',
+      customAnswers: {
+        'q-song': 'Sauti Sol — Suzanna',
+        'q-shuttle': 'No, private transport',
+      },
       submittedAt: '2026-10-05T12:00:00Z',
     },
   ];
@@ -356,6 +389,46 @@ class MockDatabase {
       message: 'Mama Sarah was an exemplary mother in faith. May the Lord grant comfort, peace, and eternal rest to the entire family.',
       status: 'approved',
       createdAt: '2026-10-09T14:15:00Z',
+    },
+  ];
+
+  cohosts: CoHostEntity[] = [
+    {
+      id: 'cohost-1',
+      eventId: 'event-wedding-1',
+      email: 'wanjiku.cohost@kadi.co.ke',
+      name: 'Wanjiku Ochieng (Bride)',
+      role: 'manager',
+      status: 'accepted',
+      inviteToken: 'tok_cohost_wanjiku_acc',
+      invitedAt: '2026-10-02T10:00:00Z',
+      acceptedAt: '2026-10-02T11:00:00Z',
+      invitedBy: 'host-1',
+    },
+    {
+      id: 'cohost-2',
+      eventId: 'event-wedding-1',
+      email: 'dan.usher@kadi.co.ke',
+      name: 'Dan Kiptoo (Lead Usher)',
+      role: 'check_in_staff',
+      status: 'accepted',
+      inviteToken: 'tok_cohost_dan_acc',
+      invitedAt: '2026-10-04T14:00:00Z',
+      acceptedAt: '2026-10-04T15:30:00Z',
+      invitedBy: 'host-1',
+    },
+  ];
+
+  checkIns: CheckInRecordEntity[] = [
+    {
+      id: 'chk-1',
+      eventId: 'event-wedding-1',
+      guestId: 'guest-1',
+      passCode: 'pass_peter_otieno_84a9f',
+      guestName: 'Dr. Peter Otieno & Family',
+      checkedInAt: '2026-11-14T13:45:00Z',
+      checkedInBy: 'Dan Kiptoo (Lead Usher)',
+      status: 'checked_in',
     },
   ];
 }
