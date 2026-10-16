@@ -352,7 +352,7 @@ export default function EventCommandCenterPage() {
   const filteredGuests = GuestService.listGuests(eventId, guestSearch, guestGroupFilter);
 
   return (
-    <div className="space-y-6">
+    <div className={activeTab === 'design' ? '-mt-2 sm:-mt-4 space-y-1.5' : 'space-y-6'}>
       {/* Archive Warning Banner */}
       {event.status === 'archived' && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-amber-500/10 border border-amber-600/30 text-[#272620]">
@@ -374,9 +374,9 @@ export default function EventCommandCenterPage() {
       )}
 
       {/* Top Banner / Event Title */}
-      <div className="bg-transparent py-5 sm:py-7 border-y border-[rgba(39,38,32,.18)] flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className={`bg-transparent border-y border-[rgba(39,38,32,.18)] flex flex-col md:flex-row md:items-center justify-between ${activeTab === 'design' ? 'py-2 sm:py-2.5 gap-2' : 'py-5 sm:py-7 gap-6'}`}>
         <div>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-1">
             <Link
               href="/app/events"
               className="text-xs text-brand-slate hover:text-brand-charcoal flex items-center gap-1 font-semibold"
@@ -396,33 +396,35 @@ export default function EventCommandCenterPage() {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-serif font-medium tracking-[-.04em] text-brand-charcoal">
+          <h1 className={`font-serif font-medium tracking-[-.04em] text-brand-charcoal ${activeTab === 'design' ? 'text-base sm:text-lg' : 'text-3xl sm:text-4xl'}`}>
             {event.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-brand-slate mt-2">
-            <span className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-brand-purple" /> {event.date}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-brand-purple" /> {event.time}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-brand-purple" /> {event.venue}
-            </span>
-          </div>
+          {activeTab !== 'design' && (
+            <div className="flex flex-wrap items-center gap-4 text-xs text-brand-slate mt-2">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-brand-purple" /> {event.date}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-brand-purple" /> {event.time}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-brand-purple" /> {event.venue}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Header Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           {event.status === 'draft' && (
             <>
-              <Button variant="primary" size="md" onClick={handlePublish}>
+              <Button variant="primary" size={activeTab === 'design' ? 'sm' : 'md'} onClick={handlePublish}>
                 Publish Live Invitation
               </Button>
               <Button
                 variant="ghost"
-                size="md"
+                size={activeTab === 'design' ? 'sm' : 'md'}
                 onClick={() => setIsArchiveConfirmOpen(true)}
                 leftIcon={<Archive className="w-4 h-4 text-stone-600" />}
               >
@@ -436,7 +438,7 @@ export default function EventCommandCenterPage() {
               <Link href={`/e/${event.slug}`} target="_blank">
                 <Button
                   variant="primary"
-                  size="md"
+                  size={activeTab === 'design' ? 'sm' : 'md'}
                   rightIcon={<ExternalLink className="w-4 h-4" />}
                 >
                   View Live Link
@@ -444,7 +446,7 @@ export default function EventCommandCenterPage() {
               </Link>
               <Button
                 variant="ghost"
-                size="md"
+                size={activeTab === 'design' ? 'sm' : 'md'}
                 onClick={() => setIsArchiveConfirmOpen(true)}
                 leftIcon={<Archive className="w-4 h-4 text-stone-600" />}
               >
@@ -454,14 +456,14 @@ export default function EventCommandCenterPage() {
           )}
 
           {event.status === 'archived' && (
-            <Button variant="primary" size="md" onClick={handleUnarchive}>
+            <Button variant="primary" size={activeTab === 'design' ? 'sm' : 'md'} onClick={handleUnarchive}>
               Restore to Draft
             </Button>
           )}
 
           <Button
             variant="secondary"
-            size="md"
+            size={activeTab === 'design' ? 'sm' : 'md'}
             onClick={handleCopyLink}
             leftIcon={copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
           >
@@ -1259,9 +1261,8 @@ export default function EventCommandCenterPage() {
       )}
 
       {/* TAB 4: DESIGN & 3D STUDIO */}
-      {/* TAB 4: DESIGN & 3D STUDIO */}
       {activeTab === 'design' && (
-        <div className="space-y-4 animate-in fade-in duration-200">
+        <div className="animate-in fade-in duration-200">
           <KadiStudioEditor
             initialEvent={event}
             initialDesign={design}

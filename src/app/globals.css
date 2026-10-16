@@ -354,6 +354,49 @@
   }
 }
 
+/* Phone Canvas Containment: strictly enforces slender smartphone dimensions inside Studio & Preview */
+.kadi-phone-canvas {
+  contain: layout;
+}
+
+.kadi-phone-frame {
+  contain: layout;
+}
+
+.kadi-phone-canvas .iv-envelope-hitarea,
+.kadi-phone-frame .iv-envelope-hitarea {
+  width: min(280px, 84%) !important;
+  max-width: 280px !important;
+  aspect-ratio: 1.5 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.kadi-phone-canvas .iv-envelope,
+.kadi-phone-frame .iv-envelope {
+  max-width: 280px !important;
+}
+
+.kadi-phone-canvas .iv-tabletop-scene,
+.kadi-phone-frame .iv-tabletop-scene {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.kadi-phone-canvas .iv-content-sections,
+.kadi-phone-frame .iv-content-sections {
+  max-width: 100% !important;
+  padding-left: 0.875rem !important;
+  padding-right: 0.875rem !important;
+}
+
+.kadi-phone-canvas .kadi-draft-preview {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+}
+
 /* Tabletop Still Life Ambience */
 .iv-tabletop-scene {
   position: absolute;

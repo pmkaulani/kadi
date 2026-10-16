@@ -57,7 +57,7 @@ export function DraftInvitationPreview({
     <InvitationRenderer
       config={config}
       restartKey={restartKey}
-      className="kadi-draft-preview w-full"
+      className="kadi-draft-preview w-full max-w-full overflow-x-hidden min-w-0"
     />
   );
 }
