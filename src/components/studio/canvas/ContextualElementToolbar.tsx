@@ -117,6 +117,7 @@ export function ContextualElementToolbar({
   const isText = element.type === 'text';
   const isPhoto = element.type === 'photo';
   const isSticker = element.type === 'sticker';
+  const isButton = element.type === 'button';
   const isLocked = !!element.isLocked;
 
   // Font size handler
@@ -317,6 +318,88 @@ export function ContextualElementToolbar({
               )}
             </div>
           )}
+
+          <div className="w-[1px] h-4 bg-white/15 mx-0.5" />
+        </>
+      )}
+
+      {/* ── BUTTON SPECIFIC CONTROLS ─────────────────────────────────── */}
+      {isButton && !isLocked && (
+        <>
+          {/* Button Text Size Stepper */}
+          <div className="flex items-center bg-white/10 rounded-md border border-white/10 px-1 py-0.5">
+            <button
+              type="button"
+              onClick={() => setFontSize(currentFontSize - 1)}
+              className="p-1 hover:text-amber-300 text-white/80"
+              title="Decrease text size"
+            >
+              <Minus size={11} />
+            </button>
+            <span className="w-5 text-center font-mono text-[11px] font-semibold">
+              {currentFontSize}
+            </span>
+            <button
+              type="button"
+              onClick={() => setFontSize(currentFontSize + 1)}
+              className="p-1 hover:text-amber-300 text-white/80"
+              title="Increase text size"
+            >
+              <Plus size={11} />
+            </button>
+          </div>
+
+          {/* Button Background Fill Color Picker */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowColorPicker(!showColorPicker)}
+              className="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 text-[11px]"
+              title="Button background color"
+            >
+              <div
+                className="w-3 h-3 rounded-full border border-white/40 shadow-xs"
+                style={{ backgroundColor: style.fill || '#934638' }}
+              />
+              <span>Fill</span>
+            </button>
+            {showColorPicker && (
+              <div className="absolute top-full left-0 mt-2 bg-[#262626] border border-white/20 p-2 rounded-lg shadow-xl grid grid-cols-4 gap-1.5 z-50">
+                {PRESET_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => {
+                      onUpdateStyle({ fill: c });
+                      setShowColorPicker(false);
+                    }}
+                    className="w-5 h-5 rounded-full border border-white/30 hover:scale-110 transition-transform"
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Button Corner Shape (Pill vs Rounded vs Sharp) */}
+          <button
+            type="button"
+            onClick={() => {
+              const currentR = style.borderRadius ?? 9999;
+              const nextRadius = currentR >= 9000 ? 8 : currentR === 8 ? 0 : 9999;
+              onUpdateStyle({ borderRadius: nextRadius });
+            }}
+            className="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-white flex items-center gap-1 text-[11px]"
+            title="Toggle corner style (Pill / Rounded / Sharp)"
+          >
+            <span>
+              {(style.borderRadius ?? 9999) >= 9000
+                ? 'Pill'
+                : style.borderRadius === 8
+                ? 'Rounded'
+                : 'Sharp'}
+            </span>
+          </button>
 
           <div className="w-[1px] h-4 bg-white/15 mx-0.5" />
         </>

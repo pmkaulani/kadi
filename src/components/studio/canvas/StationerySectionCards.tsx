@@ -35,13 +35,14 @@ interface StationerySectionCardsProps {
   onOpenPhotoRail?: () => void;
   onOpenStickerRail?: () => void;
   onScrollToTop?: () => void;
+  onDeselectArtboard?: () => void;
 }
 
 /**
- * Universal Inline Editable Text component.
- * Appears as natural printed letterpress typography when idle.
- * Single click instantly opens an inline text caret with matching typography.
- * Saves immediately on blur or Enter, cancels on Escape.
+ * Universal Natural Text Editor.
+ * Works like normal typography: clicking places the caret right where you click.
+ * No forced full-text highlight, no dotted underlines, and zero layout shift.
+ * Saves on blur or Enter (single line), cancels on Escape.
  */
 function InlineEditableText({
   value,
@@ -60,77 +61,58 @@ function InlineEditableText({
   as?: React.ElementType;
   style?: React.CSSProperties;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [text, setText] = useState(value || '');
-  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const ref = useRef<HTMLElement>(null);
+  const isComposingRef = useRef(false);
 
+  // Sync external changes when element is not actively focused
   useEffect(() => {
-    setText(value || '');
+    if (ref.current && document.activeElement !== ref.current) {
+      if (ref.current.innerText !== (value || '')) {
+        ref.current.innerText = value || '';
+      }
+    }
   }, [value]);
 
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [isEditing]);
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    if (text !== (value || '')) {
-      onChange(text);
+  const handleBlur = (e: React.FocusEvent<HTMLElement>) => {
+    const raw = e.currentTarget.innerText || '';
+    const cleaned = multiline ? raw.trim() : raw.replace(/[\r\n]+/g, ' ').trim();
+    if (cleaned !== (value || '')) {
+      onChange(cleaned);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      setText(value || '');
-      setIsEditing(false);
-    } else if (e.key === 'Enter' && !multiline) {
-      handleBlur();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === 'Enter' && !multiline) {
+      e.preventDefault();
+      (e.target as HTMLElement).blur();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      if (ref.current) {
+        ref.current.innerText = value || '';
+      }
+      (e.target as HTMLElement).blur();
     }
   };
-
-  if (isEditing) {
-    if (multiline) {
-      return (
-        <textarea
-          ref={inputRef as any}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          rows={3}
-          className={`w-full bg-transparent border-0 border-b border-[#B99A62] text-center focus:outline-none p-1 transition-all resize-y select-text ${className}`}
-          style={style}
-        />
-      );
-    }
-    return (
-      <input
-        ref={inputRef as any}
-        type="text"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        className={`w-full bg-transparent border-0 border-b border-[#B99A62] text-center focus:outline-none p-0.5 transition-all select-text ${className}`}
-        style={style}
-      />
-    );
-  }
 
   return (
     <Tag
-      onClick={(e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsEditing(true);
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      onCompositionStart={() => {
+        isComposingRef.current = true;
       }}
-      className={`cursor-pointer hover:opacity-85 transition-opacity hover:underline decoration-dotted decoration-[#B99A62]/60 underline-offset-4 select-text ${className}`}
+      onCompositionEnd={() => {
+        isComposingRef.current = false;
+      }}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      className={`outline-none cursor-text select-text transition-colors hover:bg-black/[0.015] focus:bg-transparent empty:before:content-[attr(data-placeholder)] empty:before:text-black/30 empty:before:italic empty:before:pointer-events-none ${className}`}
       style={style}
+      data-placeholder={placeholder}
       title="Click to edit text directly"
     >
-      {value || <span className="opacity-40 italic">{placeholder}</span>}
+      {value || ''}
     </Tag>
   );
 }
@@ -147,6 +129,7 @@ export function StationerySectionCards({
   onOpenPhotoRail,
   onOpenStickerRail,
   onScrollToTop,
+  onDeselectArtboard,
 }: StationerySectionCardsProps) {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
 
@@ -256,6 +239,7 @@ export function StationerySectionCards({
 
   return (
     <div
+      onPointerDown={() => onDeselectArtboard?.()}
       className="w-[480px] rounded-2xl relative shadow-[0_24px_70px_rgba(0,0,0,0.85)] mt-4 p-8 sm:p-10 transition-all"
       style={{
         backgroundColor: bgColor,

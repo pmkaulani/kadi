@@ -1,4 +1,4 @@
-export type CanvasElementType = 'text' | 'sticker' | 'photo' | 'shape';
+export type CanvasElementType = 'text' | 'sticker' | 'photo' | 'shape' | 'button';
 
 export type MaskShape = 'none' | 'circle' | 'oval' | 'rounded' | 'arch';
 
@@ -28,6 +28,7 @@ export interface CanvasElementStyle {
   borderWidth?: number;
   shapeType?: 'rectangle' | 'circle' | 'rounded';
   fill?: string;
+  buttonVariant?: 'filled' | 'outline' | 'pill' | 'gold-foil';
 }
 
 export interface CanvasElementAnimation {
@@ -40,8 +41,11 @@ export interface CanvasElement {
   id: string;
   type: CanvasElementType;
   name: string;
-  // Content: text string for 'text', URL/SVG path for 'sticker' or 'photo'
+  // Content: text string for 'text' or 'button', URL/SVG path for 'sticker' or 'photo'
   content: string;
+  // Optional button target (e.g. '#canvas-section-rsvp', '#canvas-section-venue', or external URL)
+  linkUrl?: string;
+  buttonVariant?: 'filled' | 'outline' | 'pill' | 'gold-foil';
   // Normalized 0-100 or absolute canvas units (standard artboard is 480 x 680)
   x: number;
   y: number;

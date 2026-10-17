@@ -51,6 +51,7 @@ export function CanvasCardView({
 
   const bg = cardBackground || palette?.cardBackground || '#FCFAF7';
   const textColor = palette?.text || '#272620';
+  const primaryColor = palette?.primary || '#934638';
 
   return (
     <div
@@ -169,6 +170,28 @@ export function CanvasCardView({
                         : undefined,
                     }}
                   />
+                )}
+
+                {/* 5. BUTTON */}
+                {elem.type === 'button' && (
+                  <div
+                    className="w-full h-full flex items-center justify-center pointer-events-auto transition-transform active:scale-95 shadow-xs"
+                    style={{
+                      backgroundColor: style.fill || primaryColor,
+                      color: style.color || '#FFFFFF',
+                      borderRadius:
+                        style.borderRadius !== undefined ? `${style.borderRadius}px` : '9999px',
+                      borderWidth:
+                        style.borderWidth !== undefined ? `${style.borderWidth}px` : '0px',
+                      borderColor: style.borderColor || 'transparent',
+                      fontFamily: style.fontFamily || 'Inter',
+                      fontSize: style.fontSize || 13,
+                      fontWeight: style.fontWeight || 600,
+                      letterSpacing: style.letterSpacing ? `${style.letterSpacing}px` : '0.04em',
+                    }}
+                  >
+                    <span>{elem.content}</span>
+                  </div>
                 )}
               </div>
             );

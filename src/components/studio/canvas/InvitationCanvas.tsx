@@ -13,6 +13,14 @@ import {
   ArrowLeft,
   ArrowRight,
   RotateCw,
+  Type,
+  ImageIcon,
+  MousePointerClick,
+  Sparkles,
+  Copy,
+  Trash2,
+  Plus,
+  Minus,
 } from 'lucide-react';
 import type {
   CanvasElement,
@@ -52,6 +60,9 @@ interface InvitationCanvasProps {
   onUpdateDesign?: (patch: Partial<EventDesignEntity>) => void;
   onOpenPhotoRail?: () => void;
   onOpenStickerRail?: () => void;
+  onAddText?: () => void;
+  onAddPhoto?: () => void;
+  onAddButton?: () => void;
 }
 
 const ARTBOARD_WIDTH = 480;
@@ -78,9 +89,13 @@ export function InvitationCanvas({
   onUpdateDesign,
   onOpenPhotoRail,
   onOpenStickerRail,
+  onAddText,
+  onAddPhoto,
+  onAddButton,
 }: InvitationCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const artboardRef = useRef<HTMLDivElement>(null);
+  const clipboardRef = useRef<CanvasElement | null>(null);
   const [zoom, setZoom] = useState(1);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
@@ -162,6 +177,14 @@ export function InvitationCanvas({
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
         e.preventDefault();
         onDuplicateElement(selectedElement.id);
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        clipboardRef.current = selectedElement;
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {
+        e.preventDefault();
+        if (clipboardRef.current) {
+          onDuplicateElement(clipboardRef.current.id);
+        }
       } else if (e.key === 'ArrowLeft') {
         if (!selectedElement.isLocked) {
           e.preventDefault();
@@ -280,6 +303,11 @@ export function InvitationCanvas({
   const startDrag = (e: React.PointerEvent, element: CanvasElement) => {
     e.stopPropagation();
     if (element.isLocked) return;
+
+    if (e.altKey) {
+      onDuplicateElement(element.id);
+      return;
+    }
 
     activeTransform.current = {
       type: 'drag',
@@ -405,6 +433,103 @@ export function InvitationCanvas({
           transformOrigin: 'top center',
         }}
       >
+        {/* ── TOP QUICK CREATIVE BAR (TEXT, PHOTO, BUTTON, STICKER, DUPLICATE) ── */}
+        <div className="w-[480px] mb-3 flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#1E1E20]/90 backdrop-blur-md border border-white/10 shadow-lg text-white text-xs select-none shrink-0">
+          <div className="flex items-center gap-1.5">
+            {onAddText && (
+              <button
+                type="button"
+                onClick={onAddText}
+                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 transition-colors flex items-center gap-1.5 font-medium text-[11px]"
+                title="Add text to canvas"
+              >
+                <Type size={12} className="text-[#B99A62]" />
+                <span>+ Text</span>
+              </button>
+            )}
+            {onAddPhoto && (
+              <button
+                type="button"
+                onClick={onAddPhoto}
+                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 transition-colors flex items-center gap-1.5 font-medium text-[11px]"
+                title="Add photo to canvas"
+              >
+                <ImageIcon size={12} className="text-emerald-400" />
+                <span>+ Photo</span>
+              </button>
+            )}
+            {onAddButton && (
+              <button
+                type="button"
+                onClick={onAddButton}
+                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 transition-colors flex items-center gap-1.5 font-medium text-[11px]"
+                title="Add action button anywhere"
+              >
+                <MousePointerClick size={12} className="text-amber-400" />
+                <span>+ Button</span>
+              </button>
+            )}
+            {onOpenStickerRail && (
+              <button
+                type="button"
+                onClick={onOpenStickerRail}
+                className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 transition-colors flex items-center gap-1 text-[11px] text-white/70"
+                title="Add sticker or crest"
+              >
+                <Sparkles size={11} className="text-amber-300" />
+                <span>+ Sticker</span>
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1">
+            {selectedElement && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onDuplicateElement(selectedElement.id)}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-white/90 hover:text-white"
+                  title="Duplicate selected element (Ctrl+D / Alt-Drag)"
+                >
+                  <Copy size={12} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDeleteElement(selectedElement.id)}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-red-500/30 transition-colors text-white/70 hover:text-red-300"
+                  title="Delete selected element"
+                >
+                  <Trash2 size={12} />
+                </button>
+                <div className="w-[1px] h-3 bg-white/15 mx-0.5" />
+              </>
+            )}
+
+            {/* Zoom In / Out controls */}
+            <div className="flex items-center gap-0.5 text-[11px] text-white/60">
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.max(0.4, Number((z - 0.1).toFixed(1))))}
+                className="p-1 hover:text-white rounded"
+                title="Zoom out"
+              >
+                <Minus size={11} />
+              </button>
+              <span className="w-8 text-center font-mono text-[10px]">
+                {Math.round(zoom * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.min(1.5, Number((z + 0.1).toFixed(1))))}
+                className="p-1 hover:text-white rounded"
+                title="Zoom in"
+              >
+                <Plus size={11} />
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* ── THE PORTRAIT INVITATION ARTBOARD (480 x 680) ──────────────────── */}
         <div
           ref={artboardRef}
@@ -451,7 +576,7 @@ export function InvitationCanvas({
                 id={`canvas-elem-${elem.id}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (isSelected && elem.type === 'text') {
+                  if (isSelected && (elem.type === 'text' || elem.type === 'button')) {
                     setEditingTextId(elem.id);
                   } else {
                     onSelectId(elem.id);
@@ -459,7 +584,7 @@ export function InvitationCanvas({
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  if (elem.type === 'text') {
+                  if (elem.type === 'text' || elem.type === 'button') {
                     setEditingTextId(elem.id);
                   }
                 }}
@@ -476,7 +601,7 @@ export function InvitationCanvas({
                   transform: `rotate(${elem.rotation}deg)`,
                   zIndex: isSelected ? 999 : elem.zIndex,
                   opacity: elem.opacity ?? 1,
-                  cursor: elem.isLocked ? 'default' : elem.type === 'text' ? 'text' : 'move',
+                  cursor: elem.isLocked ? 'default' : (elem.type === 'text' || elem.type === 'button') ? 'pointer' : 'move',
                 }}
               >
                 {/* ── 1. TEXT ELEMENT ──────────────────────────────────────── */}
@@ -548,6 +673,47 @@ export function InvitationCanvas({
                   </div>
                 )}
 
+                {/* ── 4. BUTTON ELEMENT (FREELY POSITIONABLE CALL TO ACTION) ─ */}
+                {elem.type === 'button' && (
+                  <div
+                    className="w-full h-full flex items-center justify-center relative p-1 shadow-xs transition-transform"
+                    style={{
+                      backgroundColor: style.fill || palette.primary || '#934638',
+                      color: style.color || '#FFFFFF',
+                      borderRadius:
+                        style.borderRadius !== undefined ? `${style.borderRadius}px` : '9999px',
+                      borderWidth:
+                        style.borderWidth !== undefined ? `${style.borderWidth}px` : '0px',
+                      borderColor: style.borderColor || 'transparent',
+                      borderStyle: style.borderWidth ? 'solid' : 'none',
+                      fontFamily: style.fontFamily || 'Inter',
+                      fontSize: style.fontSize || 13,
+                      fontWeight: style.fontWeight || 600,
+                      letterSpacing: style.letterSpacing ? `${style.letterSpacing}px` : '0.04em',
+                    }}
+                  >
+                    {isEditing ? (
+                      <input
+                        autoFocus
+                        type="text"
+                        value={elem.content}
+                        onChange={(e) =>
+                          onUpdateElement(elem.id, { content: e.target.value })
+                        }
+                        onBlur={() => setEditingTextId(null)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === 'Escape') setEditingTextId(null);
+                        }}
+                        className="w-full bg-transparent text-inherit text-center border-0 border-b border-white/60 focus:outline-none p-0.5 select-text"
+                      />
+                    ) : (
+                      <span className="truncate select-none font-medium">
+                        {elem.content || 'Click to edit button'}
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 {/* ── SELECTION OVERLAY & HANDLES (§5.3.1) ─────────────────── */}
                 <SelectionTransformOverlay
                   element={elem}
@@ -566,7 +732,7 @@ export function InvitationCanvas({
           })}
 
         {/* ── FLOATING CONTEXTUAL TOOLBAR (§5.2) ──────────────────── */}
-        {selectedElement && (
+        {selectedElement && !editingTextId && (
           <div
             onClick={(e) => e.stopPropagation()}
             onPointerDown={(e) => e.stopPropagation()}
@@ -621,6 +787,10 @@ export function InvitationCanvas({
           onUpdateDesign={onUpdateDesign}
           onOpenPhotoRail={onOpenPhotoRail}
           onOpenStickerRail={onOpenStickerRail}
+          onDeselectArtboard={() => {
+            onSelectId(null);
+            setEditingTextId(null);
+          }}
           onScrollToTop={() => {
             if (containerRef.current) {
               containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });

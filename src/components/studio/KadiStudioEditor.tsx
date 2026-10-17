@@ -41,6 +41,7 @@ import {
   Minimize2,
   Type,
   Layers,
+  MousePointerClick,
   ArrowLeft,
   Undo2,
   Redo2,
@@ -320,7 +321,7 @@ export function KadiStudioEditor({
   // Studio Mode: Canvas editing (default) vs Guest Preview
   const [studioMode, setStudioMode] = useState<'canvas' | 'preview'>('canvas');
   const [activeRailTool, setActiveRailTool] = useState<
-    'templates' | 'text' | 'stickers' | 'photos' | 'envelope' | 'sections' | 'layers' | null
+    'templates' | 'text' | 'stickers' | 'photos' | 'buttons' | 'envelope' | 'sections' | 'layers' | null
   >(null);
 
   // Selected element ID on canvas
@@ -609,6 +610,45 @@ export function KadiStudioEditor({
     pushHistory(next);
     patchDesign({ canvasElements: next });
     setSelectedCanvasId(newPhoto.id);
+    setActiveRailTool(null);
+  };
+
+  // Add new Button to canvas
+  const handleInsertButton = (preset: {
+    label: string;
+    fill?: string;
+    color?: string;
+    borderRadius?: number;
+    linkUrl?: string;
+  }) => {
+    const newButton: CanvasElement = {
+      id: `button-${Date.now()}`,
+      type: 'button',
+      name: preset.label,
+      content: preset.label,
+      linkUrl: preset.linkUrl,
+      x: 140,
+      y: 320,
+      width: 200,
+      height: 44,
+      rotation: 0,
+      zIndex: Math.max(...canvasElements.map((e) => e.zIndex), 0) + 1,
+      opacity: 1,
+      styleProps: {
+        fill: preset.fill || draft.design.palette?.primary || activeTemplate.palette.primary,
+        color: preset.color || '#FFFFFF',
+        borderRadius: preset.borderRadius ?? 9999,
+        fontSize: 13,
+        fontWeight: 600,
+        fontFamily: 'Inter',
+        letterSpacing: 1.5,
+      },
+    };
+
+    const next = [...canvasElements, newButton];
+    pushHistory(next);
+    patchDesign({ canvasElements: next });
+    setSelectedCanvasId(newButton.id);
     setActiveRailTool(null);
   };
 
@@ -914,6 +954,14 @@ export function KadiStudioEditor({
             }
           />
           <RailButton
+            icon={MousePointerClick}
+            label="Buttons"
+            isActive={activeRailTool === 'buttons'}
+            onClick={() =>
+              setActiveRailTool(activeRailTool === 'buttons' ? null : 'buttons')
+            }
+          />
+          <RailButton
             icon={Layout}
             label="Templates"
             isActive={activeRailTool === 'templates'}
@@ -964,6 +1012,7 @@ export function KadiStudioEditor({
                   {activeRailTool === 'stickers' && 'Transparent Stickers'}
                   {activeRailTool === 'text' && 'Typography & Text'}
                   {activeRailTool === 'photos' && 'Photos & Masking'}
+                  {activeRailTool === 'buttons' && 'Buttons & Actions'}
                   {activeRailTool === 'templates' && 'Occasion Suites'}
                   {activeRailTool === 'envelope' && 'Envelope & Motion'}
                   {activeRailTool === 'sections' && 'Guest Page Sections'}
@@ -988,6 +1037,99 @@ export function KadiStudioEditor({
                 )}
                 {activeRailTool === 'photos' && (
                   <UploadsPanel onInsertPhoto={handleInsertPhoto} />
+                )}
+                {activeRailTool === 'buttons' && (
+                  <div className="p-4 space-y-4">
+                    <p className="text-[11px] text-white/60 leading-relaxed">
+                      Click any button style to drop it onto your card. You have full freedom to position, drag, resize, rotate, or duplicate it anywhere.
+                    </p>
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleInsertButton({
+                            label: 'RSVP JOYFULLY',
+                            fill: '#B99A62',
+                            color: '#112327',
+                            borderRadius: 9999,
+                            linkUrl: '#canvas-section-rsvp',
+                          })
+                        }
+                        className="w-full py-3 px-4 rounded-full bg-[#B99A62] text-[#112327] font-sans font-semibold text-xs tracking-wider shadow-md hover:brightness-110 transition-all flex items-center justify-between"
+                      >
+                        <span>RSVP Joyfully</span>
+                        <span className="text-[10px] uppercase font-mono opacity-60">Gold Pill</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleInsertButton({
+                            label: 'ADD TO CALENDAR',
+                            fill: '#934638',
+                            color: '#FFFFFF',
+                            borderRadius: 9999,
+                            linkUrl: '#canvas-section-ceremony',
+                          })
+                        }
+                        className="w-full py-3 px-4 rounded-full bg-[#934638] text-white font-sans font-semibold text-xs tracking-wider shadow-md hover:brightness-110 transition-all flex items-center justify-between"
+                      >
+                        <span>Add to Calendar</span>
+                        <span className="text-[10px] uppercase font-mono opacity-60">Terracotta</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleInsertButton({
+                            label: 'VIEW VENUE & MAP',
+                            fill: '#0F766E',
+                            color: '#FFFFFF',
+                            borderRadius: 9999,
+                            linkUrl: '#canvas-section-venue',
+                          })
+                        }
+                        className="w-full py-3 px-4 rounded-full bg-[#0F766E] text-white font-sans font-semibold text-xs tracking-wider shadow-md hover:brightness-110 transition-all flex items-center justify-between"
+                      >
+                        <span>View Venue &amp; Map</span>
+                        <span className="text-[10px] uppercase font-mono opacity-60">Forest Teal</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleInsertButton({
+                            label: 'M-PESA REGISTRY',
+                            fill: '#272620',
+                            color: '#F6CFA0',
+                            borderRadius: 9999,
+                            linkUrl: '#canvas-section-registry',
+                          })
+                        }
+                        className="w-full py-3 px-4 rounded-full bg-[#272620] text-[#F6CFA0] font-sans font-semibold text-xs tracking-wider border border-[#B99A62]/40 shadow-md hover:bg-black transition-all flex items-center justify-between"
+                      >
+                        <span>M-Pesa Registry</span>
+                        <span className="text-[10px] uppercase font-mono opacity-60">Harambee</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleInsertButton({
+                            label: 'CUSTOM ACTION',
+                            fill: 'transparent',
+                            color: '#FFFFFF',
+                            borderRadius: 8,
+                            linkUrl: '',
+                          })
+                        }
+                        className="w-full py-3 px-4 rounded-lg bg-white/5 border border-white/20 text-white font-sans font-medium text-xs tracking-wider hover:bg-white/10 transition-all flex items-center justify-between"
+                      >
+                        <span>Custom Action Link</span>
+                        <span className="text-[10px] uppercase font-mono opacity-60">Outlined</span>
+                      </button>
+                    </div>
+                  </div>
                 )}
                 {activeRailTool === 'layers' && (
                   <LayersDrawer
@@ -1164,6 +1306,27 @@ export function KadiStudioEditor({
               onUpdateDesign={patchDesign}
               onOpenPhotoRail={() => setActiveRailTool('photos')}
               onOpenStickerRail={() => setActiveRailTool('stickers')}
+              onAddText={() =>
+                handleInsertText({
+                  content: 'Click to edit text',
+                  style: {
+                    fontSize: 22,
+                    fontFamily: 'Playfair Display',
+                    fontWeight: '600',
+                    color: draft.design.palette?.text || '#272620',
+                  },
+                })
+              }
+              onAddPhoto={() => setActiveRailTool('photos')}
+              onAddButton={() =>
+                handleInsertButton({
+                  label: 'RSVP JOYFULLY',
+                  fill: draft.design.palette?.primary || activeTemplate.palette.primary,
+                  color: '#FFFFFF',
+                  borderRadius: 9999,
+                  linkUrl: '#canvas-section-rsvp',
+                })
+              }
             />
           ) : (
             /* True Guest Preview Mode (with phone mockup & envelope) */
