@@ -181,7 +181,10 @@ function resolveCanvasDesign(
 
   return {
     ...(design || {}),
-    canvasElements: getTemplateCanvasElements(template, values),
+    canvasElements: getTemplateCanvasElements(template, values, {
+      palette: design?.palette,
+      headingFont: design?.typography?.headingFont || design?.fontFamily,
+    }),
   };
 }
 
