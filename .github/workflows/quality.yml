@@ -21,7 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      NODE_ENV: test
       NEXT_PUBLIC_APP_URL: http://localhost:3005
       NEXT_PUBLIC_APP_NAME: Kadi
       NEXT_PUBLIC_AUTH_PROVIDER: cookie_hmac_local
