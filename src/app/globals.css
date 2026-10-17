@@ -3232,10 +3232,13 @@ body:has(.kadi-stationery-sheet),
 }
 
 
+
 /* --------------------------------------------------------------------------
-   Envelope craft refinement — a narrower, true portrait letter and quieter
-   stationery details. Motion transforms remain owned by Framer Motion.
+   Kadi stationery craft
+   Motion owns animated transforms; this layer defines the physical materials,
+   portrait proportions and restrained typography of the envelope experience.
    -------------------------------------------------------------------------- */
+
 .iv-world .iv-envelope-back {
   border-color: color-mix(in srgb, var(--iv-gold, #c7a56a) 54%, transparent);
   box-shadow:
@@ -3290,10 +3293,10 @@ body:has(.kadi-stationery-sheet),
   top: -4% !important;
   height: auto !important;
   aspect-ratio: 480 / 680;
+  border-radius: 1px;
+  filter: drop-shadow(0 13px 18px rgba(18,8,6,.2));
 }
 
-
-/* Keep both loose inserts cut from the same portrait stationery stock. */
 .iv-world .iv-insert-paper--back {
   left: 24%;
   top: -2%;
@@ -3323,11 +3326,6 @@ body:has(.kadi-stationery-sheet),
   box-shadow: 0 7px 18px rgba(40,25,20,.16);
 }
 
-.iv-world .iv-card-preview--canvas {
-  border-radius: 1px;
-  filter: drop-shadow(0 13px 18px rgba(18,8,6,.2));
-}
-
 .iv-world .iv-letter-inner-border {
   border-color: color-mix(in srgb, var(--iv-gold, #b99a62) 57%, transparent);
   box-shadow:
@@ -3335,49 +3333,6 @@ body:has(.kadi-stationery-sheet),
     inset 0 0 0 3px color-mix(in srgb, var(--iv-gold, #b99a62) 22%, transparent);
 }
 
-.iv-world .iv-envelope-pocket {
-  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 34%, transparent);
-}
-
-.iv-world .iv-pocket-gold-rule {
-  opacity: .32;
-}
-
-.iv-world .iv-envelope-hitarea:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--iv-gold, #dab46f) 72%, white);
-  outline-offset: 7px;
-  border-radius: 3px;
-}
-
-@media (max-width: 700px) {
-  .iv-world .iv-card-preview:not(.iv-card-preview--canvas) {
-    left: 24%;
-    width: 52%;
-    top: -4%;
-    height: auto;
-    aspect-ratio: 480 / 680;
-    padding: 6px;
-  }
-
-  .iv-world .iv-card-preview--canvas {
-    left: 24%;
-    width: 52%;
-    top: -4% !important;
-    height: auto !important;
-    aspect-ratio: 480 / 680;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .iv-world .iv-card-preview,
-  .iv-world .iv-insert-paper,
-  .iv-world .iv-envelope-flap-hinge {
-    transition: none !important;
-  }
-}
-
-
-/* Printed invitation art direction: less ornamental UI, more like a finished card. */
 .iv-world .iv-letter-corner {
   display: none;
 }
@@ -3458,6 +3413,14 @@ body:has(.kadi-stationery-sheet),
   overflow-wrap: anywhere;
 }
 
+.iv-world .iv-envelope-pocket {
+  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 34%, transparent);
+}
+
+.iv-world .iv-pocket-gold-rule {
+  opacity: .32;
+}
+
 .iv-world .iv-envelope-address {
   position: absolute;
   z-index: 8;
@@ -3523,7 +3486,17 @@ body:has(.kadi-stationery-sheet),
   border-color: color-mix(in srgb, var(--iv-gold, #b99a62) 34%, transparent) !important;
 }
 
+.iv-world .iv-envelope-hitarea:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--iv-gold, #dab46f) 72%, white);
+  outline-offset: 7px;
+  border-radius: 3px;
+}
+
 @media (max-width: 700px) {
+  .iv-world .iv-card-preview:not(.iv-card-preview--canvas) {
+    padding: 6px;
+  }
+
   .iv-world .iv-envelope-address {
     width: 70%;
     padding: 4px 6px 5px;
