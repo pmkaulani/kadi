@@ -403,7 +403,14 @@ export function KadiStudioEditor({
         headingFont: getCanvasHeadingFontOverride(activeTemplate, draft.design),
       })
     );
-  }, [draft.design.canvasElements, activeTemplate, draft.values]);
+  }, [
+    draft.design.canvasElements,
+    draft.design.palette,
+    draft.design.typography,
+    draft.design.fontFamily,
+    activeTemplate,
+    draft.values,
+  ]);
 
   const [history, setHistory] = useState<CanvasElement[][]>([canvasElements]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -1620,7 +1627,7 @@ export function KadiStudioEditor({
               Switching Invitation Style
             </h3>
             <p className="text-xs text-white/70 leading-relaxed">
-              Would you like to keep your personalized event details (title, hosts, date, venue) or load the new template's sample contents?
+              Would you like to keep your personalized event details (title, hosts, date, venue) or load the new template&apos;s sample contents?
             </p>
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
