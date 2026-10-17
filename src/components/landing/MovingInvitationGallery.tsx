@@ -607,7 +607,7 @@ function InvitationGalleryCard({
             </div>
 
             {/* Typography inside the floral arch */}
-            <div className="relative z-10 my-auto text-center px-1.5 sm:px-4 py-1 sm:py-2 flex flex-col items-center">
+            <div className="relative z-[2] my-auto text-center px-1.5 sm:px-4 py-1 sm:py-2 flex flex-col items-center">
               <h3 className="font-serif text-xs sm:text-base font-medium tracking-wide text-[#272620] mb-0.5 leading-tight">
                 Anabel Mahat
               </h3>
@@ -963,7 +963,7 @@ function InvitationGalleryCard({
 
         {/* ── HOVER OVERLAY: "CUSTOMIZE THIS DESIGN" ACTION PILL ───────── */}
         <div
-          className={`absolute inset-0 bg-neutral-950/80 backdrop-blur-md rounded-xl sm:rounded-2xl flex flex-col items-center justify-center p-3 sm:p-5 transition-all duration-200 ${
+          className={`absolute inset-0 z-30 bg-neutral-950/85 backdrop-blur-md rounded-xl sm:rounded-2xl flex flex-col items-center justify-center p-3 sm:p-5 transition-all duration-200 ${
             isHovered
               ? 'opacity-100 pointer-events-auto'
               : 'opacity-0 pointer-events-none'
