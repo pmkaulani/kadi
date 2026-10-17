@@ -537,9 +537,15 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   };
 }
 
+export interface CanvasArtDirectionOverrides {
+  palette?: Partial<TemplateDefinition['palette']>;
+  headingFont?: string;
+}
+
 export function getTemplateCanvasElements(
   template: TemplateDefinition,
-  values: DraftInvitationValues
+  values: DraftInvitationValues,
+  overrides: CanvasArtDirectionOverrides = {}
 ): CanvasElement[] {
   const category = template.category as string;
   const id = template.id.toLowerCase();
@@ -552,7 +558,11 @@ export function getTemplateCanvasElements(
   const isCorporate = ['corporate', 'product-launch', 'fundraiser'].includes(category);
   const isHeritage = category === 'cultural-celebration' || id.includes('cultural') || id.includes('harambee') || id.includes('safari');
   const direction = resolveArtDirection(template);
-  const { ink, heading, accent, muted } = getAccessiblePalette(template);
+  const paletteTemplate = overrides.palette
+    ? { ...template, palette: { ...template.palette, ...overrides.palette } }
+    : template;
+  const { ink, heading, accent, muted } = getAccessiblePalette(paletteTemplate);
+  const headingFont = overrides.headingFont || direction.headingFont;
   const headingText = (values.celebrants || '').trim() || (values.title || template.sampleData.title).trim();
 
   const elements: CanvasElement[] = [];
@@ -617,7 +627,7 @@ export function getTemplateCanvasElements(
   const requestY = direction.requestY ?? Math.max(isMemorial ? 220 : 0, photoBottom + 6);
   addText(elements, 'text-request', 'Invitation request', direction.request,
     { x: 40, y: requestY, width: 400, height: 24 },
-    { fontFamily: isMemorial ? 'Cormorant Garamond' : direction.headingFont, fontSize: 15, fontStyle: isCorporate ? 'normal' : 'italic', fontWeight: 400, color: muted, textAlign: 'center', letterSpacing: 0.2 }, 5);
+    { fontFamily: headingFont, fontSize: 15, fontStyle: isCorporate ? 'normal' : 'italic', fontWeight: 400, color: muted, textAlign: 'center', letterSpacing: 0.2 }, 5);
 
   let titleFontSize = direction.titleMax;
   if (headingText.length > 30) titleFontSize -= 8;
@@ -628,7 +638,7 @@ export function getTemplateCanvasElements(
 
   addText(elements, 'text-title', 'Celebrants / event title', headingText,
     { x: 30, y: direction.titleY, width: 420, height: direction.titleHeight },
-    { fontFamily: direction.headingFont, fontSize: Math.max(22, titleFontSize), fontWeight: isCorporate ? 600 : 500, color: heading, textAlign: 'center', lineHeight: 1.12, letterSpacing: isCorporate ? -0.6 : -0.25 }, 6,
+    { fontFamily: headingFont, fontSize: Math.max(22, titleFontSize), fontWeight: isCorporate ? 600 : 500, color: heading, textAlign: 'center', lineHeight: 1.12, letterSpacing: isCorporate ? -0.6 : -0.25 }, 6,
     isMemorial ? { effect: 'fadeIn', duration: 0.7, delay: 0.12 } : undefined);
 
   const date = values.date?.trim() || template.sampleData.date;
