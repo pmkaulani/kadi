@@ -337,13 +337,13 @@ export function getTemplateCanvasElements(
 
   // 7. Bottom Corner Accents tailored to archetype
   let cornerSticker = isWedding
-    ? STICKER_ASSETS.find((s) => s.id === 'wedding-red-rose')
+    ? STICKER_ASSETS.find((s) => s.id === 'botanical-white-rose')
     : isHeritage
-    ? STICKER_ASSETS.find((s) => s.id === 'heritage-ceremonial-drum')
+    ? STICKER_ASSETS.find((s) => s.id === 'cultural-karibu-sana')
     : isDisco || isBirthday
-    ? STICKER_ASSETS.find((s) => s.id === 'party-confetti-ball')
+    ? STICKER_ASSETS.find((s) => s.id === 'party-disco-ball')
     : isMediterranean
-    ? STICKER_ASSETS.find((s) => s.id === 'botanical-hibiscus')
+    ? STICKER_ASSETS.find((s) => s.id === 'botanical-olive-branch')
     : undefined;
 
   if (cornerSticker) {
