@@ -218,9 +218,64 @@ function buildInitialDraft(
       design
     );
 
-  const initialCanvasElements =
+  const rawCanvasElements =
     design?.canvasElements ||
     getTemplateCanvasElements(activeTemplate, initialValues);
+
+  const isBabyEvent =
+    category === 'baby-shower' ||
+    category === 'welcome-baby' ||
+    initialValues.title?.toLowerCase().includes('baby') ||
+    initialValues.celebrants?.toLowerCase().includes('baby');
+
+  const initialCanvasElements = rawCanvasElements.map((el) => {
+    // 1. If it's a baby event and has a wedding ring top sticker, replace with sweet baby doodle heart
+    if (
+      isBabyEvent &&
+      el.id === 'sticker-hero-crest' &&
+      (el.content.includes('wedding') ||
+        el.content.includes('diamond-ring') ||
+        el.content.includes('solitaire') ||
+        el.content.includes('interlocking-rings'))
+    ) {
+      return {
+        ...el,
+        name: 'Hand-Drawn Pink Heart',
+        content: '/stickers/planner-doodle-heart.png',
+        accessibilityLabel: 'Hand-Drawn Pink Heart',
+      };
+    }
+
+    // 2. Responsive title font size scaling for long event titles / celebrant names
+    if (el.id === 'text-title' && el.styleProps?.fontSize && el.styleProps.fontSize >= 34) {
+      const len = el.content?.length || 0;
+      if (len > 24) {
+        return {
+          ...el,
+          styleProps: { ...el.styleProps, fontSize: 26, lineHeight: 1.2 },
+          width: Math.max(el.width, 432),
+          x: Math.min(el.x, 24),
+        };
+      } else if (len > 18) {
+        return {
+          ...el,
+          styleProps: { ...el.styleProps, fontSize: 30, lineHeight: 1.2 },
+          width: Math.max(el.width, 432),
+          x: Math.min(el.x, 24),
+        };
+      }
+    }
+
+    // 3. If an element overhangs outside the right card boundary (> 480), nudge inward safely
+    if (el.x + el.width > 480) {
+      return {
+        ...el,
+        x: Math.max(15, 480 - el.width - 15),
+      };
+    }
+
+    return el;
+  });
 
   return {
     templateId: event?.templateId || activeTemplate.id,

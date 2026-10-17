@@ -62,7 +62,7 @@ export function CanvasCardView({
       } justify-center overflow-hidden select-none ${className}`}
     >
       <div
-        className="relative shrink-0 shadow-lg rounded-2xl overflow-hidden transition-transform duration-75"
+        className="relative shrink-0 shadow-lg rounded-2xl overflow-visible transition-transform duration-75"
         style={{
           width: ARTBOARD_WIDTH,
           height: ARTBOARD_HEIGHT,
@@ -74,7 +74,7 @@ export function CanvasCardView({
       >
         {/* Subtle Paper Linen texture */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.035]"
+          className="absolute inset-0 pointer-events-none opacity-[0.035] rounded-2xl overflow-hidden"
           style={{
             backgroundImage: `radial-gradient(#000 1px, transparent 1px)`,
             backgroundSize: '8px 8px',
@@ -107,7 +107,7 @@ export function CanvasCardView({
                 {/* 1. TEXT */}
                 {elem.type === 'text' && (
                   <div
-                    className="w-full h-full flex items-center justify-center p-1"
+                    className="w-full h-full flex items-center justify-center p-1 text-center"
                     style={{
                       fontFamily: style.fontFamily || 'Inter',
                       fontSize: style.fontSize || 16,
@@ -118,10 +118,10 @@ export function CanvasCardView({
                       letterSpacing: style.letterSpacing
                         ? `${style.letterSpacing}px`
                         : undefined,
-                      lineHeight: style.lineHeight || 1.3,
+                      lineHeight: style.lineHeight || 1.25,
                     }}
                   >
-                    <span className="whitespace-pre-wrap">{elem.content}</span>
+                    <span className="whitespace-pre-wrap break-words max-w-full px-1">{elem.content}</span>
                   </div>
                 )}
 

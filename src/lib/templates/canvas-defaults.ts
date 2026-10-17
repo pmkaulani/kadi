@@ -46,16 +46,40 @@ export function getTemplateCanvasElements(
   template: TemplateDefinition,
   values: DraftInvitationValues
 ): CanvasElement[] {
+  const valCat = (values as any).category as string | undefined;
   const isWedding =
     template.category === 'wedding' ||
     template.category === 'anniversary' ||
-    template.category === 'engagement';
-  const isBirthday = template.category === 'birthday';
+    template.category === 'engagement' ||
+    valCat === 'wedding' ||
+    valCat === 'anniversary' ||
+    valCat === 'engagement';
+  const isBirthday =
+    template.category === 'birthday' ||
+    valCat === 'birthday' ||
+    values.title?.toLowerCase().includes('birthday');
   const isMemorial =
-    template.category === 'memorial' || template.category === 'funeral';
+    template.category === 'memorial' ||
+    template.category === 'funeral' ||
+    valCat === 'memorial' ||
+    valCat === 'funeral' ||
+    values.title?.toLowerCase().includes('memorial') ||
+    values.title?.toLowerCase().includes('funeral');
   const isGraduation =
-    template.category === 'graduation' || template.category === 'corporate';
-  const isBaby = template.category === 'baby-shower';
+    template.category === 'graduation' ||
+    template.category === 'corporate' ||
+    valCat === 'graduation' ||
+    valCat === 'corporate' ||
+    values.title?.toLowerCase().includes('graduation');
+  const isBaby =
+    template.category === 'baby-shower' ||
+    template.category === 'welcome-baby' ||
+    template.id.includes('baby') ||
+    (template.motionPreset as string) === 'baby-shower' ||
+    valCat === 'baby-shower' ||
+    valCat === 'welcome-baby' ||
+    values.title?.toLowerCase().includes('baby') ||
+    values.celebrants?.toLowerCase().includes('baby');
 
   const isHeritage =
     template.motionPreset === 'cultural-celebration' ||
@@ -89,7 +113,13 @@ export function getTemplateCanvasElements(
   const elements: CanvasElement[] = [];
 
   // 1. Top Decorative Image Sticker / Crest (tailored to event archetype & culture)
-  let topSticker = STICKER_ASSETS.find((s) => s.id === 'romance-solitaire-diamond');
+  let topSticker = isWedding
+    ? STICKER_ASSETS.find((s) => s.id === 'romance-solitaire-diamond')
+    : isBaby
+    ? STICKER_ASSETS.find((s) => s.id === 'planner-doodle-heart') ||
+      STICKER_ASSETS.find((s) => s.id === 'party-gold-balloon-star')
+    : STICKER_ASSETS.find((s) => s.id === 'stationery-wax-seal-gold');
+
   if (isHeritage) {
     topSticker =
       STICKER_ASSETS.find((s) => s.id === 'cultural-harusi-tunayo') ||
@@ -110,6 +140,12 @@ export function getTemplateCanvasElements(
       STICKER_ASSETS.find((s) => s.id === 'botanical-olive-branch') ||
       STICKER_ASSETS.find((s) => s.id === 'botanical-eucalyptus-garland') ||
       topSticker;
+  } else if (isBaby) {
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'planner-doodle-heart') ||
+      STICKER_ASSETS.find((s) => s.id === 'party-gold-balloon-star') ||
+      STICKER_ASSETS.find((s) => s.id === 'romance-white-doves') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-pink-peony');
   } else if (isBirthday) {
     topSticker =
       STICKER_ASSETS.find((s) => s.id === 'party-wedding-cake') ||
@@ -124,11 +160,6 @@ export function getTemplateCanvasElements(
       STICKER_ASSETS.find((s) => s.id === 'badge-best-day-ever') ||
       STICKER_ASSETS.find((s) => s.id === 'badge-vip-access') ||
       STICKER_ASSETS.find((s) => s.id === 'badge-its-giving-luxury');
-  } else if (isBaby) {
-    topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'romance-white-doves') ||
-      STICKER_ASSETS.find((s) => s.id === 'botanical-pink-peony') ||
-      STICKER_ASSETS.find((s) => s.id === 'party-gold-balloon-star');
   } else if (isWedding) {
     topSticker =
       STICKER_ASSETS.find((s) => s.id === 'romance-solitaire-diamond') ||
@@ -167,6 +198,8 @@ export function getTemplateCanvasElements(
         ? 'IN LOVING MEMORY'
         : isBirthday
         ? 'CELEBRATING WITH JOY'
+        : isBaby
+        ? 'WITH JOY & GRATITUDE'
         : 'TOGETHER WITH THEIR FAMILIES'),
     x: 40,
     y: 148,
@@ -197,6 +230,8 @@ export function getTemplateCanvasElements(
         ? 'invite you to join in remembrance of'
         : isBirthday
         ? 'invite you to celebrate'
+        : isBaby
+        ? 'joyfully invite you to welcome'
         : 'joyfully invite you to the wedding of'),
     x: 40,
     y: 180,
@@ -216,27 +251,40 @@ export function getTemplateCanvasElements(
     },
   });
 
-  // 4. Main Event Title / Celebrants (striking display headline)
+  // 4. Main Event Title / Celebrants (striking display headline with responsive font scaling)
+  const titleText = values.celebrants || values.title || 'Celebration';
+  let titleFontSize = 36;
+  if (titleText.length > 26) {
+    titleFontSize = 26;
+  } else if (titleText.length > 18) {
+    titleFontSize = 30;
+  } else if (titleText.length > 12) {
+    titleFontSize = 34;
+  }
+  if (isBirthday || isBaby) {
+    titleFontSize = Math.min(titleFontSize, 32);
+  }
+
   elements.push({
     id: 'text-title',
     type: 'text',
     name: 'Celebrants / Title',
-    content: values.celebrants || values.title || 'Kevin & Wanjiku',
-    x: 30,
+    content: titleText,
+    x: 24,
     y: 216,
-    width: 420,
-    height: 68,
+    width: 432,
+    height: 76,
     rotation: 0,
     zIndex: 5,
     opacity: 1,
     styleProps: {
       fontFamily: headingFont,
-      fontSize: isBirthday ? 34 : 38,
+      fontSize: titleFontSize,
       fontWeight: '700',
       color: primaryColor,
       textAlign: 'center',
-      lineHeight: 1.15,
-      letterSpacing: -0.5,
+      lineHeight: 1.2,
+      letterSpacing: -0.3,
     },
     animation: { effect: 'rise', duration: 1.0 },
   });
@@ -338,6 +386,8 @@ export function getTemplateCanvasElements(
       ? 'RSVP requested by date on card'
       : isMemorial
       ? 'A reception to celebrate her life will follow'
+      : isBaby
+      ? 'Celebration and refreshments to follow'
       : 'Reception and dinner to follow',
     x: 40,
     y: 595,
