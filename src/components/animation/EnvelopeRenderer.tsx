@@ -32,6 +32,15 @@ export type AnimationPhase =
   | 'settling'
   | 'settled';
 
+/** Delays are measured from the user's first press, not chained phase durations. */
+export const ENVELOPE_OPENING_TIMELINE: ReadonlyArray<{ phase: AnimationPhase; delayMs: number }> = [
+  { phase: 'seal-release', delayMs: 280 },
+  { phase: 'flap-open', delayMs: 600 },
+  { phase: 'card-rising', delayMs: 1300 },
+  { phase: 'settling', delayMs: 2050 },
+  { phase: 'settled', delayMs: 2620 },
+];
+
 export type EnvelopeMotionStyle =
   | 'classic-wax-seal'
   | 'floral-bloom'
@@ -371,13 +380,8 @@ export function EnvelopeRenderer({
   }, [audioUrl]);
 
   /**
-   * Choreographed 6-Beat Opening Sequence:
-   * Beat A (0ms): Seal press & envelope slight deflection
-   * Beat B (280ms): Seal release & unlock
-   * Beat C (600ms): 3D hinged flap swing open (-178deg)
-   * Beat D & E (1300ms): A short breath, then the portrait card rises
-   * Beat F (2050ms): Paper settles into its final position
-   * Settled (2620ms): Full editorial invitation active
+   * The seal press is immediate. Subsequent beats share one declared timeline
+   * so the choreography and regression tests always use the same source of truth.
    */
   const openEnvelope = useCallback(() => {
     if (phase !== 'closed') return;
@@ -389,43 +393,15 @@ export function EnvelopeRenderer({
     timerRefs.current.forEach(window.clearTimeout);
     timerRefs.current = [];
 
-    // Beat A — Seal press
     changePhase('seal-press');
 
-    // Beat B — Break / release
-    timerRefs.current.push(
-      window.setTimeout(() => {
-        changePhase('seal-release');
-      }, 280)
-    );
-
-    // Beat C — Hinged flap opens backwards 180deg
-    timerRefs.current.push(
-      window.setTimeout(() => {
-        changePhase('flap-open');
-      }, 600)
-    );
-
-    // Beat D & E — Inserts move and tall hero card rises
-    timerRefs.current.push(
-      window.setTimeout(() => {
-        changePhase('card-rising');
-      }, 1300)
-    );
-
-    // Beat F — Settling expansion
-    timerRefs.current.push(
-      window.setTimeout(() => {
-        changePhase('settling');
-      }, 2050)
-    );
-
-    // Settled — Full invitation page active
-    timerRefs.current.push(
-      window.setTimeout(() => {
-        changePhase('settled');
-      }, 2620)
-    );
+    ENVELOPE_OPENING_TIMELINE.forEach(({ phase: nextPhase, delayMs }) => {
+      timerRefs.current.push(
+        window.setTimeout(() => {
+          changePhase(nextPhase);
+        }, delayMs)
+      );
+    });
   }, [phase, reducedMotion, changePhase]);
 
   const skipToDetails = useCallback(() => {
