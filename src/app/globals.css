@@ -2490,11 +2490,8 @@ body:has(.kadi-stationery-sheet),
   flex-direction: column;
   align-items: center;
   padding: 0 !important;
-  background-color: #1A1614;
-  background-image: 
-    radial-gradient(ellipse at 50% 12%, rgba(147, 70, 56, 0.16) 0%, transparent 65%),
-    radial-gradient(circle at 85% 85%, rgba(185, 154, 98, 0.1) 0%, transparent 55%),
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 6px);
+  background-color: transparent;
+  background-image: none;
 }
 
 .kadi-stationery-sheet {
@@ -2778,10 +2775,30 @@ body:has(.kadi-stationery-sheet),
   scroll-padding-top: 28px;
 }
 
-.kadi-phone-frame .kadi-stationery-suite {
+.kadi-phone-frame .kadi-stationery-suite,
+.kadi-phone-canvas .kadi-stationery-suite {
   padding: 0 !important;
+  padding-top: 12px !important;
+  padding-bottom: 24px !important;
   width: 100% !important;
   max-width: 100% !important;
+  min-height: auto !important;
+  background: transparent !important;
+}
+
+.kadi-phone-frame .kadi-canvas-card-wrapper,
+.kadi-phone-canvas .kadi-canvas-card-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+.kadi-phone-frame .kadi-canvas-card-wrapper > div,
+.kadi-phone-canvas .kadi-canvas-card-wrapper > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-radius: 18px !important;
 }
 
 .kadi-phone-frame .kadi-stationery-sheet {

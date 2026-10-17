@@ -59,7 +59,7 @@ export function CanvasCardView({
       ref={containerRef}
       className={`relative w-full h-full flex ${
         fit === 'fill-width' ? 'items-start' : 'items-center'
-      } justify-center overflow-hidden select-none ${className}`}
+      } justify-center overflow-visible select-none ${className}`}
     >
       <div
         className="relative shrink-0 shadow-lg rounded-2xl overflow-visible transition-transform duration-75"

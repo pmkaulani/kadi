@@ -1559,7 +1559,15 @@ export function KadiStudioEditor({
                   /* Modern Luxury Phone Frame */
                   <div className="kadi-phone-frame relative mx-auto my-auto w-[385px] sm:w-[393px] h-[790px] sm:h-[844px] max-w-[calc(100vw-24px)] shrink-0">
                     <div className="w-full h-full rounded-[44px] p-[10px] bg-[#1E1D1A] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col relative select-none">
-                      <div className="rounded-[34px] bg-[#120608] overflow-hidden flex flex-col flex-1 relative ring-1 ring-black/80 shadow-inner w-full min-w-0">
+                      <div
+                        className="rounded-[34px] overflow-hidden flex flex-col flex-1 relative ring-1 ring-black/80 shadow-inner w-full min-w-0 transition-colors"
+                        style={{
+                          backgroundColor:
+                            draft.design.palette?.cardBackground ||
+                            activeTemplate.palette.cardBackground ||
+                            '#FAF7F2',
+                        }}
+                      >
                         {/* Dynamic Island */}
                         <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-[90px] h-[23px] bg-black rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.6)] z-30 pointer-events-none" />
                         <DraftInvitationPreview
