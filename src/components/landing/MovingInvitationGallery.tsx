@@ -34,7 +34,15 @@ interface GalleryCardItem {
     | 'celestial-gold'
     | 'minimal-botanical'
     | 'watercolor-crest'
-    | 'pastel-floral';
+    | 'pastel-floral'
+    | 'swahili-gold-lace'
+    | 'kikuyu-ruracio-ochre'
+    | 'retro-disco-wave'
+    | 'vogue-editorial-photo'
+    | 'amalfi-lemon-grove'
+    | 'art-deco-noir'
+    | 'celestial-starmap'
+    | 'safari-wild-one';
   celebrants?: string;
   photoUrl?: string;
   rsvpText?: string;
@@ -261,11 +269,132 @@ const GALLERY_CARDS: GalleryCardItem[] = [
     accentColor: '#D97706',
     layoutType: 'carla-cake-bunting',
   },
+  // ── NEW BESPOKE DESIGN ARCHETYPES (EXPANDED DIVERSE SUITES) ───────────────
+  {
+    id: 'swahili-harusi-gold',
+    templateId: 'harambee-cultural-night',
+    category: 'heritage',
+    categoryLabel: 'Heritage & African',
+    title: 'Harusi Yetu · Tariq & Amina',
+    subtitle: 'Familia za Shariff na Al-Bakri wanawaalika kwenye sherehe ya harusi na tafrija ya kipekee',
+    dateText: 'JUMATATU · 18 DESEMBA 2028 · 4:00 PM',
+    venueText: 'Fort Jesus Ocean Terrace, Mombasa',
+    cardBg: '#181411',
+    textColor: '#FAF6EE',
+    accentColor: '#D4AF37',
+    layoutType: 'swahili-gold-lace',
+    celebrants: 'Tariq & Amina',
+  },
+  {
+    id: 'kikuyu-ruracio-ochre',
+    templateId: 'harambee-cultural-night',
+    category: 'heritage',
+    categoryLabel: 'Heritage & African',
+    title: 'Ruracio · Njeri & Mwangi',
+    subtitle: 'Kuhanda Ithigi & Traditional Betrothal Ceremony',
+    dateText: 'SATURDAY, AUG 22, 2028 · 11:00 AM',
+    venueText: 'Thuo Heritage Homestead, Nyeri',
+    cardBg: '#3E1F10',
+    textColor: '#FFFDF7',
+    accentColor: '#E6AA38',
+    layoutType: 'kikuyu-ruracio-ochre',
+    celebrants: 'Njeri & Mwangi',
+  },
+  {
+    id: 'retro-disco-wave',
+    templateId: 'ruby-disco-birthday',
+    category: 'birthday',
+    categoryLabel: 'Birthday',
+    title: 'Studio 74 · Chloe turns 30',
+    subtitle: 'Boogie down with disco beats, sparkling mirror balls & cocktails',
+    dateText: 'FRIDAY · OCT 27 · 8:00 PM TILL LATE',
+    venueText: 'The Alchemist Courtyard, Westlands',
+    cardBg: '#1B0824',
+    textColor: '#FFF0F5',
+    accentColor: '#F43F5E',
+    layoutType: 'retro-disco-wave',
+    rsvpText: 'Dress Code: 70s Glamour',
+  },
+  {
+    id: 'vogue-editorial-photo',
+    templateId: 'savannah-twilight',
+    category: 'wedding',
+    categoryLabel: 'Wedding',
+    title: 'The Wedding of Vivienne & Alexander',
+    subtitle: 'An intimate celebration of eternal vows & editorial romance',
+    dateText: 'SEPTEMBER 12, 2028 · 3:30 PM',
+    venueText: 'Villa Rosa Kempinski Grand Ballroom, Nairobi',
+    cardBg: '#FAF8F5',
+    textColor: '#1A1816',
+    accentColor: '#8C7355',
+    layoutType: 'vogue-editorial-photo',
+    photoUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80',
+    celebrants: 'Vivienne & Alexander',
+  },
+  {
+    id: 'amalfi-lemon-grove',
+    templateId: 'harvest-table',
+    category: 'anniversary',
+    categoryLabel: 'Anniversary',
+    title: 'A Summer in Amalfi · 25 Years',
+    subtitle: 'Under the citrus canopy for a silver jubilee garden feast',
+    dateText: 'SUNDAY · JULY 19, 2028 · 1:30 PM',
+    venueText: 'Enashipai Resort & Spa, Naivasha',
+    cardBg: '#FFFDF5',
+    textColor: '#1E3A8A',
+    accentColor: '#EAB308',
+    layoutType: 'amalfi-lemon-grove',
+    celebrants: 'Marco & Sophia',
+  },
+  {
+    id: 'art-deco-noir',
+    templateId: 'golden-soiree',
+    category: 'corporate',
+    categoryLabel: 'Honours',
+    title: 'The Great Gatsby Midnight Gala',
+    subtitle: 'An evening of live jazz, vintage champagne & roaring elegance',
+    dateText: "NEW YEAR'S EVE · DEC 31 · 9:00 PM",
+    venueText: 'Tribe Hotel Rooftop, Gigiri',
+    cardBg: '#121212',
+    textColor: '#F9F6EE',
+    accentColor: '#D4AF37',
+    layoutType: 'art-deco-noir',
+  },
+  {
+    id: 'celestial-starmap',
+    templateId: 'lullaby-stars',
+    category: 'wedding',
+    categoryLabel: 'Wedding',
+    title: 'Written in the Stars · Maya & Leo',
+    subtitle: 'Under the celestial canopy, we pledge our infinite journey',
+    dateText: 'OCTOBER 14, 2028 · 6:30 PM',
+    venueText: 'Lake Elementaita Astronomy Camp',
+    cardBg: '#090D1E',
+    textColor: '#FFFFFF',
+    accentColor: '#FDE047',
+    layoutType: 'celestial-starmap',
+    celebrants: 'Maya & Leo',
+  },
+  {
+    id: 'safari-wild-one',
+    templateId: 'tender-welcome-baby',
+    category: 'baby-shower',
+    categoryLabel: 'Family',
+    title: 'Zayn is The Wild One!',
+    subtitle: 'Put on your safari hat & join our little explorer in the jungle',
+    dateText: 'SATURDAY · NOV 4, 2028 · 11:00 AM',
+    venueText: 'Langata Botanical Gardens, Nairobi',
+    cardBg: '#FAF6ED',
+    textColor: '#3D2E1E',
+    accentColor: '#15803D',
+    layoutType: 'safari-wild-one',
+  },
 ];
 
 const CATEGORIES = [
   { id: 'all', label: 'All' },
   { id: 'wedding', label: 'Weddings' },
+  { id: 'heritage', label: 'Heritage & African' },
   { id: 'birthday', label: 'Birthdays' },
   { id: 'anniversary', label: 'Anniversaries' },
   { id: 'graduation', label: 'Honours' },
@@ -283,7 +412,8 @@ export function MovingInvitationGallery() {
       const matchesCategory =
         selectedCategory === 'all' ||
         card.category === selectedCategory ||
-        (selectedCategory === 'wedding' && card.category === 'anniversary') ||
+        (selectedCategory === 'heritage' && (card.category === 'heritage' || card.categoryLabel.includes('Heritage'))) ||
+        (selectedCategory === 'wedding' && (card.category === 'anniversary' || card.category === 'heritage')) ||
         (selectedCategory === 'graduation' && (card.category === 'milestone' || card.category === 'corporate'));
       const matchesSearch =
         !searchQuery ||
@@ -294,70 +424,66 @@ export function MovingInvitationGallery() {
     });
   }, [selectedCategory, searchQuery]);
 
-  // Distribute cards into 5 columns matching kadi-gallery-reference.png with deep scroll coverage
+  // Distribute cards into 7 columns matching kadi-gallery-reference.png with deep scroll coverage
   const columns = useMemo(() => {
     if (selectedCategory === 'all' && !searchQuery) {
       // 7 distinct columns partitioned into 3 disjoint sets so NO adjacent columns ever share cards
-      // Set 1: anabel-wedding, carla-birthday, thirty-hannah, james-carla, olivia-birthday
-      // Set 2: carla-photo-party, david-peter, summit-of-honor, first-home-botanical, everlasting-peace
-      // Set 3: twilight-toast, sweet-dreams, modern-monochrome, bon-voyage-safari, first-birthday-wild
-
       return [
-        // Column 0 (Set 1)
+        // Column 0
         [
           GALLERY_CARDS.find((c) => c.id === 'anabel-wedding')!,
-          GALLERY_CARDS.find((c) => c.id === 'carla-birthday')!,
+          GALLERY_CARDS.find((c) => c.id === 'swahili-harusi-gold')!,
           GALLERY_CARDS.find((c) => c.id === 'thirty-hannah')!,
-          GALLERY_CARDS.find((c) => c.id === 'james-carla')!,
+          GALLERY_CARDS.find((c) => c.id === 'vogue-editorial-photo')!,
           GALLERY_CARDS.find((c) => c.id === 'olivia-birthday')!,
         ],
-        // Column 1 (Set 2)
+        // Column 1
         [
+          GALLERY_CARDS.find((c) => c.id === 'kikuyu-ruracio-ochre')!,
           GALLERY_CARDS.find((c) => c.id === 'carla-photo-party')!,
-          GALLERY_CARDS.find((c) => c.id === 'david-peter')!,
           GALLERY_CARDS.find((c) => c.id === 'summit-of-honor')!,
-          GALLERY_CARDS.find((c) => c.id === 'first-home-botanical')!,
+          GALLERY_CARDS.find((c) => c.id === 'amalfi-lemon-grove')!,
           GALLERY_CARDS.find((c) => c.id === 'everlasting-peace')!,
         ],
-        // Column 2 (Set 3)
+        // Column 2
         [
-          GALLERY_CARDS.find((c) => c.id === 'twilight-toast')!,
-          GALLERY_CARDS.find((c) => c.id === 'sweet-dreams')!,
-          GALLERY_CARDS.find((c) => c.id === 'modern-monochrome')!,
+          GALLERY_CARDS.find((c) => c.id === 'retro-disco-wave')!,
+          GALLERY_CARDS.find((c) => c.id === 'art-deco-noir')!,
+          GALLERY_CARDS.find((c) => c.id === 'celestial-starmap')!,
           GALLERY_CARDS.find((c) => c.id === 'bon-voyage-safari')!,
-          GALLERY_CARDS.find((c) => c.id === 'first-birthday-wild')!,
+          GALLERY_CARDS.find((c) => c.id === 'safari-wild-one')!,
         ],
-        // Column 3 (Set 1 - permuted)
+        // Column 3
         [
-          GALLERY_CARDS.find((c) => c.id === 'thirty-hannah')!,
-          GALLERY_CARDS.find((c) => c.id === 'olivia-birthday')!,
-          GALLERY_CARDS.find((c) => c.id === 'anabel-wedding')!,
-          GALLERY_CARDS.find((c) => c.id === 'james-carla')!,
-          GALLERY_CARDS.find((c) => c.id === 'carla-birthday')!,
-        ],
-        // Column 4 (Set 2 - permuted)
-        [
-          GALLERY_CARDS.find((c) => c.id === 'summit-of-honor')!,
-          GALLERY_CARDS.find((c) => c.id === 'first-home-botanical')!,
           GALLERY_CARDS.find((c) => c.id === 'david-peter')!,
-          GALLERY_CARDS.find((c) => c.id === 'everlasting-peace')!,
-          GALLERY_CARDS.find((c) => c.id === 'carla-photo-party')!,
+          GALLERY_CARDS.find((c) => c.id === 'james-carla')!,
+          GALLERY_CARDS.find((c) => c.id === 'swahili-harusi-gold')!,
+          GALLERY_CARDS.find((c) => c.id === 'carla-birthday')!,
+          GALLERY_CARDS.find((c) => c.id === 'vogue-editorial-photo')!,
         ],
-        // Column 5 (Set 3 - permuted)
+        // Column 4
         [
-          GALLERY_CARDS.find((c) => c.id === 'bon-voyage-safari')!,
-          GALLERY_CARDS.find((c) => c.id === 'first-birthday-wild')!,
+          GALLERY_CARDS.find((c) => c.id === 'amalfi-lemon-grove')!,
+          GALLERY_CARDS.find((c) => c.id === 'first-home-botanical')!,
+          GALLERY_CARDS.find((c) => c.id === 'kikuyu-ruracio-ochre')!,
           GALLERY_CARDS.find((c) => c.id === 'sweet-dreams')!,
-          GALLERY_CARDS.find((c) => c.id === 'twilight-toast')!,
           GALLERY_CARDS.find((c) => c.id === 'modern-monochrome')!,
         ],
-        // Column 6 (Set 1 - permuted)
+        // Column 5
         [
-          GALLERY_CARDS.find((c) => c.id === 'james-carla')!,
-          GALLERY_CARDS.find((c) => c.id === 'carla-birthday')!,
-          GALLERY_CARDS.find((c) => c.id === 'olivia-birthday')!,
+          GALLERY_CARDS.find((c) => c.id === 'art-deco-noir')!,
+          GALLERY_CARDS.find((c) => c.id === 'retro-disco-wave')!,
+          GALLERY_CARDS.find((c) => c.id === 'celestial-starmap')!,
+          GALLERY_CARDS.find((c) => c.id === 'first-birthday-wild')!,
+          GALLERY_CARDS.find((c) => c.id === 'twilight-toast')!,
+        ],
+        // Column 6
+        [
+          GALLERY_CARDS.find((c) => c.id === 'safari-wild-one')!,
           GALLERY_CARDS.find((c) => c.id === 'thirty-hannah')!,
           GALLERY_CARDS.find((c) => c.id === 'anabel-wedding')!,
+          GALLERY_CARDS.find((c) => c.id === 'james-carla')!,
+          GALLERY_CARDS.find((c) => c.id === 'olivia-birthday')!,
         ],
       ];
     }
@@ -957,6 +1083,359 @@ function InvitationGalleryCard({
 
             <div className="text-center border-t border-black/10 pt-1 sm:pt-2 text-[6.5px] sm:text-[8px] opacity-70 truncate px-1">
               {card.dateText}
+            </div>
+          </div>
+        )}
+
+        {/* 10. SWAHILI COASTAL HARUSI YETU (Gold Lace & Ogee Arch) */}
+        {card.layoutType === 'swahili-gold-lace' && (
+          <div className="relative w-full h-full p-2.5 sm:p-4 flex flex-col justify-between text-[#FAF6EE]">
+            <div className="absolute inset-1 sm:inset-2 pointer-events-none opacity-85">
+              <svg viewBox="0 0 240 340" className="w-full h-full" fill="none">
+                <path
+                  d="M 20 80 Q 20 30 70 20 Q 120 10 120 5 Q 120 10 170 20 Q 220 30 220 80 L 220 320 L 20 320 Z"
+                  stroke="#D4AF37"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M 26 84 Q 26 36 72 26 Q 120 17 120 12 Q 120 17 168 26 Q 214 36 214 84 L 214 314 L 26 314 Z"
+                  stroke="#B8860B"
+                  strokeWidth="0.8"
+                  strokeDasharray="2 3"
+                />
+                <circle cx="120" cy="5" r="3" fill="#D4AF37" />
+                <circle cx="32" cy="308" r="4" fill="#D4AF37" fillOpacity="0.3" stroke="#D4AF37" strokeWidth="1" />
+                <circle cx="208" cy="308" r="4" fill="#D4AF37" fillOpacity="0.3" stroke="#D4AF37" strokeWidth="1" />
+              </svg>
+            </div>
+
+            <div className="relative z-[2] text-center pt-2 sm:pt-3">
+              <span className="text-[7.5px] sm:text-[9.5px] uppercase tracking-[0.28em] text-[#D4AF37] font-semibold block">
+                Harusi Yetu
+              </span>
+              <div className="w-8 sm:w-12 h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-1" />
+            </div>
+
+            <div className="relative z-[2] text-center my-auto px-2">
+              <h3 className="font-serif text-sm sm:text-lg font-medium tracking-wide text-[#FAF6EE] leading-tight">
+                Tariq
+              </h3>
+              <span className="font-serif italic text-xs sm:text-sm text-[#D4AF37] leading-none my-0.5 block">&amp;</span>
+              <h3 className="font-serif text-sm sm:text-lg font-medium tracking-wide text-[#FAF6EE] leading-tight mb-1 sm:mb-2">
+                Amina
+              </h3>
+              <p className="text-[6.5px] sm:text-[8px] text-[#E0D7C6] max-w-[130px] sm:max-w-[180px] mx-auto leading-relaxed">
+                {card.subtitle}
+              </p>
+            </div>
+
+            <div className="relative z-[2] text-center pb-2 sm:pb-3 border-t border-[#D4AF37]/20 pt-1.5 sm:pt-2">
+              <div className="text-[7px] sm:text-[8.5px] text-[#D4AF37] font-bold tracking-wider mb-0.5 truncate px-1">
+                {card.dateText}
+              </div>
+              <div className="text-[6px] sm:text-[7.5px] text-[#B8AF9F] truncate px-1">
+                {card.venueText}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 11. KIKUYU TRADITIONAL RURACIO (Ochre & Beaded Chevrons) */}
+        {card.layoutType === 'kikuyu-ruracio-ochre' && (
+          <div className="relative w-full h-full p-2.5 sm:p-4 flex flex-col justify-between text-[#FFFDF7]">
+            <div className="relative w-full pt-1">
+              <div className="flex justify-center items-center gap-1 sm:gap-1.5 mb-1">
+                {['#DC2626', '#2563EB', '#F8FAFC', '#F59E0B', '#16A34A', '#DC2626', '#2563EB'].map((c, i) => (
+                  <div key={i} className="w-2.5 sm:w-3.5 h-1.5 sm:h-2 rounded-xs" style={{ backgroundColor: c }} />
+                ))}
+              </div>
+              <div className="text-center">
+                <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.25em] text-[#E6AA38] font-bold">
+                  Kuhanda Ithigi
+                </span>
+              </div>
+            </div>
+
+            <div className="my-auto text-center px-1">
+              <div className="inline-block px-2.5 py-0.5 rounded-full bg-[#E6AA38]/20 border border-[#E6AA38]/40 text-[7px] sm:text-[8.5px] font-semibold text-[#FDE68A] uppercase tracking-wider mb-1">
+                Traditional Ruracio
+              </div>
+              <h2 className="font-serif text-base sm:text-2xl text-[#FFFDF7] font-bold tracking-tight mb-0.5 leading-tight">
+                Njeri &amp; Mwangi
+              </h2>
+              <div className="w-10 sm:w-16 h-0.5 bg-[#E6AA38] mx-auto my-1.5" />
+              <p className="text-[6.5px] sm:text-[8px] text-[#F3E8E2] max-w-[130px] sm:max-w-[180px] mx-auto leading-relaxed">
+                {card.subtitle}
+              </p>
+            </div>
+
+            <div className="text-center pb-1 sm:pb-2 pt-1.5 border-t border-[#E6AA38]/30">
+              <div className="text-[7.5px] sm:text-[9px] font-bold text-[#E6AA38] tracking-wide">
+                {card.dateText}
+              </div>
+              <div className="text-[6px] sm:text-[7.5px] text-[#E0D0C5] mt-0.5">
+                {card.venueText}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 12. RETRO 70s DISCO WAVE (Electric Plum & Funk Ribbons) */}
+        {card.layoutType === 'retro-disco-wave' && (
+          <div className="relative w-full h-full p-2.5 sm:p-4 flex flex-col justify-between text-[#FFF0F5] overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none opacity-40">
+              <svg viewBox="0 0 200 300" className="w-full h-full" fill="none">
+                <path d="M -20 50 Q 80 120 180 50 Q 220 20 250 80" stroke="#F43F5E" strokeWidth="12" opacity="0.6"/>
+                <path d="M -20 70 Q 80 140 180 70 Q 220 40 250 100" stroke="#F59E0B" strokeWidth="10" opacity="0.7"/>
+                <path d="M -20 90 Q 80 160 180 90 Q 220 60 250 120" stroke="#06B6D4" strokeWidth="8" opacity="0.5"/>
+              </svg>
+            </div>
+
+            <div className="relative z-[2] text-center pt-1 flex flex-col items-center">
+              <div className="w-9 sm:w-12 h-9 sm:h-12 rounded-full bg-white/10 border border-white/30 backdrop-blur-xs flex items-center justify-center shadow-lg">
+                <span className="text-base sm:text-xl">🪩</span>
+              </div>
+              <span className="text-[7.5px] sm:text-[9px] uppercase tracking-[0.25em] text-[#F43F5E] font-black mt-1">
+                Studio 74
+              </span>
+            </div>
+
+            <div className="relative z-[2] my-auto text-center px-1">
+              <h2 className="text-lg sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#F43F5E] via-[#FBBF24] to-[#38BDF8] tracking-tight leading-none mb-1">
+                CHLOE
+              </h2>
+              <div className="text-[10px] sm:text-sm font-bold text-white tracking-wide uppercase">
+                Turns 30!
+              </div>
+              <p className="text-[6.5px] sm:text-[8px] text-white/80 max-w-[130px] sm:max-w-[170px] mx-auto mt-1 leading-snug">
+                {card.subtitle}
+              </p>
+            </div>
+
+            <div className="relative z-[2] text-center pb-1 sm:pb-2 pt-1 border-t border-white/15">
+              <div className="text-[7.5px] sm:text-[9px] font-bold text-[#FBBF24]">
+                {card.dateText}
+              </div>
+              <div className="text-[6px] sm:text-[7.5px] text-white/70 mt-0.5">
+                {card.rsvpText}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 13. VOGUE EDITORIAL ROMANCE (Arched Photo & Masthead) */}
+        {card.layoutType === 'vogue-editorial-photo' && (
+          <div className="relative w-full h-full p-2.5 sm:p-4 flex flex-col justify-between text-[#1A1816]">
+            <div className="text-center pt-0.5 sm:pt-1 border-b border-black/15 pb-1 sm:pb-1.5 flex items-center justify-between px-1">
+              <span className="text-[6.5px] sm:text-[8px] font-mono tracking-widest uppercase text-neutral-500">
+                ISSUE NO. 12
+              </span>
+              <span className="font-serif font-bold text-[9px] sm:text-xs tracking-[0.25em] text-[#1A1816]">
+                VOWS
+              </span>
+              <span className="text-[6.5px] sm:text-[8px] font-mono tracking-widest uppercase text-neutral-500">
+                EDITION
+              </span>
+            </div>
+
+            <div className="relative w-24 sm:w-36 h-28 sm:h-40 mx-auto my-auto rounded-t-full rounded-b-md overflow-hidden shadow-lg border-2 border-white">
+              {card.photoUrl && (
+                <img
+                  src={card.photoUrl}
+                  alt={card.celebrants || card.title}
+                  className="w-full h-full object-cover"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+            </div>
+
+            <div className="text-center pb-1 sm:pb-2">
+              <h3 className="font-serif italic text-xs sm:text-base font-medium text-[#1A1816] leading-tight">
+                Vivienne &amp; Alexander
+              </h3>
+              <p className="text-[6.5px] sm:text-[8px] uppercase tracking-wider text-neutral-600 mt-0.5">
+                {card.dateText}
+              </p>
+              <div className="text-[6px] sm:text-[7.5px] text-neutral-500 font-mono mt-0.5">
+                1°16&apos;05.4&quot;S 36°48&apos;33.1&quot;E · Nairobi
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 14. AMALFI LEMON GROVE (Majolica Tile & Citrus Jubilee) */}
+        {card.layoutType === 'amalfi-lemon-grove' && (
+          <div className="relative w-full h-full p-2.5 sm:p-4 flex flex-col justify-between text-[#1E3A8A]">
+            <div className="absolute inset-1 sm:inset-2 pointer-events-none opacity-80">
+              <svg viewBox="0 0 200 300" className="w-full h-full" fill="none">
+                <rect x="5" y="5" width="22" height="22" stroke="#1E3A8A" strokeWidth="1.2" fill="#EFF6FF" />
+                <circle cx="16" cy="16" r="6" fill="#EAB308" />
+                <rect x="173" y="5" width="22" height="22" stroke="#1E3A8A" strokeWidth="1.2" fill="#EFF6FF" />
+                <circle cx="184" cy="16" r="6" fill="#EAB308" />
+                <rect x="5" y="273" width="22" height="22" stroke="#1E3A8A" strokeWidth="1.2" fill="#EFF6FF" />
+                <circle cx="16" cy="284" r="6" fill="#EAB308" />
+                <rect x="173" y="273" width="22" height="22" stroke="#1E3A8A" strokeWidth="1.2" fill="#EFF6FF" />
+                <circle cx="184" cy="284" r="6" fill="#EAB308" />
+                <rect x="10" y="10" width="180" height="280" stroke="#1E3A8A" strokeWidth="1" strokeDasharray="3 3"/>
+              </svg>
+            </div>
+
+            <div className="relative z-[2] text-center pt-2 sm:pt-3">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <span className="text-sm sm:text-base">🍋</span>
+                <span className="text-[7.5px] sm:text-[9.5px] uppercase tracking-[0.25em] text-[#1E3A8A] font-bold">
+                  Amalfi Soirée
+                </span>
+                <span className="text-sm sm:text-base">🍋</span>
+              </div>
+              <div className="w-10 sm:w-14 h-px bg-[#EAB308] mx-auto" />
+            </div>
+
+            <div className="relative z-[2] text-center my-auto px-2">
+              <h2 className="font-serif italic text-base sm:text-2xl text-[#1E3A8A] font-bold leading-tight">
+                A Summer in Amalfi
+              </h2>
+              <div className="text-[8px] sm:text-[10px] font-serif uppercase tracking-widest text-[#B45309] font-semibold mt-0.5">
+                25th Wedding Anniversary
+              </div>
+              <p className="text-[6.5px] sm:text-[8px] text-neutral-600 max-w-[130px] sm:max-w-[170px] mx-auto mt-1 leading-relaxed">
+                {card.subtitle}
+              </p>
+            </div>
+
+            <div className="relative z-[2] text-center pb-2 sm:pb-3 border-t border-[#1E3A8A]/20 pt-1">
+              <div className="text-[7px] sm:text-[8.5px] font-bold text-[#1E3A8A]">{card.dateText}</div>
+              <div className="text-[6px] sm:text-[7.5px] text-neutral-500 mt-0.5">{card.venueText}</div>
+            </div>
+          </div>
+        )}
+
+        {/* 15. ART DECO NOIR (Onyx & Stepped Gold Geometrics) */}
+        {card.layoutType === 'art-deco-noir' && (
+          <div className="relative w-full h-full p-2.5 sm:p-4 flex flex-col justify-between text-[#F9F6EE]">
+            <div className="absolute inset-1 sm:inset-2 pointer-events-none opacity-90">
+              <svg viewBox="0 0 200 300" className="w-full h-full" fill="none">
+                <rect x="6" y="6" width="188" height="288" stroke="#D4AF37" strokeWidth="1.5" />
+                <rect x="12" y="12" width="176" height="276" stroke="#B8860B" strokeWidth="0.8" />
+                <path d="M 6 30 L 30 6 M 6 36 L 36 6 M 170 6 L 194 30 M 164 6 L 194 36 M 6 270 L 30 294 M 6 264 L 36 294 M 170 294 L 194 270 M 164 294 L 194 264" stroke="#D4AF37" strokeWidth="1"/>
+                <polygon points="100,8 108,18 100,28 92,18" fill="#D4AF37"/>
+              </svg>
+            </div>
+
+            <div className="relative z-[2] text-center pt-3 sm:pt-4">
+              <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.3em] text-[#D4AF37] font-semibold block">
+                The Great Gatsby
+              </span>
+              <div className="text-[6px] sm:text-[7.5px] tracking-widest text-neutral-400 uppercase mt-0.5">
+                Midnight Soirée
+              </div>
+            </div>
+
+            <div className="relative z-[2] text-center my-auto px-2">
+              <h2 className="font-serif text-sm sm:text-xl font-medium tracking-[0.15em] text-[#F9F6EE] uppercase mb-1 leading-tight">
+                Midnight Gala
+              </h2>
+              <div className="w-8 sm:w-12 h-px bg-[#D4AF37] mx-auto my-1" />
+              <p className="text-[6.5px] sm:text-[8px] text-neutral-300 max-w-[130px] sm:max-w-[170px] mx-auto leading-relaxed">
+                {card.subtitle}
+              </p>
+            </div>
+
+            <div className="relative z-[2] text-center pb-3 sm:pb-4 border-t border-[#D4AF37]/25 pt-1.5">
+              <div className="text-[7.5px] sm:text-[9px] font-bold text-[#D4AF37] tracking-wider">
+                {card.dateText}
+              </div>
+              <div className="text-[6px] sm:text-[7.5px] text-neutral-400 mt-0.5">
+                {card.venueText}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 16. CELESTIAL STARMAP (Midnight Navy & Constellation) */}
+        {card.layoutType === 'celestial-starmap' && (
+          <div className="relative w-full h-full p-2.5 sm:p-4 flex flex-col justify-between text-white overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none opacity-85">
+              <svg viewBox="0 0 200 300" className="w-full h-full" fill="none">
+                <line x1="30" y1="60" x2="65" y2="40" stroke="#FDE047" strokeWidth="0.8" opacity="0.6"/>
+                <line x1="65" y1="40" x2="110" y2="55" stroke="#FDE047" strokeWidth="0.8" opacity="0.6"/>
+                <line x1="110" y1="55" x2="160" y2="35" stroke="#FDE047" strokeWidth="0.8" opacity="0.6"/>
+                <line x1="40" y1="240" x2="85" y2="260" stroke="#FDE047" strokeWidth="0.8" opacity="0.6"/>
+                <line x1="85" y1="260" x2="150" y2="245" stroke="#FDE047" strokeWidth="0.8" opacity="0.6"/>
+                <circle cx="30" cy="60" r="2" fill="#FFFFFF"/>
+                <circle cx="65" cy="40" r="2.5" fill="#FDE047"/>
+                <circle cx="110" cy="55" r="2" fill="#FFFFFF"/>
+                <circle cx="160" cy="35" r="3" fill="#FDE047"/>
+                <circle cx="40" cy="240" r="2" fill="#FFFFFF"/>
+                <circle cx="85" cy="260" r="2.5" fill="#FDE047"/>
+                <circle cx="150" cy="245" r="2" fill="#FFFFFF"/>
+                <circle cx="100" cy="150" r="60" fill="#3B82F6" fillOpacity="0.08"/>
+              </svg>
+            </div>
+
+            <div className="relative z-[2] text-center pt-1 sm:pt-2">
+              <div className="flex items-center justify-center gap-1 text-[8px] sm:text-[10px] text-[#FDE047] opacity-90">
+                <span>🌑</span>
+                <span>🌒</span>
+                <span>🌕</span>
+                <span>🌘</span>
+                <span>🌑</span>
+              </div>
+              <span className="text-[6.5px] sm:text-[8px] uppercase tracking-[0.25em] text-[#FDE047] font-semibold block mt-0.5">
+                Written in the Stars
+              </span>
+            </div>
+
+            <div className="relative z-[2] text-center my-auto px-1">
+              <h2 className="font-serif italic text-base sm:text-2xl text-white font-normal leading-tight">
+                Maya &amp; Leo
+              </h2>
+              <div className="w-8 sm:w-12 h-px bg-gradient-to-r from-transparent via-[#FDE047] to-transparent mx-auto my-1" />
+              <p className="text-[6.5px] sm:text-[8px] text-white/80 max-w-[130px] sm:max-w-[175px] mx-auto leading-relaxed">
+                {card.subtitle}
+              </p>
+            </div>
+
+            <div className="relative z-[2] text-center pb-1 sm:pb-2 border-t border-white/10 pt-1">
+              <div className="text-[7.5px] sm:text-[9px] font-semibold text-[#FDE047]">{card.dateText}</div>
+              <div className="text-[6px] sm:text-[7.5px] text-white/60 mt-0.5">{card.venueText}</div>
+            </div>
+          </div>
+        )}
+
+        {/* 17. SAFARI WILD ONE (Tropical Jungle & Lion Cub) */}
+        {card.layoutType === 'safari-wild-one' && (
+          <div className="relative w-full h-full p-2.5 sm:p-4 flex flex-col justify-between text-[#3D2E1E]">
+            <div className="relative w-full pt-0.5">
+              <div className="flex justify-between items-center px-1">
+                <span className="text-base sm:text-xl">🌿</span>
+                <div className="text-center">
+                  <span className="text-[7px] sm:text-[8.5px] uppercase tracking-[0.22em] text-[#15803D] font-black">
+                    Safari Expedition
+                  </span>
+                </div>
+                <span className="text-base sm:text-xl">🌴</span>
+              </div>
+            </div>
+
+            <div className="my-auto text-center px-1">
+              <div className="w-10 sm:w-14 h-10 sm:h-14 mx-auto mb-1 flex items-center justify-center">
+                <span className="text-2xl sm:text-4xl">🦁</span>
+              </div>
+              <h2 className="font-serif text-base sm:text-2xl font-black text-[#B45309] leading-tight">
+                Zayn
+              </h2>
+              <div className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-[#15803D]">
+                is The Wild One!
+              </div>
+              <p className="text-[6.5px] sm:text-[8px] text-neutral-600 max-w-[130px] sm:max-w-[170px] mx-auto mt-1 leading-snug">
+                {card.subtitle}
+              </p>
+            </div>
+
+            <div className="text-center pb-1 sm:pb-2 pt-1 border-t border-amber-900/15">
+              <div className="text-[7.5px] sm:text-[9px] font-bold text-[#B45309]">{card.dateText}</div>
+              <div className="text-[6px] sm:text-[7.5px] text-neutral-500 mt-0.5">{card.venueText}</div>
             </div>
           </div>
         )}

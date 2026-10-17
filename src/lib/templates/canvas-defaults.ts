@@ -57,6 +57,23 @@ export function getTemplateCanvasElements(
     template.category === 'graduation' || template.category === 'corporate';
   const isBaby = template.category === 'baby-shower';
 
+  const isHeritage =
+    template.motionPreset === 'cultural-celebration' ||
+    template.liner?.id === 'african-print' ||
+    template.id === 'harambee-cultural-night' ||
+    template.id.includes('cultural') ||
+    template.id.includes('safari');
+  const isDisco =
+    template.id.includes('disco') ||
+    template.id === 'ruby-disco-birthday';
+  const isArtDeco =
+    template.id === 'golden-soiree' ||
+    template.id === 'future-in-gold' ||
+    template.id === 'bespoke-gathering';
+  const isMediterranean =
+    template.id === 'harvest-table' ||
+    template.id === 'terrace-open-house';
+
   const headingFont =
     template.fonts.heading === 'sans' ? 'Inter' : 'Playfair Display';
 
@@ -71,16 +88,49 @@ export function getTemplateCanvasElements(
   // Base artboard coordinate space is 480 x 680 (portrait invitation card)
   const elements: CanvasElement[] = [];
 
-  // 1. Top Decorative Sticker / Crest (refined 90x90 centered crest)
+  // 1. Top Decorative Sticker / Crest (tailored to event archetype & culture)
   let topSticker = STICKER_ASSETS.find((s) => s.id === 'botanical-gold-laurel-wreath');
-  if (isBirthday) {
-    topSticker = STICKER_ASSETS.find((s) => s.id === 'birthday-balloon-cluster');
+  if (isHeritage) {
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'heritage-shield-spears') ||
+      STICKER_ASSETS.find((s) => s.id === 'heritage-swahili-henna-lace') ||
+      topSticker;
+  } else if (isDisco) {
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'celebration-disco-ball') ||
+      STICKER_ASSETS.find((s) => s.id === 'birthday-retro-sun') ||
+      topSticker;
+  } else if (isArtDeco) {
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'luxury-art-deco-sunburst') ||
+      STICKER_ASSETS.find((s) => s.id === 'milestone-starburst-crest') ||
+      topSticker;
+  } else if (isMediterranean) {
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'botanical-olive-branch') ||
+      topSticker;
+  } else if (isBirthday) {
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'birthday-tiered-cake') ||
+      STICKER_ASSETS.find((s) => s.id === 'birthday-balloon-cluster');
   } else if (isMemorial) {
-    topSticker = STICKER_ASSETS.find((s) => s.id === 'memorial-peace-dove');
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'memorial-tree-of-life') ||
+      STICKER_ASSETS.find((s) => s.id === 'memorial-peace-dove');
   } else if (isGraduation) {
-    topSticker = STICKER_ASSETS.find((s) => s.id === 'milestone-mortarboard-cap');
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'milestone-mortarboard-cap') ||
+      STICKER_ASSETS.find((s) => s.id === 'milestone-quill-inkwell');
   } else if (isBaby) {
-    topSticker = STICKER_ASSETS.find((s) => s.id === 'baby-butterfly-flutter');
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'baby-safari-elephant') ||
+      STICKER_ASSETS.find((s) => s.id === 'baby-crescent-moon-clouds') ||
+      STICKER_ASSETS.find((s) => s.id === 'baby-butterfly-flutter');
+  } else if (isWedding) {
+    topSticker =
+      STICKER_ASSETS.find((s) => s.id === 'luxury-wax-seal-crimson') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-gold-laurel-wreath') ||
+      STICKER_ASSETS.find((s) => s.id === 'wedding-gold-rings');
   }
 
   if (topSticker) {
@@ -233,39 +283,46 @@ export function getTemplateCanvasElements(
     },
   });
 
-  // 7. Bottom Botanical Corner Accents for Wedding / Gala (subtle, delicate)
-  if (isWedding) {
-    const eucalyptus = STICKER_ASSETS.find((s) => s.id === 'botanical-eucalyptus-sprig');
-    if (eucalyptus) {
-      elements.push({
-        id: 'sticker-bottom-left',
-        type: 'sticker',
-        name: 'Eucalyptus Corner',
-        content: eucalyptus.svgContent,
-        x: 10,
-        y: 530,
-        width: 80,
-        height: 110,
-        rotation: -15,
-        zIndex: 1,
-        opacity: 0.8,
-        styleProps: {},
-      });
-      elements.push({
-        id: 'sticker-bottom-right',
-        type: 'sticker',
-        name: 'Eucalyptus Corner Right',
-        content: eucalyptus.svgContent,
-        x: 390,
-        y: 530,
-        width: 80,
-        height: 110,
-        rotation: 15,
-        zIndex: 1,
-        opacity: 0.8,
-        styleProps: {},
-      });
-    }
+  // 7. Bottom Corner Accents tailored to archetype
+  let cornerSticker = isWedding
+    ? STICKER_ASSETS.find((s) => s.id === 'botanical-eucalyptus-sprig')
+    : isHeritage
+    ? STICKER_ASSETS.find((s) => s.id === 'heritage-cowrie-trio')
+    : isDisco || isBirthday
+    ? STICKER_ASSETS.find((s) => s.id === 'celebration-confetti-sparkles')
+    : isMediterranean
+    ? STICKER_ASSETS.find((s) => s.id === 'botanical-olive-branch')
+    : undefined;
+
+  if (cornerSticker) {
+    elements.push({
+      id: 'sticker-bottom-left',
+      type: 'sticker',
+      name: `${cornerSticker.name} Corner Left`,
+      content: cornerSticker.svgContent,
+      x: 10,
+      y: 530,
+      width: 80,
+      height: 110,
+      rotation: -15,
+      zIndex: 1,
+      opacity: 0.8,
+      styleProps: {},
+    });
+    elements.push({
+      id: 'sticker-bottom-right',
+      type: 'sticker',
+      name: `${cornerSticker.name} Corner Right`,
+      content: cornerSticker.svgContent,
+      x: 390,
+      y: 530,
+      width: 80,
+      height: 110,
+      rotation: 15,
+      zIndex: 1,
+      opacity: 0.8,
+      styleProps: {},
+    });
   }
 
   // 8. Reception / RSVP Note (elegant italic line at bottom)

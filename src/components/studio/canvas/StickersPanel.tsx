@@ -11,10 +11,12 @@ interface StickersPanelProps {
 
 const CATEGORIES = [
   { id: 'all', label: 'All' },
+  { id: 'heritage', label: 'Heritage & African' },
+  { id: 'luxury', label: 'Luxury & Seals' },
   { id: 'botanical', label: 'Botanicals' },
-  { id: 'birthday', label: 'Birthdays' },
   { id: 'wedding', label: 'Weddings' },
-  { id: 'celebration', label: 'Celebrations' },
+  { id: 'birthday', label: 'Birthdays' },
+  { id: 'celebration', label: 'Nightlife & Toast' },
   { id: 'milestone', label: 'Honours' },
   { id: 'baby', label: 'Baby & Family' },
   { id: 'memorial', label: 'Memorial' },
