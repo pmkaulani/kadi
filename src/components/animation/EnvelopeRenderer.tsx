@@ -345,12 +345,8 @@ export function EnvelopeRenderer({
     onPhaseChange?.(next);
   }, [onPhaseChange]);
 
-  // Reduced motion: immediately jump to settled, bypassing animation
-  useEffect(() => {
-    if (reducedMotion) {
-      changePhase('settled');
-    }
-  }, [reducedMotion, changePhase]);
+  // Respect reduced-motion preferences when the envelope is opened, but keep
+  // the closed stationery visible on first paint instead of skipping the experience.
 
   // Cleanup: clear all pending timers on unmount to prevent leaks
   useEffect(() => {
@@ -377,11 +373,11 @@ export function EnvelopeRenderer({
   /**
    * Choreographed 6-Beat Opening Sequence:
    * Beat A (0ms): Seal press & envelope slight deflection
-   * Beat B (320ms): Seal release & unlock
-   * Beat C (570ms): 3D hinged flap swing open (-178deg)
-   * Beat D & E (1120ms): Staggered paper inserts + tall card rise with photo & details
-   * Beat F (1920ms): Settling expansion
-   * Settled (2650ms): Full editorial invitation active
+   * Beat B (280ms): Seal release & unlock
+   * Beat C (600ms): 3D hinged flap swing open (-178deg)
+   * Beat D & E (1300ms): A short breath, then the portrait card rises
+   * Beat F (2050ms): Paper settles into its final position
+   * Settled (2620ms): Full editorial invitation active
    */
   const openEnvelope = useCallback(() => {
     if (phase !== 'closed') return;
@@ -400,35 +396,35 @@ export function EnvelopeRenderer({
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('seal-release');
-      }, 260)
+      }, 280)
     );
 
     // Beat C — Hinged flap opens backwards 180deg
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('flap-open');
-      }, 520)
+      }, 600)
     );
 
     // Beat D & E — Inserts move and tall hero card rises
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('card-rising');
-      }, 1140)
+      }, 1300)
     );
 
     // Beat F — Settling expansion
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('settling');
-      }, 1860)
+      }, 2050)
     );
 
     // Settled — Full invitation page active
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('settled');
-      }, 2340)
+      }, 2620)
     );
   }, [phase, reducedMotion, changePhase]);
 
@@ -588,7 +584,8 @@ export function EnvelopeRenderer({
         <section
           className={`iv-opening-stage iv-opening-stage--${phase} ${phase !== 'closed' ? 'is-opening' : ''} ${
             phase === 'card-rising' || phase === 'settling' ? 'card-rising' : ''
-          }`}
+          } ${phase === 'settling' ? 'is-settling' : ''}`}
+          data-phase={phase}
           aria-label="Open your sealed invitation"
         >
           {/* Personalised opening: let the event and celebrants lead. */}
@@ -616,10 +613,8 @@ export function EnvelopeRenderer({
             style={renderStyle}
             type="button"
             onClick={openEnvelope}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') openEnvelope();
-            }}
             aria-label="Open your invitation envelope"
+            aria-describedby={phase === 'closed' ? 'iv-open-instruction' : 'iv-opening-status'}
             disabled={phase !== 'closed'}
             animate={
               phase === 'seal-press'
@@ -694,14 +689,14 @@ export function EnvelopeRenderer({
                 style={renderStyle}
                 animate={
                   phase === 'closed' || phase === 'seal-press'
-                    ? { y: '38%', z: 10, rotate: 0, scale: 0.985, opacity: 0 }
+                    ? { y: '28%', z: 6, rotate: 0, scale: 0.985, opacity: 0 }
                     : phase === 'seal-release'
-                    ? { y: '30%', z: 12, rotate: -0.25, scale: 0.99, opacity: 0 }
+                    ? { y: '22%', z: 10, rotate: -0.25, scale: 0.99, opacity: 0 }
                     : phase === 'flap-open'
-                    ? { y: '8%', z: 14, rotate: -0.2, scale: 0.995, opacity: 1 }
+                    ? { y: '7%', z: 14, rotate: -0.2, scale: 0.995, opacity: 1 }
                     : phase === 'card-rising'
-                    ? { y: '-40%', z: 22, rotate: -0.55, scale: 1.005, opacity: 1 }
-                    : { y: '-43%', z: 24, rotate: 0, scale: 1.012, opacity: 1 }
+                    ? { y: '-46%', z: 22, rotate: -0.55, scale: 1.005, opacity: 1 }
+                    : { y: '-50%', z: 24, rotate: 0, scale: 1.006, opacity: 1 }
                 }
                 transition={{
                   duration: phase === 'card-rising' ? 0.72 : phase === 'settling' ? 0.42 : 0.3,
@@ -885,7 +880,7 @@ export function EnvelopeRenderer({
           {/* Tap Prompt & Guest Greeting */}
           {phase === 'closed' ? (
             <>
-              <div className="iv-open-instruction">
+              <div className="iv-open-instruction" id="iv-open-instruction">
                 <span className="iv-open-rule" aria-hidden="true" />
                 <span>Open your invitation</span>
               </div>
@@ -896,7 +891,7 @@ export function EnvelopeRenderer({
               )}
             </>
           ) : (
-            <div className="iv-opening-status" aria-live="polite">
+            <div className="iv-opening-status" id="iv-opening-status" aria-live="polite">
               <span>Opening your invitation...</span>
             </div>
           )}
