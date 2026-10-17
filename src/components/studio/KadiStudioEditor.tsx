@@ -70,7 +70,7 @@ import { TypographyPaletteControls } from '@/components/studio/TypographyPalette
 import { migrateEventToBlocks } from '@/lib/blocks/registry';
 import type { InvitationBlockConfig } from '@/lib/blocks/types';
 import type { CanvasElement, MaskShape } from '@/types/canvas';
-import { getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
+import { getCanvasHeadingFontOverride, getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
 import { InvitationCanvas } from './canvas/InvitationCanvas';
 import { StickersPanel } from './canvas/StickersPanel';
 import { TextPanel } from './canvas/TextPanel';
@@ -222,7 +222,7 @@ function buildInitialDraft(
     design?.canvasElements ||
     getTemplateCanvasElements(activeTemplate, initialValues, {
       palette: design?.palette,
-      headingFont: design?.typography?.headingFont || design?.fontFamily,
+      headingFont: getCanvasHeadingFontOverride(activeTemplate, design),
     });
 
   const isBabyEvent =
@@ -400,7 +400,7 @@ export function KadiStudioEditor({
       draft.design.canvasElements ||
       getTemplateCanvasElements(activeTemplate, draft.values, {
         palette: draft.design.palette,
-        headingFont: draft.design.typography?.headingFont || draft.design.fontFamily,
+        headingFont: getCanvasHeadingFontOverride(activeTemplate, draft.design),
       })
     );
   }, [draft.design.canvasElements, activeTemplate, draft.values]);
@@ -792,7 +792,7 @@ export function KadiStudioEditor({
       preserveDetails ? draft.values : (nextTemplate.sampleData as any),
       {
         palette: nextTemplate.palette,
-        headingFont: draft.design.typography?.headingFont || draft.design.fontFamily,
+        headingFont: preserveDetails ? getCanvasHeadingFontOverride(activeTemplate, draft.design) : undefined,
       }
     );
 
