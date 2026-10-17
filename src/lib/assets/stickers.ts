@@ -2,16 +2,14 @@ export interface StickerAsset {
   id: string;
   name: string;
   category:
-    | 'tiktok'
-    | 'party'
-    | 'wedding'
-    | 'heritage'
+    | 'stationery'
     | 'botanical'
-    | 'milestone'
-    | 'baby'
-    | 'memorial';
+    | 'party'
+    | 'badges'
+    | 'cultural'
+    | 'romance';
   tags: string[];
-  // Genuine transparent 3D PNG image sticker URL (WhatsApp / TikTok style)
+  // Genuine decorative image sticker URL (WhatsApp & TikTok style PNG cutouts)
   imageUrl: string;
   // Backward-compatible image markup
   svgContent: string;
@@ -25,8 +23,8 @@ function createSticker(
   name: string,
   category: StickerAsset['category'],
   tags: string[],
-  width = 120,
-  height = 120
+  width = 130,
+  height = 130
 ): StickerAsset {
   const imageUrl = `/stickers/${id}.png`;
   return {
@@ -44,514 +42,362 @@ function createSticker(
 
 export const STICKER_ASSETS: StickerAsset[] = [
   // ═════════════════════════════════════════════════════════════════════════
-  // 1. TIKTOK & WHATSAPP VIRAL REACTIONS & VIBES
+  // 1. STATIONERY, WASHI TAPE & WAX SEALS
   // ═════════════════════════════════════════════════════════════════════════
   createSticker(
-    'tiktok-party-popper',
-    'Party Popper Explosion',
-    'tiktok',
-    ['party', 'popper', 'confetti', 'yay', 'celebration', 'tiktok', 'whatsapp', 'surprise'],
+    'stationery-washi-gold',
+    'Gold Foil Washi Tape',
+    'stationery',
+    ['washi', 'tape', 'gold', 'foil', 'scrapbook', 'stationery', 'paper', 'torn', 'decorative'],
+    200,
+    62
+  ),
+  createSticker(
+    'stationery-washi-floral',
+    'Botanical Eucalyptus Washi Tape',
+    'stationery',
+    ['washi', 'tape', 'eucalyptus', 'leaves', 'greenery', 'masking', 'scrapbook', 'botanical'],
+    200,
+    62
+  ),
+  createSticker(
+    'stationery-washi-rose-gold',
+    'Rose Gold Shimmer Washi Tape',
+    'stationery',
+    ['washi', 'tape', 'rose gold', 'pink', 'shimmer', 'glitter', 'tape', 'stationery'],
+    200,
+    62
+  ),
+  createSticker(
+    'stationery-postage-stamp-vintage',
+    'Vintage Airmail Stamp 50¢',
+    'stationery',
+    ['stamp', 'postage', 'airmail', 'vintage', 'royal post', 'mail', 'envelope', 'perforated'],
+    120,
+    140
+  ),
+  createSticker(
+    'stationery-wax-seal-crimson',
+    'Royal Crimson Wax Seal with Ribbon',
+    'stationery',
+    ['wax', 'seal', 'crimson', 'red', 'ribbon', 'monogram', 'royal', 'wedding', 'envelope'],
+    130,
+    150
+  ),
+  createSticker(
+    'stationery-wax-seal-gold',
+    'Antique Gilded Gold Wax Seal',
+    'stationery',
+    ['wax', 'seal', 'gold', 'gilded', 'embossed', 'botanical', 'olive', 'forever'],
     130,
     130
   ),
   createSticker(
-    'tiktok-fire',
-    'Fire Reaction 🔥',
-    'tiktok',
-    ['fire', 'flame', 'lit', 'hot', 'viral', 'energy', 'slay', 'tiktok', 'whatsapp'],
-    110,
-    110
+    'stationery-wax-seal-sage',
+    'Dusty Sage Green Wax Seal',
+    'stationery',
+    ['wax', 'seal', 'sage', 'green', 'dove', 'botanical', 'peace', 'luxury'],
+    130,
+    130
   ),
   createSticker(
-    'tiktok-hundred',
-    '100% Points 💯',
-    'tiktok',
-    ['hundred', '100', 'perfect', 'score', 'facts', 'vibe', 'tiktok', 'whatsapp'],
-    110,
-    110
+    'stationery-polaroid-frame',
+    'Polaroid Instant Photo Frame',
+    'stationery',
+    ['polaroid', 'photo', 'frame', 'tape', 'camera', 'memories', 'instant', 'scrapbook'],
+    130,
+    150
   ),
   createSticker(
-    'tiktok-partying-face',
-    'Partying Smiley 🥳',
-    'tiktok',
-    ['party', 'smiley', 'face', 'celebrate', 'horn', 'confetti', 'happy', 'birthday'],
-    115,
-    115
-  ),
-  createSticker(
-    'tiktok-heart-eyes',
-    'Love Heart Eyes 😍',
-    'tiktok',
-    ['heart', 'eyes', 'love', 'in love', 'gorgeous', 'adoring', 'crush', 'reaction'],
-    115,
-    115
-  ),
-  createSticker(
-    'tiktok-sparkling-heart',
-    'Sparkling Pink Heart 💖',
-    'tiktok',
-    ['sparkling', 'heart', 'pink', 'sparkles', 'love', 'aesthetic', 'sweet'],
-    115,
-    115
-  ),
-  createSticker(
-    'tiktok-heart-fire',
-    'Heart on Fire ❤️‍🔥',
-    'tiktok',
-    ['heart', 'fire', 'passion', 'flame', 'burning', 'love', 'wild'],
-    115,
-    115
-  ),
-  createSticker(
-    'tiktok-camera-flash',
-    'Camera with Flash 📸',
-    'tiktok',
-    ['camera', 'photo', 'polaroid', 'flash', 'memories', 'aesthetic', 'shoot'],
-    110,
-    110
-  ),
-  createSticker(
-    'tiktok-sparkles',
-    'Gleaming Gold Sparkles ✨',
-    'tiktok',
-    ['sparkles', 'glitter', 'gold', 'stars', 'magic', 'shine', 'clean'],
-    110,
-    110
-  ),
-  createSticker(
-    'tiktok-eyes',
-    'Shifty Eyes 👀',
-    'tiktok',
-    ['eyes', 'look', 'attention', 'tea', 'spill', 'peeking', 'reaction'],
-    110,
-    110
+    'stationery-brass-clip',
+    'Vintage Brass Paperclip',
+    'stationery',
+    ['paperclip', 'clip', 'brass', 'gold', 'metal', 'scrapbook', 'stationery'],
+    80,
+    135
   ),
 
   // ═════════════════════════════════════════════════════════════════════════
-  // 2. NIGHTLIFE, CELEBRATION & COCKTAILS
+  // 2. FLORALS & BOTANICALS
   // ═════════════════════════════════════════════════════════════════════════
   createSticker(
-    'party-disco-ball',
-    '3D Faceted Mirror Disco Ball 🪩',
-    'party',
-    ['disco', 'ball', 'mirror', 'nightlife', 'party', 'dance', '70s', 'club', 'glam'],
-    125,
-    125
+    'botanical-white-rose',
+    'English Garden White Rose',
+    'botanical',
+    ['rose', 'white rose', 'flower', 'floral', 'botanical', 'wedding', 'bloom', 'petal'],
+    130,
+    130
   ),
+  createSticker(
+    'botanical-pink-peony',
+    'Blooming Pink Peony',
+    'botanical',
+    ['peony', 'pink', 'flower', 'floral', 'botanical', 'bloom', 'spring', 'garden'],
+    130,
+    130
+  ),
+  createSticker(
+    'botanical-eucalyptus-garland',
+    'Silver Dollar Eucalyptus Sprig',
+    'botanical',
+    ['eucalyptus', 'leaves', 'greenery', 'foliage', 'silver dollar', 'garland', 'botanical'],
+    130,
+    130
+  ),
+  createSticker(
+    'botanical-olive-branch',
+    'Mediterranean Olive Branch',
+    'botanical',
+    ['olive', 'branch', 'olives', 'mediterranean', 'peace', 'leaves', 'greenery', 'tuscany'],
+    130,
+    130
+  ),
+  createSticker(
+    'botanical-pampas-grass',
+    'Bohemian Pampas Grass Plume',
+    'botanical',
+    ['pampas', 'grass', 'boho', 'bohemian', 'plume', 'dried floral', 'neutral', 'aesthetic'],
+    130,
+    130
+  ),
+  createSticker(
+    'botanical-monstera-leaf',
+    'Tropical Monstera Leaf',
+    'botanical',
+    ['monstera', 'leaf', 'tropical', 'greenery', 'palm', 'foliage', 'safari'],
+    130,
+    130
+  ),
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // 3. TOAST & CELEBRATION
+  // ═════════════════════════════════════════════════════════════════════════
   createSticker(
     'party-champagne-pop',
-    'Popping Champagne Bottle 🍾',
+    'Exploding Champagne Bottle',
     'party',
-    ['champagne', 'bottle', 'pop', 'cork', 'celebrate', 'toast', 'bubbly', 'vip'],
-    120,
-    140
-  ),
-  createSticker(
-    'party-cheers-glasses',
-    'Clinking Champagne Coupes 🥂',
-    'party',
-    ['cheers', 'toast', 'glasses', 'champagne', 'wedding', 'reception', 'drinks'],
-    125,
-    125
-  ),
-  createSticker(
-    'party-cocktail',
-    'Martini Cocktail with Olive 🍸',
-    'party',
-    ['cocktail', 'martini', 'olive', 'bar', 'drinks', 'speakeasy', 'noir', 'classy'],
-    110,
-    130
-  ),
-  createSticker(
-    'party-tropical-drink',
-    'Tropical Tiki Cocktail 🍹',
-    'party',
-    ['tropical', 'tiki', 'drink', 'umbrella', 'summer', 'beach', 'pool party'],
-    115,
-    135
-  ),
-  createSticker(
-    'party-birthday-cake',
-    'Celebration Birthday Cake 🎂',
-    'party',
-    ['cake', 'birthday', 'candles', 'frosting', 'sweet', 'party', 'anniversary'],
-    125,
-    125
-  ),
-  createSticker(
-    'party-balloon',
-    'Festive Party Balloon 🎈',
-    'party',
-    ['balloon', 'red', 'party', 'birthday', 'celebration', 'fun'],
-    110,
-    135
-  ),
-  createSticker(
-    'party-confetti-ball',
-    'Exploding Confetti Ball 🎊',
-    'party',
-    ['confetti', 'ball', 'burst', 'celebration', 'festive', 'carnival'],
-    120,
-    120
-  ),
-  createSticker(
-    'party-sparkler',
-    'Burning Golden Sparkler 🎇',
-    'party',
-    ['sparkler', 'fireworks', 'golden', 'sparks', 'night', 'new year', 'festive'],
-    115,
-    135
-  ),
-  createSticker(
-    'party-wrapped-gift',
-    'Wrapped Gift with Ribbon 🎁',
-    'party',
-    ['gift', 'present', 'box', 'ribbon', 'surprise', 'birthday', 'christmas'],
-    115,
-    115
-  ),
-
-  // ═════════════════════════════════════════════════════════════════════════
-  // 3. WEDDINGS, ROMANCE & ELEGANCE
-  // ═════════════════════════════════════════════════════════════════════════
-  createSticker(
-    'wedding-diamond-ring',
-    'Solitaire Diamond Gold Ring 💍',
-    'wedding',
-    ['ring', 'diamond', 'gold', 'wedding', 'proposal', 'engagement', 'marriage'],
-    115,
-    115
-  ),
-  createSticker(
-    'wedding-red-rose',
-    'Velvet Red Rose Bloom 🌹',
-    'wedding',
-    ['rose', 'flower', 'red', 'romance', 'love', 'blush', 'bloom', 'petal'],
-    115,
-    115
-  ),
-  createSticker(
-    'wedding-flower-bouquet',
-    'Wedding Floral Bouquet 💐',
-    'wedding',
-    ['bouquet', 'flowers', 'wedding', 'bridal', 'spring', 'blooms'],
-    125,
-    125
-  ),
-  createSticker(
-    'wedding-two-hearts',
-    'Two Entwined Hearts 💕',
-    'wedding',
-    ['hearts', 'two hearts', 'pink', 'romance', 'couple', 'together'],
-    115,
-    115
-  ),
-  createSticker(
-    'wedding-white-heart',
-    'Pure White Heart 🤍',
-    'wedding',
-    ['heart', 'white', 'pure', 'minimal', 'clean', 'peace', 'modern'],
-    110,
-    110
-  ),
-  createSticker(
-    'wedding-red-heart',
-    'Classic Glossy Red Heart ❤️',
-    'wedding',
-    ['heart', 'red', 'classic', 'love', 'valentines', 'romance'],
-    110,
-    110
-  ),
-  createSticker(
-    'wedding-heart-ribbon',
-    'Gift Heart with Ribbon 💝',
-    'wedding',
-    ['heart', 'ribbon', 'gift', 'gold ribbon', 'romance', 'precious'],
-    115,
-    115
-  ),
-  createSticker(
-    'wedding-heart-arrow',
-    'Cupid Heart with Arrow 💘',
-    'wedding',
-    ['heart', 'arrow', 'cupid', 'smitten', 'shot', 'love'],
-    115,
-    115
-  ),
-  createSticker(
-    'wedding-gem-stone',
-    'Brilliant Cut Diamond Gem 💎',
-    'wedding',
-    ['gem', 'diamond', 'jewel', 'crystal', 'luxury', 'precious', 'shine'],
-    110,
-    110
-  ),
-
-  // ═════════════════════════════════════════════════════════════════════════
-  // 4. HERITAGE, SAFARI & EAST AFRICAN CULTURE
-  // ═════════════════════════════════════════════════════════════════════════
-  createSticker(
-    'heritage-ceremonial-drum',
-    'Ceremonial African Drum 🪘',
-    'heritage',
-    ['drum', 'djembe', 'african', 'music', 'rhythm', 'ruracio', 'traditional', 'harambee'],
-    120,
-    130
-  ),
-  createSticker(
-    'heritage-warrior-shield',
-    'Warrior Ceremonial Shield 🛡️',
-    'heritage',
-    ['shield', 'african', 'warrior', 'protection', 'crest', 'heritage', 'traditional'],
-    115,
-    125
-  ),
-  createSticker(
-    'heritage-safari-lion',
-    'Regal African Lion 🦁',
-    'heritage',
-    ['lion', 'king', 'safari', 'wildlife', 'kenya', 'brave', 'serengeti', 'mara'],
-    120,
-    120
-  ),
-  createSticker(
-    'heritage-safari-elephant',
-    'Majestic Safari Elephant 🐘',
-    'heritage',
-    ['elephant', 'safari', 'wildlife', 'amboseli', 'kenya', 'wisdom', 'nature'],
-    125,
-    115
-  ),
-  createSticker(
-    'heritage-safari-giraffe',
-    'Tall Safari Giraffe 🦒',
-    'heritage',
-    ['giraffe', 'safari', 'wildlife', 'giraffe manor', 'kenya', 'gentle'],
-    115,
-    140
-  ),
-  createSticker(
-    'heritage-safari-zebra',
-    'Plains African Zebra 🦓',
-    'heritage',
-    ['zebra', 'stripes', 'safari', 'wildlife', 'maasai mara', 'kenya'],
-    120,
-    120
-  ),
-  createSticker(
-    'heritage-hot-chai',
-    'Steaming Chai / Dawa ☕',
-    'heritage',
-    ['chai', 'tea', 'dawa', 'coffee', 'hot', 'kenyan chai', 'breakfast', 'karibu'],
-    115,
-    115
-  ),
-  createSticker(
-    'heritage-travel-plane',
-    'Destination Travel Airplane ✈️',
-    'heritage',
-    ['plane', 'airplane', 'travel', 'destination', 'flight', 'honeymoon', 'mombasa'],
-    125,
-    115
-  ),
-  createSticker(
-    'heritage-luggage',
-    'Safari Travel Suitcase 🧳',
-    'heritage',
-    ['luggage', 'suitcase', 'travel', 'vacation', 'safari', 'trip', 'journey'],
-    115,
-    120
-  ),
-
-  // ═════════════════════════════════════════════════════════════════════════
-  // 5. BOTANICALS & FLORALS
-  // ═════════════════════════════════════════════════════════════════════════
-  createSticker(
-    'botanical-palm-tree',
-    'Coastal Island Palm Tree 🌴',
-    'botanical',
-    ['palm', 'tree', 'coastal', 'beach', 'tropical', 'diani', 'mombasa', 'island'],
-    120,
-    135
-  ),
-  createSticker(
-    'botanical-hibiscus',
-    'Tropical Hibiscus Bloom 🌺',
-    'botanical',
-    ['hibiscus', 'flower', 'pink', 'tropical', 'bloom', 'exotic'],
-    115,
-    115
-  ),
-  createSticker(
-    'botanical-cherry-blossom',
-    'Sakura Cherry Blossom 🌸',
-    'botanical',
-    ['cherry blossom', 'sakura', 'pink', 'spring', 'floral', 'delicate'],
-    115,
-    115
-  ),
-  createSticker(
-    'botanical-sunflower',
-    'Radiant Golden Sunflower 🌻',
-    'botanical',
-    ['sunflower', 'golden', 'yellow', 'flower', 'sunny', 'summer'],
-    115,
-    115
-  ),
-  createSticker(
-    'botanical-tulip',
-    'Fresh Garden Tulip 🌷',
-    'botanical',
-    ['tulip', 'flower', 'spring', 'garden', 'pink', 'blossom'],
-    110,
-    130
-  ),
-  createSticker(
-    'botanical-clover',
-    'Lucky Four-Leaf Clover 🍀',
-    'botanical',
-    ['clover', 'lucky', 'four leaf', 'green', 'fortune', 'irish'],
-    110,
-    110
-  ),
-  createSticker(
-    'botanical-seedling',
-    'Fresh Green Sprout 🌱',
-    'botanical',
-    ['seedling', 'sprout', 'leaf', 'green', 'growth', 'new beginning', 'eco'],
-    110,
-    115
-  ),
-
-  // ═════════════════════════════════════════════════════════════════════════
-  // 6. HONOURS & MILESTONES
-  // ═════════════════════════════════════════════════════════════════════════
-  createSticker(
-    'milestone-graduation-cap',
-    'Mortarboard Graduation Cap 🎓',
-    'milestone',
-    ['graduation', 'cap', 'mortarboard', 'degree', 'diploma', 'class of', 'scholar'],
+    ['champagne', 'pop', 'bottle', 'foam', 'bubbly', 'celebrate', 'toast', 'sparkles'],
     130,
-    110
-  ),
-  createSticker(
-    'milestone-trophy',
-    'Gold Championship Trophy 🏆',
-    'milestone',
-    ['trophy', 'champion', 'gold', 'award', 'winner', 'cup', 'honour'],
-    115,
-    135
-  ),
-  createSticker(
-    'milestone-medal',
-    '1st Place Distinction Medal 🥇',
-    'milestone',
-    ['medal', 'gold medal', 'first place', 'award', 'honour', 'ribbon'],
-    110,
     130
   ),
   createSticker(
-    'milestone-royal-crown',
-    'Gilded Imperial Crown 👑',
-    'milestone',
-    ['crown', 'royal', 'queen', 'king', 'gold', 'regal', 'princess'],
-    125,
-    110
+    'party-crystal-flutes',
+    'Crystal Champagne Toast Flutes',
+    'party',
+    ['champagne', 'flutes', 'glasses', 'toast', 'cheers', 'bubbly', 'wedding', 'party'],
+    130,
+    130
   ),
   createSticker(
-    'milestone-diploma-scroll',
-    'Honour Diploma Scroll 📜',
-    'milestone',
-    ['scroll', 'diploma', 'degree', 'certificate', 'parchment', 'graduation'],
-    120,
-    120
+    'party-disco-ball',
+    'Holographic Disco Mirror Ball',
+    'party',
+    ['disco', 'ball', 'mirror', 'retro', 'party', 'nightlife', 'sparkles', 'dance'],
+    130,
+    130
   ),
   createSticker(
-    'milestone-fountain-pen',
-    'Gold Nib Scholar Pen 🖋️',
-    'milestone',
-    ['pen', 'fountain pen', 'ink', 'signature', 'author', 'scholar', 'write'],
-    110,
+    'party-sparkler-wand',
+    'Golden Sparkler Fireworks Wand',
+    'party',
+    ['sparkler', 'fireworks', 'fire', 'golden', 'sparks', 'sendoff', 'celebration'],
+    130,
+    130
+  ),
+  createSticker(
+    'party-wedding-cake',
+    'Floral Cascade Wedding Cake',
+    'party',
+    ['cake', 'wedding cake', 'tiers', 'floral', 'roses', 'dessert', 'slice', 'confection'],
+    130,
+    136
+  ),
+  createSticker(
+    'party-gold-balloon-star',
+    'Mylar Gold Star Foil Balloon',
+    'party',
+    ['balloon', 'star', 'gold', 'foil', 'mylar', 'metallic', 'party', 'celebrate'],
+    130,
     130
   ),
 
   // ═════════════════════════════════════════════════════════════════════════
-  // 7. BABY & FAMILY
+  // 4. SLOGANS, BADGES & EVENT RIBBONS
   // ═════════════════════════════════════════════════════════════════════════
   createSticker(
-    'baby-teddy-bear',
-    'Vintage Plush Teddy Bear 🧸',
-    'baby',
-    ['teddy', 'bear', 'plush', 'toy', 'cute', 'baby', 'shower', 'nursery'],
-    120,
-    125
+    'badge-save-the-date',
+    'Save The Date Boarding Pass',
+    'badges',
+    ['save the date', 'boarding pass', 'ticket', 'stub', 'barcode', 'admit one', 'vip'],
+    190,
+    95
   ),
   createSticker(
-    'baby-bottle',
-    'Pastel Nursery Milk Bottle 🍼',
-    'baby',
-    ['bottle', 'baby', 'milk', 'shower', 'newborn', 'nursery'],
-    110,
-    135
+    'badge-vip-access',
+    'VIP All-Access Pass Wristband',
+    'badges',
+    ['vip', 'access', 'wristband', 'holographic', 'badge', 'pass', 'all access', 'party'],
+    190,
+    85
   ),
   createSticker(
-    'baby-crescent-moon',
-    'Golden Lullaby Crescent Moon 🌙',
-    'baby',
-    ['moon', 'crescent', 'night', 'lullaby', 'stars', 'sweet dreams', 'gold'],
-    115,
+    'badge-youre-invited',
+    'Cordially Invited Emerald Ribbon',
+    'badges',
+    ['invited', 'cordially invited', 'invitation', 'ribbon', 'gold', 'emerald', 'luxury'],
+    190,
+    82
+  ),
+  createSticker(
+    'badge-best-day-ever',
+    'Best Day Ever Sunset Arch Badge',
+    'badges',
+    ['best day ever', 'sunset', 'arch', 'retro', 'badge', 'celebrate', 'happy', 'party'],
+    130,
+    130
+  ),
+  createSticker(
+    'badge-its-giving-luxury',
+    "It's Giving Luxury Pastel Badge",
+    'badges',
+    ['its giving', 'luxury', 'pastel', 'aesthetic', 'pill', 'tiktok', 'vibe', 'chic'],
+    170,
+    110
+  ),
+  createSticker(
+    'badge-dress-to-impress',
+    'Black Tie Dress Code Badge',
+    'badges',
+    ['dress code', 'black tie', 'dress to impress', 'formal', 'tuxedo', 'diamond', 'badge'],
+    130,
+    130
+  ),
+  createSticker(
+    'badge-champagne-showers',
+    'Champagne Showers Retro Badge',
+    'badges',
+    ['champagne showers', 'bubbly', 'showers', 'disco', 'nightlife', 'party', 'badge'],
+    170,
     115
   ),
   createSticker(
-    'baby-sun-face',
-    'Smiling Warm Sunshine 🌞',
-    'baby',
-    ['sun', 'sunshine', 'smiling', 'face', 'warm', 'morning', 'happy'],
-    120,
-    120
-  ),
-  createSticker(
-    'baby-glowing-star',
-    'Cute Glowing Star 🌟',
-    'baby',
-    ['star', 'glowing', 'shine', 'twinkle', 'yellow', 'gold'],
-    115,
-    115
+    'badge-mr-and-mrs',
+    'Just Married Mr & Mrs Ribbon',
+    'badges',
+    ['mr and mrs', 'just married', 'couple', 'wedding', 'bride', 'groom', 'ribbon'],
+    180,
+    98
   ),
 
   // ═════════════════════════════════════════════════════════════════════════
-  // 8. MEMORIAL & SOLEMN TRIBUTES
+  // 5. HERITAGE, SWAHILI & CULTURAL CELEBRATIONS
   // ═════════════════════════════════════════════════════════════════════════
   createSticker(
-    'memorial-dove',
-    'Peace Dove in Flight 🕊️',
-    'memorial',
-    ['dove', 'peace', 'olive', 'wings', 'tribute', 'memorial', 'rest in peace'],
-    125,
+    'cultural-harusi-tunayo',
+    'Harusi Tunayo! Wedding Celebration Banner',
+    'cultural',
+    ['harusi', 'tunayo', 'swahili', 'wedding', 'kanga', 'drums', 'celebration', 'kenya', 'africa'],
+    185,
     115
   ),
   createSticker(
-    'memorial-candle',
-    'Candle of Remembrance 🕯️',
-    'memorial',
-    ['candle', 'flame', 'light', 'remembrance', 'vigil', 'memorial', 'peace'],
-    100,
-    135
+    'cultural-ruracio-vibes',
+    'Ruracio Traditional Dowry Badge',
+    'cultural',
+    ['ruracio', 'traditional', 'dowry', 'kikuyu', 'beads', 'ochre', 'african wedding', 'culture'],
+    170,
+    130
+  ),
+  createSticker(
+    'cultural-sherehe-haitaki',
+    'Sherehe Haitaki Hasira! Party Banner',
+    'cultural',
+    ['sherehe', 'haitaki hasira', 'party', 'kenya', 'swahili', 'energy', 'turnup', 'celebrate'],
+    185,
+    100
+  ),
+  createSticker(
+    'cultural-kumepambana',
+    'Kumepambana! High Energy Badge',
+    'cultural',
+    ['kumepambana', 'fire', 'party', 'swahili', 'high energy', 'shangwe', 'vibes'],
+    130,
+    130
+  ),
+  createSticker(
+    'cultural-karibu-sana',
+    'Karibu Sana Swahili Welcome Seal',
+    'cultural',
+    ['karibu sana', 'welcome', 'swahili', 'seal', 'gold', 'reception', 'guest'],
+    130,
+    130
+  ),
+  createSticker(
+    'cultural-chai-gossip',
+    'Chai & Gossip Spiced Tea Mug',
+    'cultural',
+    ['chai', 'tea', 'spiced', 'gossip', 'tea mug', 'kenyan chai', 'warm', 'friends'],
+    130,
+    130
+  ),
+  createSticker(
+    'cultural-tukutane-sherehe',
+    'Tukutane Sherehe Turn-Up Badge',
+    'cultural',
+    ['tukutane', 'sherehe', 'party', 'turnup', 'african party', 'dance', 'invitation'],
+    180,
+    110
+  ),
+  createSticker(
+    'cultural-asante-sana',
+    'Asante Sana Gratitude Seal',
+    'cultural',
+    ['asante sana', 'thank you', 'gratitude', 'swahili', 'pink', 'floral', 'love'],
+    130,
+    130
+  ),
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // 6. ROMANCE, LOVE & MILESTONES
+  // ═════════════════════════════════════════════════════════════════════════
+  createSticker(
+    'romance-solitaire-diamond',
+    'Solitaire Diamond Engagement Ring',
+    'romance',
+    ['diamond', 'ring', 'solitaire', 'engagement', 'proposal', 'gold', 'sparkle', 'forever'],
+    130,
+    136
+  ),
+  createSticker(
+    'romance-interlocking-rings',
+    'Interlocking Gold & Platinum Rings',
+    'romance',
+    ['rings', 'wedding bands', 'interlocking', 'platinum', 'gold', 'marriage', 'two souls'],
+    140,
+    120
+  ),
+  createSticker(
+    'romance-white-doves',
+    'Flying White Doves of Devotion',
+    'romance',
+    ['doves', 'dove', 'white', 'olive branch', 'peace', 'devotion', 'wedding', 'flying'],
+    140,
+    126
+  ),
+  createSticker(
+    'romance-vintage-key',
+    'Antique Golden Key to My Heart',
+    'romance',
+    ['key', 'golden key', 'antique', 'vintage', 'heart', 'love', 'skeleton key'],
+    170,
+    102
+  ),
+  createSticker(
+    'romance-love-letter',
+    'Deckle-Edge Sealed Love Letter',
+    'romance',
+    ['love letter', 'envelope', 'wax seal', 'sealed', 'heart', 'romance', 'deckle edge'],
+    150,
+    128
   ),
 ];
-
-export function getStickersByCategory(category?: string): StickerAsset[] {
-  if (!category || category === 'all') return STICKER_ASSETS;
-  return STICKER_ASSETS.filter((s) => s.category === category);
-}
-
-export function searchStickers(query: string): StickerAsset[] {
-  const q = query.toLowerCase().trim();
-  if (!q) return STICKER_ASSETS;
-  return STICKER_ASSETS.filter(
-    (s) =>
-      s.name.toLowerCase().includes(q) ||
-      s.category.toLowerCase().includes(q) ||
-      s.tags.some((t) => t.toLowerCase().includes(q))
-  );
-}

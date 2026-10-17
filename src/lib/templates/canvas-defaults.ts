@@ -88,52 +88,53 @@ export function getTemplateCanvasElements(
   // Base artboard coordinate space is 480 x 680 (portrait invitation card)
   const elements: CanvasElement[] = [];
 
-  // 1. Top Decorative 3D Image Sticker / Crest (tailored to event archetype & culture)
-  let topSticker = STICKER_ASSETS.find((s) => s.id === 'wedding-diamond-ring');
+  // 1. Top Decorative Image Sticker / Crest (tailored to event archetype & culture)
+  let topSticker = STICKER_ASSETS.find((s) => s.id === 'romance-solitaire-diamond');
   if (isHeritage) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'heritage-warrior-shield') ||
-      STICKER_ASSETS.find((s) => s.id === 'heritage-safari-lion') ||
+      STICKER_ASSETS.find((s) => s.id === 'cultural-harusi-tunayo') ||
+      STICKER_ASSETS.find((s) => s.id === 'cultural-ruracio-vibes') ||
       topSticker;
   } else if (isDisco) {
     topSticker =
       STICKER_ASSETS.find((s) => s.id === 'party-disco-ball') ||
-      STICKER_ASSETS.find((s) => s.id === 'tiktok-sparkles') ||
+      STICKER_ASSETS.find((s) => s.id === 'party-champagne-pop') ||
       topSticker;
   } else if (isArtDeco) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'milestone-royal-crown') ||
-      STICKER_ASSETS.find((s) => s.id === 'wedding-gem-stone') ||
+      STICKER_ASSETS.find((s) => s.id === 'stationery-wax-seal-gold') ||
+      STICKER_ASSETS.find((s) => s.id === 'badge-dress-to-impress') ||
       topSticker;
   } else if (isMediterranean) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'botanical-palm-tree') ||
-      STICKER_ASSETS.find((s) => s.id === 'botanical-hibiscus') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-olive-branch') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-eucalyptus-garland') ||
       topSticker;
   } else if (isBirthday) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'party-birthday-cake') ||
-      STICKER_ASSETS.find((s) => s.id === 'party-balloon') ||
-      STICKER_ASSETS.find((s) => s.id === 'tiktok-party-popper');
+      STICKER_ASSETS.find((s) => s.id === 'party-wedding-cake') ||
+      STICKER_ASSETS.find((s) => s.id === 'party-gold-balloon-star') ||
+      STICKER_ASSETS.find((s) => s.id === 'party-champagne-pop');
   } else if (isMemorial) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'memorial-dove') ||
-      STICKER_ASSETS.find((s) => s.id === 'memorial-candle');
+      STICKER_ASSETS.find((s) => s.id === 'romance-white-doves') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-olive-branch');
   } else if (isGraduation) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'milestone-graduation-cap') ||
-      STICKER_ASSETS.find((s) => s.id === 'milestone-trophy') ||
-      STICKER_ASSETS.find((s) => s.id === 'milestone-medal');
+      STICKER_ASSETS.find((s) => s.id === 'badge-best-day-ever') ||
+      STICKER_ASSETS.find((s) => s.id === 'badge-vip-access') ||
+      STICKER_ASSETS.find((s) => s.id === 'badge-its-giving-luxury');
   } else if (isBaby) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'baby-teddy-bear') ||
-      STICKER_ASSETS.find((s) => s.id === 'baby-crescent-moon') ||
-      STICKER_ASSETS.find((s) => s.id === 'baby-bottle');
+      STICKER_ASSETS.find((s) => s.id === 'romance-white-doves') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-pink-peony') ||
+      STICKER_ASSETS.find((s) => s.id === 'party-gold-balloon-star');
   } else if (isWedding) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'wedding-diamond-ring') ||
-      STICKER_ASSETS.find((s) => s.id === 'wedding-red-rose') ||
-      STICKER_ASSETS.find((s) => s.id === 'wedding-flower-bouquet');
+      STICKER_ASSETS.find((s) => s.id === 'romance-solitaire-diamond') ||
+      STICKER_ASSETS.find((s) => s.id === 'romance-interlocking-rings') ||
+      STICKER_ASSETS.find((s) => s.id === 'stationery-wax-seal-crimson') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-white-rose');
   }
 
   if (topSticker) {

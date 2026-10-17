@@ -11,14 +11,12 @@ interface StickersPanelProps {
 
 const CATEGORIES = [
   { id: 'all', label: 'All Stickers' },
-  { id: 'tiktok', label: '🔥 Viral & TikTok' },
-  { id: 'party', label: '🎉 Nightlife & Party' },
-  { id: 'wedding', label: '💍 Wedding & Love' },
-  { id: 'heritage', label: '🦁 Heritage & Safari' },
-  { id: 'botanical', label: '🌿 Botanicals' },
-  { id: 'milestone', label: '🏆 Honours & Awards' },
-  { id: 'baby', label: '🧸 Baby & Family' },
-  { id: 'memorial', label: '🕊️ Memorial' },
+  { id: 'stationery', label: '💌 Washi & Wax Seals' },
+  { id: 'botanical', label: '🌿 Florals & Botanicals' },
+  { id: 'party', label: '🥂 Toast & Celebration' },
+  { id: 'badges', label: '✨ Slogans & Badges' },
+  { id: 'cultural', label: '🦁 Heritage & Harusi' },
+  { id: 'romance', label: '💍 Romance & Love' },
 ];
 
 export function StickersPanel({ onInsertSticker, onClose }: StickersPanelProps) {
@@ -46,7 +44,7 @@ export function StickersPanel({ onInsertSticker, onClose }: StickersPanelProps) 
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search stickers (fire, disco, rose, ring)..."
+            placeholder="Search stickers (washi, seal, rose, champagne, harusi)..."
             className="w-full bg-transparent text-xs text-white placeholder-white/40 focus:outline-none"
           />
           {search && (
