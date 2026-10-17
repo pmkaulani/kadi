@@ -19,8 +19,12 @@ import type {
   CanvasElementStyle,
   AnimationEffect,
 } from '@/types/canvas';
+import type { DraftInvitationValues } from '@/components/invitations/DraftInvitationPreview';
+import type { EventDesignEntity } from '@/lib/db/types';
+import type { TemplateDefinition } from '@/lib/templates/types';
 import { SelectionTransformOverlay } from './SelectionTransformOverlay';
 import { ContextualElementToolbar } from './ContextualElementToolbar';
+import { StationerySectionCards } from './StationerySectionCards';
 
 interface InvitationCanvasProps {
   elements: CanvasElement[];
@@ -40,6 +44,14 @@ interface InvitationCanvasProps {
     cardBackground: string;
   };
   onRequestReplace?: (id: string) => void;
+  values?: DraftInvitationValues;
+  design?: Partial<EventDesignEntity>;
+  category?: string;
+  template?: TemplateDefinition;
+  onUpdateValues?: <K extends keyof DraftInvitationValues>(key: K, value: DraftInvitationValues[K]) => void;
+  onUpdateDesign?: (patch: Partial<EventDesignEntity>) => void;
+  onOpenPhotoRail?: () => void;
+  onOpenStickerRail?: () => void;
 }
 
 const ARTBOARD_WIDTH = 480;
@@ -58,8 +70,17 @@ export function InvitationCanvas({
   cardBackground,
   palette,
   onRequestReplace,
+  values,
+  design,
+  category,
+  template,
+  onUpdateValues,
+  onUpdateDesign,
+  onOpenPhotoRail,
+  onOpenStickerRail,
 }: InvitationCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const artboardRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
@@ -306,7 +327,7 @@ export function InvitationCanvas({
     if (element.isLocked) return;
 
     // Calculate center in client coordinates
-    const artboardRect = containerRef.current?.getBoundingClientRect();
+    const artboardRect = (artboardRef.current || containerRef.current)?.getBoundingClientRect();
     if (!artboardRect) return;
 
     const elemCenterX = artboardRect.left + (element.x + element.width / 2) * zoom;
@@ -337,7 +358,7 @@ export function InvitationCanvas({
         onSelectId(null);
         setEditingTextId(null);
       }}
-      className="relative flex-1 w-full h-full bg-[#18181A] flex items-center justify-center overflow-auto select-none p-4"
+      className="relative flex-1 w-full h-full bg-[#18181A] overflow-y-auto overflow-x-hidden p-6 sm:p-10 select-none scroll-smooth"
       style={{
         backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px)`,
         backgroundSize: '24px 24px',
@@ -346,7 +367,7 @@ export function InvitationCanvas({
       {/* Zoom Control Toolbar */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="absolute bottom-4 right-4 z-40 bg-[#262626] border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-xl text-white text-xs"
+        className="fixed bottom-6 right-6 z-50 bg-[#262626] border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-2xl text-white text-xs"
       >
         <button
           onClick={() => setZoom((z) => Math.max(0.4, Number((z - 0.1).toFixed(1))))}
@@ -376,25 +397,32 @@ export function InvitationCanvas({
         </button>
       </div>
 
-      {/* ── THE PORTRAIT INVITATION ARTBOARD (480 x 680) ──────────────────── */}
+      {/* ── CONTINUOUS SCROLLABLE DOCUMENT CONTAINER ────────────────────────── */}
       <div
-        onClick={(e) => {
-          // If clicked directly on the artboard background, deselect
-          if (e.target === e.currentTarget) {
-            onSelectId(null);
-            setEditingTextId(null);
-          }
-        }}
-        className="relative shadow-[0_24px_70px_rgba(0,0,0,0.85)] rounded-2xl transition-transform duration-75 shrink-0"
+        className="w-full flex flex-col items-center min-h-full pb-36"
         style={{
-          width: ARTBOARD_WIDTH,
-          height: ARTBOARD_HEIGHT,
           transform: `scale(${zoom})`,
-          transformOrigin: 'center center',
-          backgroundColor: cardBackground || palette.cardBackground || '#FCFAF7',
-          color: palette.text || '#272620',
+          transformOrigin: 'top center',
         }}
       >
+        {/* ── THE PORTRAIT INVITATION ARTBOARD (480 x 680) ──────────────────── */}
+        <div
+          ref={artboardRef}
+          onClick={(e) => {
+            // If clicked directly on the artboard background, deselect
+            if (e.target === e.currentTarget) {
+              onSelectId(null);
+              setEditingTextId(null);
+            }
+          }}
+          className="relative shadow-[0_24px_70px_rgba(0,0,0,0.85)] rounded-2xl transition-transform duration-75 shrink-0"
+          style={{
+            width: ARTBOARD_WIDTH,
+            height: ARTBOARD_HEIGHT,
+            backgroundColor: cardBackground || palette.cardBackground || '#FCFAF7',
+            color: palette.text || '#272620',
+          }}
+        >
         {/* Subtle Paper Linen texture */}
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.035] rounded-2xl overflow-hidden"
@@ -573,6 +601,28 @@ export function InvitationCanvas({
           </div>
         )}
       </div>
+
+      {/* ── CONTINUOUS STATIONERY SECTIONS FLOW ─────────────────────────── */}
+      {values && design && template && onUpdateValues && onUpdateDesign && (
+        <StationerySectionCards
+          values={values}
+          design={design}
+          category={category || template.category}
+          template={template}
+          cardBackground={cardBackground}
+          palette={palette}
+          onUpdateValues={onUpdateValues}
+          onUpdateDesign={onUpdateDesign}
+          onOpenPhotoRail={onOpenPhotoRail}
+          onOpenStickerRail={onOpenStickerRail}
+          onScrollToTop={() => {
+            if (containerRef.current) {
+              containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+        />
+      )}
     </div>
-  );
+  </div>
+);
 }

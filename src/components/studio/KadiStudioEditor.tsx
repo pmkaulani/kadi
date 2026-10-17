@@ -1156,6 +1156,14 @@ export function KadiStudioEditor({
                   draft.design.palette?.cardBackground || activeTemplate.palette.cardBackground,
               }}
               onRequestReplace={() => setActiveRailTool('stickers')}
+              values={draft.values}
+              design={draft.design}
+              category={draft.category}
+              template={activeTemplate}
+              onUpdateValues={patchValues}
+              onUpdateDesign={patchDesign}
+              onOpenPhotoRail={() => setActiveRailTool('photos')}
+              onOpenStickerRail={() => setActiveRailTool('stickers')}
             />
           ) : (
             /* True Guest Preview Mode (with phone mockup & envelope) */

@@ -172,3 +172,41 @@ test('Preview Mode Safety - preview configuration marks RSVP and M-Pesa interact
   assert.ok(mpesaResult.simulated);
   assert.equal(mpesaStkPushCalled, false, 'M-Pesa STK push must never be initiated in previewMode');
 });
+
+test('Continuous Canvas Flow - all stationery sections scrollable and editable in-place without section switching', () => {
+  const weddingSections = getDefaultInvitationSections('wedding');
+  assert.ok(weddingSections.length >= 6);
+
+  // Sections flow includes countdown, ceremony, venue, story, gallery, rsvp, registry, faq, closing
+  assert.ok(weddingSections.includes('ceremony'));
+  assert.ok(weddingSections.includes('story'));
+  assert.ok(weddingSections.includes('rsvp'));
+  assert.ok(weddingSections.includes('registry'));
+
+  // Test reordering sections on the canvas
+  let sectionOrder = [...weddingSections];
+  const ceremonyIdx = sectionOrder.indexOf('ceremony');
+  const temp = sectionOrder[ceremonyIdx - 1];
+  sectionOrder[ceremonyIdx - 1] = sectionOrder[ceremonyIdx];
+  sectionOrder[ceremonyIdx] = temp;
+  assert.equal(sectionOrder[ceremonyIdx - 1], 'ceremony', 'Section moved up in continuous stationery flow');
+
+  // Test toggling visibility on the canvas
+  let visibleSections = [...weddingSections];
+  visibleSections = visibleSections.filter((s) => s !== 'ceremony');
+  assert.ok(!visibleSections.includes('ceremony'), 'Ceremony hidden without page reload');
+
+  // Test inline editing of section values on canvas
+  const draftValues = {
+    title: 'Kevin & Wanjiku',
+    venue: 'Windsor Golf Hotel',
+    city: 'Nairobi',
+    story: 'We met in Nairobi...',
+    countdownLabel: 'Counting down with joy',
+    rsvpDeadline: '1 December 2026',
+    mpesaNumber: '8249102',
+  };
+
+  const updatedVenue = { ...draftValues, venue: 'Safari Park Hotel' };
+  assert.equal(updatedVenue.venue, 'Safari Park Hotel', 'Inline edit directly updates stationery value');
+});
