@@ -121,7 +121,7 @@ test('Canvas art direction - important canvas elements receive coordinated entra
   const elements = getTemplateCanvasElements(tpl, valuesFor(tpl));
 
   assert.equal(byId(elements, 'photo-hero').animation?.effect, 'fadeIn');
-  assert.equal(byId(elements, 'text-title').animation?.effect, 'fadeIn');
+  assert.equal(byId(elements, 'text-title').animation?.effect, 'rise');
   assert.equal(byId(elements, 'text-hosts').animation?.effect, 'fadeIn');
   assert.ok(
     byId(elements, 'text-title').animation!.delay! > byId(elements, 'photo-hero').animation!.delay!,
@@ -136,7 +136,7 @@ test('Canvas art direction - memorial artwork remains unembellished and restrain
   assert.equal(elements.some((element) => element.type === 'sticker'), false);
   assert.equal(byId(elements, 'photo-hero').styleProps?.maskShape, 'oval');
   assert.equal(byId(elements, 'text-hosts').content, tpl.sampleData.hosts);
-  assert.equal(byId(elements, 'text-title').animation?.effect, 'rise');
+  assert.equal(byId(elements, 'text-title').animation?.effect, 'fadeIn');
 });
 
 
