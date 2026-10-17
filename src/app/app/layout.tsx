@@ -123,11 +123,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // If this is a studio editor route (e.g. creating/customizing a new invitation),
-  // render the standalone full-screen studio without dashboard navigation, headers, or sidebars.
-  if (pathname?.startsWith('/app/events/new')) {
-    return <>{children}</>;
-  }
 
   // Interactive UI states for all controls
   const [searchQuery, setSearchQuery] = useState('');
@@ -135,6 +130,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
 
+  // If this is a studio editor route (e.g. creating/customizing a new invitation),
+  // render the standalone full-screen studio without dashboard navigation, headers, or sidebars.
+  if (pathname?.startsWith('/app/events/new')) {
+    return <>{children}</>;
+  }
   const notifications = [
     { id: 1, title: 'Sarah Wanjiru RSVPed Yes', time: '2 hours ago', unread: true },
     { id: 2, title: 'David Mwangi sent a guest message', time: '4 hours ago', unread: true },
