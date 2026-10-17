@@ -5,6 +5,7 @@ import { getDefaultInvitationSections } from '@/lib/events/default-invitation-se
 import type { AnimationPhase } from '@/components/animation/EnvelopeRenderer';
 import type { InvitationBlockConfig } from '@/lib/blocks/types';
 import { migrateEventToBlocks } from '@/lib/blocks/registry';
+import { getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
 
 export type InvitationMode =
   | 'published'
@@ -148,6 +149,43 @@ export function resolveActiveSections(
 }
 
 /**
+ * Supply the art-directed default canvas for legacy/preview routes that do not
+ * yet have a saved canvas. An explicitly saved (even empty) canvas is preserved.
+ */
+function resolveCanvasDesign(
+  template: TemplateDefinition,
+  event: EventEntity,
+  design?: Partial<EventDesignEntity>,
+  valuesOverride?: Partial<DraftInvitationValues>
+): Partial<EventDesignEntity> {
+  if (design?.canvasElements !== undefined) return design;
+
+  const values: DraftInvitationValues = {
+    title: valuesOverride?.title ?? event.title,
+    hosts: valuesOverride?.hosts ?? event.hosts,
+    celebrants: valuesOverride?.celebrants ?? event.celebrants,
+    date: valuesOverride?.date ?? event.date,
+    time: valuesOverride?.time ?? event.time,
+    venue: valuesOverride?.venue ?? event.venue,
+    city: valuesOverride?.city ?? event.city,
+    heroImage: valuesOverride?.heroImage || event.heroImage || template.sampleData.heroImage,
+    galleryImages:
+      valuesOverride?.galleryImages !== undefined
+        ? valuesOverride.galleryImages
+        : event.galleryImages,
+    // Draft mode must use the actual form value, not its display-only "Not set" placeholder.
+    rsvpDeadline: valuesOverride ? valuesOverride.rsvpDeadline : event.rsvpDeadline,
+    dressCode: valuesOverride?.dressCode ?? event.dressCode,
+    story: valuesOverride?.story ?? event.story,
+  };
+
+  return {
+    ...(design || {}),
+    canvasElements: getTemplateCanvasElements(template, values),
+  };
+}
+
+/**
  * Build canonical config for a published guest route (/e/[slug]).
  */
 export function buildPublishedInvitationConfig(
@@ -160,18 +198,19 @@ export function buildPublishedInvitationConfig(
     initialPhase?: AnimationPhase;
   }
 ): CanonicalInvitationConfig {
-  const activeSections = resolveActiveSections(event.category, options?.design);
-  const blocks = options?.design?.blocks || event.blocks || migrateEventToBlocks(event, options?.design);
+  const design = resolveCanvasDesign(template, event, options?.design);
+  const activeSections = resolveActiveSections(event.category, design);
+  const blocks = design.blocks || event.blocks || migrateEventToBlocks(event, design);
 
   return {
     version: '1.0.0',
     mode: 'published',
     event,
     template,
-    design: options?.design,
+    design,
     blocks,
     sectionOrder: activeSections,
-    visibleSections: options?.design?.visibleSections || activeSections,
+    visibleSections: design.visibleSections || activeSections,
     guestToken: options?.guestToken,
     guestName: options?.guestHousehold?.displayName,
     allowedPlusOnes: options?.guestHousehold?.allowedPlusOnes,
@@ -273,14 +312,16 @@ export function buildTemplatePreviewInvitationConfig(
     updatedAt: new Date().toISOString(),
   };
 
-  const activeSections = resolveActiveSections(template.category);
-  const blocks = migrateEventToBlocks(previewEvent);
+  const design = resolveCanvasDesign(template, previewEvent);
+  const activeSections = resolveActiveSections(template.category, design);
+  const blocks = migrateEventToBlocks(previewEvent, design);
 
   return {
     version: '1.0.0',
     mode: 'template-preview',
     event: previewEvent,
     template,
+    design,
     blocks,
     sectionOrder: activeSections,
     visibleSections: activeSections,
@@ -467,7 +508,8 @@ export function buildDraftPreviewInvitationConfig(
     updatedAt: new Date().toISOString(),
   };
 
-  const activeSections = resolveActiveSections(template.category, design);
+  const resolvedDesign = resolveCanvasDesign(template, draftEvent, design, values);
+  const activeSections = resolveActiveSections(template.category, resolvedDesign);
   const rawBlocks = design.blocks || migrateEventToBlocks(draftEvent, design);
 
   // Synchronize draftEvent and values into blocks so BlockRenderer always displays current authored content
@@ -524,10 +566,10 @@ export function buildDraftPreviewInvitationConfig(
     mode: 'draft-preview',
     event: draftEvent,
     template,
-    design,
+    design: resolvedDesign,
     blocks,
     sectionOrder: activeSections,
-    visibleSections: design.visibleSections || activeSections,
+    visibleSections: resolvedDesign.visibleSections || activeSections,
     guestName: options?.guestName || 'Preview Guest',
     allowedPlusOnes: 1,
     initialPhase: options?.initialPhase,
@@ -546,18 +588,19 @@ export function buildPrivateReviewInvitationConfig(
     initialPhase?: AnimationPhase;
   }
 ): CanonicalInvitationConfig {
-  const activeSections = resolveActiveSections(event.category, options?.design);
-  const blocks = options?.design?.blocks || event.blocks || migrateEventToBlocks(event, options?.design);
+  const design = resolveCanvasDesign(template, event, options?.design);
+  const activeSections = resolveActiveSections(event.category, design);
+  const blocks = design.blocks || event.blocks || migrateEventToBlocks(event, design);
 
   return {
     version: '1.0.0',
     mode: 'private-review',
     event,
     template,
-    design: options?.design,
+    design,
     blocks,
     sectionOrder: activeSections,
-    visibleSections: options?.design?.visibleSections || activeSections,
+    visibleSections: design.visibleSections || activeSections,
     guestName: 'Private Reviewer',
     allowedPlusOnes: 0,
     initialPhase: options?.initialPhase,
