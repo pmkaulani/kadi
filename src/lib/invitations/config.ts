@@ -5,7 +5,7 @@ import { getDefaultInvitationSections } from '@/lib/events/default-invitation-se
 import type { AnimationPhase } from '@/components/animation/EnvelopeRenderer';
 import type { InvitationBlockConfig } from '@/lib/blocks/types';
 import { migrateEventToBlocks } from '@/lib/blocks/registry';
-import { getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
+import { getCanvasHeadingFontOverride, getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
 
 export type InvitationMode =
   | 'published'
@@ -183,7 +183,7 @@ function resolveCanvasDesign(
     ...(design || {}),
     canvasElements: getTemplateCanvasElements(template, values, {
       palette: design?.palette,
-      headingFont: design?.typography?.headingFont || design?.fontFamily,
+      headingFont: getCanvasHeadingFontOverride(template, design),
     }),
   };
 }
