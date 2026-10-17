@@ -257,7 +257,7 @@ export function buildTemplatePreviewInvitationConfig(
     heroImage: sample.heroImage,
     galleryImages: sample.galleryImages || [],
     milestoneAge: sample.milestoneAge,
-    rsvpDeadline: '1 November 2026',
+    rsvpDeadline: '',
     mpesaType: 'till',
     mpesaNumber: '8249102',
     mpesaRecipient: sample.celebrants || 'Event Host',
