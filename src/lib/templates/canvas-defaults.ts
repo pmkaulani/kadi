@@ -155,7 +155,6 @@ type ArtDirection = {
 };
 
 function resolveArtDirection(template: TemplateDefinition): ArtDirection {
-  const category = template.category as string;
   const id = template.id.toLowerCase();
   const isWedding = ['wedding', 'engagement', 'anniversary', 'bridal-shower'].includes(category);
   const isBirthday = category === 'birthday';
@@ -330,11 +329,6 @@ export function getTemplateCanvasElements(
     addText(elements, 'text-remembrance', 'Remembrance', 'FOREVER IN OUR HEARTS',
       { x: 48, y: 550, width: 384, height: 26 },
       { fontFamily: 'Inter', fontSize: 9, fontWeight: 500, color: muted, textAlign: 'center', letterSpacing: 1.25 }, 7);
-  } else if (isWedding) {
-    addRule(elements, 'rule-footer', 215, 546, 50, accent);
-    addText(elements, 'text-footer', 'Invitation note', 'WITH JOY, WE LOOK FORWARD TO CELEBRATING WITH YOU',
-      { x: 48, y: 559, width: 384, height: 26 },
-      { fontFamily: 'Inter', fontSize: 8, fontWeight: 500, color: muted, textAlign: 'center', letterSpacing: 0.8 }, 7);
   }
 
   // One occasion-specific motif is enough. Avoid duplicated corner stickers.
