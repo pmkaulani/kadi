@@ -124,7 +124,7 @@ test('Canvas art direction - important canvas elements receive coordinated entra
   assert.equal(byId(elements, 'text-title').animation?.effect, 'rise');
   assert.equal(byId(elements, 'text-hosts').animation?.effect, 'fadeIn');
   assert.ok(
-    byId(elements, 'text-title').animation!.delay! > byId(elements, 'photo-hero').animation!.delay!,
+    (byId(elements, 'text-title').animation?.delay ?? 0) > (byId(elements, 'photo-hero').animation?.delay ?? 0),
     'The title should follow the artwork, not appear before it'
   );
 });
