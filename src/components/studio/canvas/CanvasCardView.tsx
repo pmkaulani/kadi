@@ -147,10 +147,19 @@ export function CanvasCardView({
 
                 {/* 3. STICKER */}
                 {elem.type === 'sticker' && (
-                  <div
-                    className="w-full h-full flex items-center justify-center drop-shadow-xs"
-                    dangerouslySetInnerHTML={{ __html: elem.content }}
-                  />
+                  elem.content.startsWith('<svg') || elem.content.startsWith('<?xml') ? (
+                    <div
+                      className="w-full h-full flex items-center justify-center drop-shadow-xs"
+                      dangerouslySetInnerHTML={{ __html: elem.content }}
+                    />
+                  ) : (
+                    <img
+                      src={elem.content}
+                      alt={elem.name || 'Sticker'}
+                      className="w-full h-full object-contain pointer-events-none select-none drop-shadow-md"
+                      draggable={false}
+                    />
+                  )
                 )}
 
                 {/* 4. SHAPE */}

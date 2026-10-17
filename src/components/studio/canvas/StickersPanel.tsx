@@ -10,16 +10,15 @@ interface StickersPanelProps {
 }
 
 const CATEGORIES = [
-  { id: 'all', label: 'All' },
-  { id: 'heritage', label: 'Heritage & African' },
-  { id: 'luxury', label: 'Luxury & Seals' },
-  { id: 'botanical', label: 'Botanicals' },
-  { id: 'wedding', label: 'Weddings' },
-  { id: 'birthday', label: 'Birthdays' },
-  { id: 'celebration', label: 'Nightlife & Toast' },
-  { id: 'milestone', label: 'Honours' },
-  { id: 'baby', label: 'Baby & Family' },
-  { id: 'memorial', label: 'Memorial' },
+  { id: 'all', label: 'All Stickers' },
+  { id: 'tiktok', label: '🔥 Viral & TikTok' },
+  { id: 'party', label: '🎉 Nightlife & Party' },
+  { id: 'wedding', label: '💍 Wedding & Love' },
+  { id: 'heritage', label: '🦁 Heritage & Safari' },
+  { id: 'botanical', label: '🌿 Botanicals' },
+  { id: 'milestone', label: '🏆 Honours & Awards' },
+  { id: 'baby', label: '🧸 Baby & Family' },
+  { id: 'memorial', label: '🕊️ Memorial' },
 ];
 
 export function StickersPanel({ onInsertSticker, onClose }: StickersPanelProps) {
@@ -47,7 +46,7 @@ export function StickersPanel({ onInsertSticker, onClose }: StickersPanelProps) 
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search stickers (eucalyptus, cake, laurel)..."
+            placeholder="Search stickers (fire, disco, rose, ring)..."
             className="w-full bg-transparent text-xs text-white placeholder-white/40 focus:outline-none"
           />
           {search && (
@@ -85,11 +84,15 @@ export function StickersPanel({ onInsertSticker, onClose }: StickersPanelProps) 
               className="group relative aspect-square rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#B99A62]/60 p-3 flex flex-col items-center justify-between cursor-pointer transition-all duration-200 hover:scale-[1.03] select-none"
               title={`Click to add ${sticker.name}`}
             >
-              {/* SVG Preview with genuine transparent background */}
-              <div
-                className="w-full h-24 flex items-center justify-center pointer-events-none"
-                dangerouslySetInnerHTML={{ __html: sticker.svgContent }}
-              />
+              {/* Real 3D Sticker Preview with genuine transparent background */}
+              <div className="w-full h-24 flex items-center justify-center pointer-events-none p-1.5">
+                <img
+                  src={sticker.imageUrl}
+                  alt={sticker.name}
+                  className="max-w-full max-h-full object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,0.45)] transition-transform duration-200 group-hover:scale-110 select-none"
+                  loading="lazy"
+                />
+              </div>
 
               {/* Name & Quick Add pill on hover */}
               <div className="w-full flex items-center justify-between mt-2 pt-1 border-t border-white/5">

@@ -673,12 +673,21 @@ export function InvitationCanvas({
                   </div>
                 )}
 
-                {/* ── 2. STICKER ELEMENT (GENUINE TRANSPARENT CUTOUT SILHOUETTE) ─ */}
+                {/* ── 2. STICKER ELEMENT (REAL IMAGE PNG / CUTOUT SILHOUETTE) ─ */}
                 {elem.type === 'sticker' && (
-                  <div
-                    className="w-full h-full pointer-events-none flex items-center justify-center overflow-visible select-none"
-                    dangerouslySetInnerHTML={{ __html: elem.content }}
-                  />
+                  elem.content.startsWith('<svg') || elem.content.startsWith('<?xml') ? (
+                    <div
+                      className="w-full h-full pointer-events-none flex items-center justify-center overflow-visible select-none"
+                      dangerouslySetInnerHTML={{ __html: elem.content }}
+                    />
+                  ) : (
+                    <img
+                      src={elem.content}
+                      alt={elem.name || 'Sticker'}
+                      className="w-full h-full object-contain pointer-events-none select-none drop-shadow-md"
+                      draggable={false}
+                    />
+                  )
                 )}
 
                 {/* ── 3. PHOTO ELEMENT (WITH NON-DESTRUCTIVE MASK SHAPES) ──── */}

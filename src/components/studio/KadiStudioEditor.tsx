@@ -576,7 +576,7 @@ export function KadiStudioEditor({
       id: `sticker-${Date.now()}`,
       type: 'sticker',
       name: asset.name,
-      content: asset.svgContent,
+      content: asset.imageUrl || asset.content || asset.svgContent,
       x: 180,
       y: 260,
       width: asset.defaultWidth || 120,

@@ -88,49 +88,52 @@ export function getTemplateCanvasElements(
   // Base artboard coordinate space is 480 x 680 (portrait invitation card)
   const elements: CanvasElement[] = [];
 
-  // 1. Top Decorative Sticker / Crest (tailored to event archetype & culture)
-  let topSticker = STICKER_ASSETS.find((s) => s.id === 'botanical-gold-laurel-wreath');
+  // 1. Top Decorative 3D Image Sticker / Crest (tailored to event archetype & culture)
+  let topSticker = STICKER_ASSETS.find((s) => s.id === 'wedding-diamond-ring');
   if (isHeritage) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'heritage-shield-spears') ||
-      STICKER_ASSETS.find((s) => s.id === 'heritage-swahili-henna-lace') ||
+      STICKER_ASSETS.find((s) => s.id === 'heritage-warrior-shield') ||
+      STICKER_ASSETS.find((s) => s.id === 'heritage-safari-lion') ||
       topSticker;
   } else if (isDisco) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'celebration-disco-ball') ||
-      STICKER_ASSETS.find((s) => s.id === 'birthday-retro-sun') ||
+      STICKER_ASSETS.find((s) => s.id === 'party-disco-ball') ||
+      STICKER_ASSETS.find((s) => s.id === 'tiktok-sparkles') ||
       topSticker;
   } else if (isArtDeco) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'luxury-art-deco-sunburst') ||
-      STICKER_ASSETS.find((s) => s.id === 'milestone-starburst-crest') ||
+      STICKER_ASSETS.find((s) => s.id === 'milestone-royal-crown') ||
+      STICKER_ASSETS.find((s) => s.id === 'wedding-gem-stone') ||
       topSticker;
   } else if (isMediterranean) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'botanical-olive-branch') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-palm-tree') ||
+      STICKER_ASSETS.find((s) => s.id === 'botanical-hibiscus') ||
       topSticker;
   } else if (isBirthday) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'birthday-tiered-cake') ||
-      STICKER_ASSETS.find((s) => s.id === 'birthday-balloon-cluster');
+      STICKER_ASSETS.find((s) => s.id === 'party-birthday-cake') ||
+      STICKER_ASSETS.find((s) => s.id === 'party-balloon') ||
+      STICKER_ASSETS.find((s) => s.id === 'tiktok-party-popper');
   } else if (isMemorial) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'memorial-tree-of-life') ||
-      STICKER_ASSETS.find((s) => s.id === 'memorial-peace-dove');
+      STICKER_ASSETS.find((s) => s.id === 'memorial-dove') ||
+      STICKER_ASSETS.find((s) => s.id === 'memorial-candle');
   } else if (isGraduation) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'milestone-mortarboard-cap') ||
-      STICKER_ASSETS.find((s) => s.id === 'milestone-quill-inkwell');
+      STICKER_ASSETS.find((s) => s.id === 'milestone-graduation-cap') ||
+      STICKER_ASSETS.find((s) => s.id === 'milestone-trophy') ||
+      STICKER_ASSETS.find((s) => s.id === 'milestone-medal');
   } else if (isBaby) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'baby-safari-elephant') ||
-      STICKER_ASSETS.find((s) => s.id === 'baby-crescent-moon-clouds') ||
-      STICKER_ASSETS.find((s) => s.id === 'baby-butterfly-flutter');
+      STICKER_ASSETS.find((s) => s.id === 'baby-teddy-bear') ||
+      STICKER_ASSETS.find((s) => s.id === 'baby-crescent-moon') ||
+      STICKER_ASSETS.find((s) => s.id === 'baby-bottle');
   } else if (isWedding) {
     topSticker =
-      STICKER_ASSETS.find((s) => s.id === 'luxury-wax-seal-crimson') ||
-      STICKER_ASSETS.find((s) => s.id === 'botanical-gold-laurel-wreath') ||
-      STICKER_ASSETS.find((s) => s.id === 'wedding-gold-rings');
+      STICKER_ASSETS.find((s) => s.id === 'wedding-diamond-ring') ||
+      STICKER_ASSETS.find((s) => s.id === 'wedding-red-rose') ||
+      STICKER_ASSETS.find((s) => s.id === 'wedding-flower-bouquet');
   }
 
   if (topSticker) {
@@ -138,7 +141,7 @@ export function getTemplateCanvasElements(
       id: 'sticker-hero-crest',
       type: 'sticker',
       name: topSticker.name,
-      content: topSticker.svgContent,
+      content: topSticker.imageUrl || topSticker.svgContent,
       x: 195,
       y: 36,
       width: 90,
@@ -285,13 +288,13 @@ export function getTemplateCanvasElements(
 
   // 7. Bottom Corner Accents tailored to archetype
   let cornerSticker = isWedding
-    ? STICKER_ASSETS.find((s) => s.id === 'botanical-eucalyptus-sprig')
+    ? STICKER_ASSETS.find((s) => s.id === 'wedding-red-rose')
     : isHeritage
-    ? STICKER_ASSETS.find((s) => s.id === 'heritage-cowrie-trio')
+    ? STICKER_ASSETS.find((s) => s.id === 'heritage-ceremonial-drum')
     : isDisco || isBirthday
-    ? STICKER_ASSETS.find((s) => s.id === 'celebration-confetti-sparkles')
+    ? STICKER_ASSETS.find((s) => s.id === 'party-confetti-ball')
     : isMediterranean
-    ? STICKER_ASSETS.find((s) => s.id === 'botanical-olive-branch')
+    ? STICKER_ASSETS.find((s) => s.id === 'botanical-hibiscus')
     : undefined;
 
   if (cornerSticker) {
@@ -299,28 +302,28 @@ export function getTemplateCanvasElements(
       id: 'sticker-bottom-left',
       type: 'sticker',
       name: `${cornerSticker.name} Corner Left`,
-      content: cornerSticker.svgContent,
+      content: cornerSticker.imageUrl || cornerSticker.svgContent,
       x: 10,
       y: 530,
       width: 80,
-      height: 110,
+      height: 80,
       rotation: -15,
       zIndex: 1,
-      opacity: 0.8,
+      opacity: 0.85,
       styleProps: {},
     });
     elements.push({
       id: 'sticker-bottom-right',
       type: 'sticker',
       name: `${cornerSticker.name} Corner Right`,
-      content: cornerSticker.svgContent,
+      content: cornerSticker.imageUrl || cornerSticker.svgContent,
       x: 390,
       y: 530,
       width: 80,
-      height: 110,
+      height: 80,
       rotation: 15,
       zIndex: 1,
-      opacity: 0.8,
+      opacity: 0.85,
       styleProps: {},
     });
   }
