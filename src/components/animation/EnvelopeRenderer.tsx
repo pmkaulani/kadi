@@ -164,6 +164,16 @@ const LINER_BASE_COLORS: Record<string, string> = {
   none: '#F4F1E8',
 };
 
+function colorLuminance(hexColor: string): number {
+  const raw = hexColor?.replace('#', '').slice(0, 6) || '';
+  if (!/^[0-9a-f]{6}$/i.test(raw)) return 0.45;
+  const channels = [0, 2, 4].map((offset) => parseInt(raw.slice(offset, offset + 2), 16) / 255);
+  const linear = channels.map((value) =>
+    value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4)
+  );
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
 function getRenderStyle(template: TemplateDefinition, design?: Partial<EventDesignEntity>): CSSProperties {
   const palette = { ...template.palette, ...(design?.palette || {}) };
   const linerId = design?.linerId || template.liner.id;
@@ -183,6 +193,7 @@ function getRenderStyle(template: TemplateDefinition, design?: Partial<EventDesi
   const envelopeColor = palette.envelope || template.palette.envelope;
   const flapColor = palette.flap || template.palette.flap;
   const secondary = palette.secondary || template.palette.secondary;
+  const addressInkIsDark = colorLuminance(envelopeColor) > 0.5;
 
   return {
     '--iv-ink': palette.text || template.palette.text,
@@ -194,6 +205,8 @@ function getRenderStyle(template: TemplateDefinition, design?: Partial<EventDesi
     '--iv-liner-pattern': linerPattern,
     '--iv-envelope-color': envelopeColor,
     '--iv-flap-color': flapColor,
+    '--iv-address-ink': addressInkIsDark ? '#40372D' : '#F8EEDB',
+    '--iv-address-rule': addressInkIsDark ? 'rgba(64, 48, 31, .38)' : 'rgba(255, 239, 206, .52)',
     '--iv-seal-color': design?.sealColor || template.seal.color,
     '--iv-seal-ink': template.palette.sealIconColor || '#f3e5c8',
     '--iv-card-line': `${secondary}66`,
