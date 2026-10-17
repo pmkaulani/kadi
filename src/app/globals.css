@@ -3367,20 +3367,10 @@ body:has(.kadi-stationery-sheet),
   padding: 3px;
   overflow: hidden;
   background: var(--iv-paper, #fbf7ef);
-  border: 1px solid color-mix(in srgb, var(--iv-gold, #b99a62) 62%, transparent);
+  border: 2px dotted color-mix(in srgb, var(--iv-gold, #b99a62) 78%, transparent);
   box-shadow: 0 2px 5px rgba(20,12,8,.22), inset 0 0 0 1px rgba(255,255,255,.74);
   transform: rotate(5deg) translateZ(2px);
   transform-origin: center;
-  pointer-events: none;
-}
-
-.iv-world .iv-postage-stamp::before {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  inset: 1px;
-  background: radial-gradient(circle, var(--iv-paper, #fbf7ef) 1.05px, transparent 1.25px) -1px -1px / 6px 6px repeat;
-  opacity: .78;
   pointer-events: none;
 }
 
