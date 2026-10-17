@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getTemplateCanvasElements } from '../src/lib/templates/canvas-defaults';
-import { getTemplateById } from '../src/lib/templates/catalogue';
+import { getTemplateById, TEMPLATES } from '../src/lib/templates/catalogue';
 
 function valuesFor(template, overrides = {}) {
   return {
@@ -121,7 +121,7 @@ test('Canvas art direction - important canvas elements receive coordinated entra
   const elements = getTemplateCanvasElements(tpl, valuesFor(tpl));
 
   assert.equal(byId(elements, 'photo-hero').animation?.effect, 'fadeIn');
-  assert.equal(byId(elements, 'text-title').animation?.effect, 'rise');
+  assert.equal(byId(elements, 'text-title').animation?.effect, 'fadeIn');
   assert.equal(byId(elements, 'text-hosts').animation?.effect, 'fadeIn');
   assert.ok(
     byId(elements, 'text-title').animation!.delay! > byId(elements, 'photo-hero').animation!.delay!,
@@ -137,4 +137,46 @@ test('Canvas art direction - memorial artwork remains unembellished and restrain
   assert.equal(byId(elements, 'photo-hero').styleProps?.maskShape, 'oval');
   assert.equal(byId(elements, 'text-hosts').content, tpl.sampleData.hosts);
   assert.equal(byId(elements, 'text-title').animation?.effect, 'rise');
+});
+
+
+test('Canvas art direction - every template keeps image, invitation request, and headline from colliding', () => {
+  for (const tpl of TEMPLATES) {
+    const elements = getTemplateCanvasElements(tpl, valuesFor(tpl));
+    const request = byId(elements, 'text-request');
+    const title = byId(elements, 'text-title');
+    const photos = elements.filter((element) => element.type === 'photo');
+
+    const lowerEdgeOfPhotography = Math.max(
+      0,
+      ...photos.map((photo) => photo.y + photo.height)
+    );
+
+    assert.ok(
+      request.y >= lowerEdgeOfPhotography,
+      `${tpl.id}: invitation request should sit below the photography (photo bottom ${lowerEdgeOfPhotography}, request y ${request.y})`
+    );
+    assert.ok(
+      request.y + request.height <= title.y,
+      `${tpl.id}: invitation request must end before the headline begins (request bottom ${request.y + request.height}, title y ${title.y})`
+    );
+    assert.ok(
+      title.y + title.height <= byId(elements, 'text-date').y,
+      `${tpl.id}: headline must finish before the date begins`
+    );
+  }
+});
+
+test('Canvas art direction - collage templates intentionally use two distinct photos', () => {
+  for (const id of ['these-are-for-you', 'silver-memories']) {
+    const tpl = template(id);
+    const elements = getTemplateCanvasElements(tpl, valuesFor(tpl));
+    const photos = elements.filter((element) => element.type === 'photo');
+    assert.equal(photos.length, 2, `${id} should use two separate memory images`);
+    assert.notEqual(photos[0].id, photos[1].id);
+    assert.notDeepEqual(
+      { x: photos[0].x, y: photos[0].y, width: photos[0].width, height: photos[0].height },
+      { x: photos[1].x, y: photos[1].y, width: photos[1].width, height: photos[1].height }
+    );
+  }
 });
