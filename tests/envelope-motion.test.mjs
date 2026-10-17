@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { ENVELOPE_OPENING_TIMELINE, resolveEnvelopeMotionStyle } from '../src/components/animation/EnvelopeRenderer';
 import { getTemplateById, TEMPLATES } from '../src/lib/templates/catalogue';
 
@@ -157,4 +158,23 @@ test('Envelope Motion - timeline state machine transitions and cancellation safe
   openEnvelope(true);
   assert.equal(currentPhase, 'settled');
   assert.equal(timers.length, 0);
+});
+
+
+test('Envelope Motion - the portrait paper composition is stable and CSS does not override Motion transforms', () => {
+  const css = readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8');
+
+  assert.match(css, /\.iv-world \.iv-card-preview:not\(\.iv-card-preview--canvas\) \{[\s\S]*?aspect-ratio: 480 \/ 680;/);
+  assert.match(css, /\.iv-world \.iv-card-preview--canvas \{[\s\S]*?aspect-ratio: 480 \/ 680;/);
+  assert.match(css, /\.iv-world \.iv-insert-paper--back \{[\s\S]*?aspect-ratio: 480 \/ 680;/);
+  assert.match(css, /\.iv-world \.iv-insert-paper--front \{[\s\S]*?aspect-ratio: 480 \/ 680;/);
+
+  assert.ok(
+    !css.includes('transform: translateY(-145px) translateZ(22px)'),
+    'Legacy CSS must not snap the invitation card out of Framer Motion control'
+  );
+  assert.ok(
+    !css.includes('transform: rotateX(-178deg);'),
+    'The CSS cascade must not override the flap angle owned by Framer Motion'
+  );
 });
