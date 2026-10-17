@@ -845,18 +845,13 @@ export function EnvelopeRenderer({
             </span>
           </motion.button>
 
-          {/* Tap Prompt & Guest Greeting */}
+          {/* The recipient is addressed on the envelope; keep the interaction prompt quiet. */}
           {phase === 'closed' ? (
             <>
               <div className="iv-open-instruction" id="iv-open-instruction">
                 <span className="iv-open-rule" aria-hidden="true" />
                 <span>Open your invitation</span>
               </div>
-              {guestName && (
-                <p className="iv-personalized">
-                  Prepared especially for <strong>{guestName}</strong>
-                </p>
-              )}
             </>
           ) : (
             <div className="iv-opening-status" id="iv-opening-status" aria-live="polite">
