@@ -27,6 +27,31 @@ export interface DraftInvitationValues {
   mpesaNumber?: string;
   mpesaRecipient?: string;
   mpesaReference?: string;
+  // Section text overrides for direct in-place editing across the stationery
+  registryHeading?: string;
+  registryTitle?: string;
+  registryMessage?: string;
+  registryAccountLabel?: string;
+  ceremonyHeading?: string;
+  ceremonyTitle?: string;
+  ceremonyTime?: string;
+  receptionTitle?: string;
+  receptionTime?: string;
+  receptionLocation?: string;
+  venueHeading?: string;
+  venueNote?: string;
+  storyHeading?: string;
+  storyTitle?: string;
+  galleryHeading?: string;
+  galleryTitle?: string;
+  rsvpHeading?: string;
+  rsvpTitle?: string;
+  rsvpSubtitle?: string;
+  faqHeading?: string;
+  faqTitle?: string;
+  closingHeading?: string;
+  closingTitle?: string;
+  closingMessage?: string;
 }
 
 export interface DraftInvitationPreviewProps {

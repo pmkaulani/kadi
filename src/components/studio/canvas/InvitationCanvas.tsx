@@ -451,7 +451,11 @@ export function InvitationCanvas({
                 id={`canvas-elem-${elem.id}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSelectId(elem.id);
+                  if (isSelected && elem.type === 'text') {
+                    setEditingTextId(elem.id);
+                  } else {
+                    onSelectId(elem.id);
+                  }
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
@@ -461,7 +465,7 @@ export function InvitationCanvas({
                 }}
                 onMouseEnter={() => setHoveredId(elem.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className={`absolute select-none group transition-opacity duration-150 ${
+                className={`absolute group transition-opacity duration-150 ${
                   isSelected ? 'z-40' : ''
                 }`}
                 style={{
@@ -472,7 +476,7 @@ export function InvitationCanvas({
                   transform: `rotate(${elem.rotation}deg)`,
                   zIndex: isSelected ? 999 : elem.zIndex,
                   opacity: elem.opacity ?? 1,
-                  cursor: elem.isLocked ? 'default' : 'move',
+                  cursor: elem.isLocked ? 'default' : elem.type === 'text' ? 'text' : 'move',
                 }}
               >
                 {/* ── 1. TEXT ELEMENT ──────────────────────────────────────── */}
@@ -503,10 +507,10 @@ export function InvitationCanvas({
                         onKeyDown={(e) => {
                           if (e.key === 'Escape') setEditingTextId(null);
                         }}
-                        className="w-full h-full bg-white/80 text-black border border-blue-500 rounded p-1 resize-none focus:outline-none"
+                        className="w-full h-full bg-transparent text-inherit border-0 border-b border-[#B99A62] p-1 resize-none focus:outline-none"
                       />
                     ) : (
-                      <span className="w-full whitespace-pre-wrap select-none">
+                      <span className="w-full whitespace-pre-wrap select-text cursor-text">
                         {elem.content}
                       </span>
                     )}
@@ -516,7 +520,7 @@ export function InvitationCanvas({
                 {/* ── 2. STICKER ELEMENT (GENUINE TRANSPARENT CUTOUT SILHOUETTE) ─ */}
                 {elem.type === 'sticker' && (
                   <div
-                    className="w-full h-full pointer-events-none flex items-center justify-center overflow-visible"
+                    className="w-full h-full pointer-events-none flex items-center justify-center overflow-visible select-none"
                     dangerouslySetInnerHTML={{ __html: elem.content }}
                   />
                 )}
@@ -524,7 +528,7 @@ export function InvitationCanvas({
                 {/* ── 3. PHOTO ELEMENT (WITH NON-DESTRUCTIVE MASK SHAPES) ──── */}
                 {elem.type === 'photo' && (
                   <div
-                    className="w-full h-full overflow-hidden shadow-sm"
+                    className="w-full h-full overflow-hidden shadow-sm select-none"
                     style={{
                       borderRadius:
                         style.maskShape === 'circle'
@@ -550,6 +554,8 @@ export function InvitationCanvas({
                   zoom={zoom}
                   isSelected={isSelected}
                   isHovered={isHovered}
+                  isEditing={isEditing}
+                  onDoubleClickText={() => setEditingTextId(elem.id)}
                   onStartDrag={(e) => startDrag(e, elem)}
                   onStartResize={(e, corner) => startResize(e, elem, corner)}
                   onStartRotate={(e) => startRotate(e, elem)}

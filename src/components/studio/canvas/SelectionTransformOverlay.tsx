@@ -10,10 +10,12 @@ interface SelectionTransformOverlayProps {
   isSelected: boolean;
   isHovered: boolean;
   isMultiSelected?: boolean;
+  isEditing?: boolean;
   onStartDrag: (e: React.PointerEvent) => void;
   onStartResize: (e: React.PointerEvent, corner: 'tl' | 'tr' | 'bl' | 'br') => void;
   onStartRotate: (e: React.PointerEvent) => void;
   onUnlock?: () => void;
+  onDoubleClickText?: () => void;
 }
 
 export function SelectionTransformOverlay({
@@ -22,10 +24,12 @@ export function SelectionTransformOverlay({
   isSelected,
   isHovered,
   isMultiSelected = false,
+  isEditing = false,
   onStartDrag,
   onStartResize,
   onStartRotate,
   onUnlock,
+  onDoubleClickText,
 }: SelectionTransformOverlayProps) {
   // If not selected and not hovered, render nothing (no idle decoration)
   if (!isSelected && !isHovered) return null;
@@ -44,11 +48,29 @@ export function SelectionTransformOverlay({
     );
   }
 
+  // If user is actively typing in text editing mode, don't intercept clicks inside
+  if (isEditing) {
+    return (
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute inset-0 rounded-[2px]"
+          style={{
+            border: '1.5px dashed #B99A62',
+          }}
+        />
+      </div>
+    );
+  }
+
   // Selected State (§5.3.1): Unmistakable, high-contrast, no-fill transform frame
   return (
     <div
       className="absolute inset-0 select-none pointer-events-auto"
       onPointerDown={isLocked ? undefined : onStartDrag}
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        onDoubleClickText?.();
+      }}
       style={{
         cursor: isLocked ? 'not-allowed' : 'move',
       }}

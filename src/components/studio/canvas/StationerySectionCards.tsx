@@ -1,31 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  Clock,
-  Eye,
-  EyeOff,
   ChevronUp,
   ChevronDown,
-  Sparkles,
-  Check,
+  EyeOff,
   Plus,
   ArrowUp,
   ExternalLink,
   MapPin,
   Calendar,
-  Heart,
-  Images,
-  Send,
-  Smartphone,
-  HelpCircle,
 } from 'lucide-react';
 import type { DraftInvitationValues } from '@/components/invitations/DraftInvitationPreview';
 import type { EventDesignEntity } from '@/lib/db/types';
 import type { TemplateDefinition } from '@/lib/templates/types';
 import {
   getDefaultInvitationSections,
-  type InvitationSectionKey,
 } from '@/lib/events/default-invitation-sections';
 
 interface StationerySectionCardsProps {
@@ -45,6 +35,104 @@ interface StationerySectionCardsProps {
   onOpenPhotoRail?: () => void;
   onOpenStickerRail?: () => void;
   onScrollToTop?: () => void;
+}
+
+/**
+ * Universal Inline Editable Text component.
+ * Appears as natural printed letterpress typography when idle.
+ * Single click instantly opens an inline text caret with matching typography.
+ * Saves immediately on blur or Enter, cancels on Escape.
+ */
+function InlineEditableText({
+  value,
+  onChange,
+  className = '',
+  placeholder = 'Click to edit...',
+  multiline = false,
+  as: Tag = 'span',
+  style,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  className?: string;
+  placeholder?: string;
+  multiline?: boolean;
+  as?: React.ElementType;
+  style?: React.CSSProperties;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [text, setText] = useState(value || '');
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setText(value || '');
+  }, [value]);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    if (text !== (value || '')) {
+      onChange(text);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setText(value || '');
+      setIsEditing(false);
+    } else if (e.key === 'Enter' && !multiline) {
+      handleBlur();
+    }
+  };
+
+  if (isEditing) {
+    if (multiline) {
+      return (
+        <textarea
+          ref={inputRef as any}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          rows={3}
+          className={`w-full bg-transparent border-0 border-b border-[#B99A62] text-center focus:outline-none p-1 transition-all resize-y select-text ${className}`}
+          style={style}
+        />
+      );
+    }
+    return (
+      <input
+        ref={inputRef as any}
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className={`w-full bg-transparent border-0 border-b border-[#B99A62] text-center focus:outline-none p-0.5 transition-all select-text ${className}`}
+        style={style}
+      />
+    );
+  }
+
+  return (
+    <Tag
+      onClick={(e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsEditing(true);
+      }}
+      className={`cursor-pointer hover:opacity-85 transition-opacity hover:underline decoration-dotted decoration-[#B99A62]/60 underline-offset-4 select-text ${className}`}
+      style={style}
+      title="Click to edit text directly"
+    >
+      {value || <span className="opacity-40 italic">{placeholder}</span>}
+    </Tag>
+  );
 }
 
 export function StationerySectionCards({
@@ -103,7 +191,6 @@ export function StationerySectionCards({
   };
 
   const primaryColor = palette.primary || template.palette.primary || '#934638';
-  const secondaryColor = palette.secondary || template.palette.secondary || '#B99A62';
   const textColor = palette.text || template.palette.text || '#272620';
   const bgColor = cardBackground || palette.cardBackground || template.palette.cardBackground || '#FCFAF7';
 
@@ -158,7 +245,7 @@ export function StationerySectionCards({
     );
   };
 
-  // Delicate fleuron / divider between sections (no hard borders)
+  // Delicate fleuron divider between sections (no hard borders)
   const renderFleuronDivider = () => (
     <div className="w-full flex items-center justify-center gap-3 py-6 select-none opacity-60" aria-hidden="true">
       <span className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#B99A62]/40" />
@@ -169,7 +256,7 @@ export function StationerySectionCards({
 
   return (
     <div
-      className="w-[480px] rounded-2xl relative shadow-[0_24px_70px_rgba(0,0,0,0.85)] mt-4 p-8 sm:p-10 transition-all select-none"
+      className="w-[480px] rounded-2xl relative shadow-[0_24px_70px_rgba(0,0,0,0.85)] mt-4 p-8 sm:p-10 transition-all"
       style={{
         backgroundColor: bgColor,
         color: textColor,
@@ -187,7 +274,7 @@ export function StationerySectionCards({
       {/* Delicate Inner Margin Frame Rule */}
       <div className="absolute inset-4 border border-black/[0.06] pointer-events-none rounded-xl" />
 
-      {/* ── 1. COUNTDOWN SECTION (PURE STATUESQUE TYPOGRAPHY, ZERO BOXES) ── */}
+      {/* ── 1. COUNTDOWN SECTION (STATUESQUE TYPOGRAPHY, ZERO BOXES) ── */}
       <section
         id="canvas-section-countdown"
         onMouseEnter={() => setHoveredSection('countdown')}
@@ -198,13 +285,11 @@ export function StationerySectionCards({
 
         {/* Italic Letterpress Quote / Label (Borderless In-Place Edit) */}
         <div className="mb-3">
-          <input
-            type="text"
+          <InlineEditableText
             value={values.countdownLabel || 'Counting down with joy'}
-            onChange={(e) => onUpdateValues('countdownLabel', e.target.value)}
-            className="w-full text-center bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] text-sm sm:text-base font-serif italic text-black/75 focus:outline-none transition-colors p-0.5"
+            onChange={(val) => onUpdateValues('countdownLabel', val)}
             placeholder="e.g. Counting down with joy"
-            title="Click to edit countdown label"
+            className="text-sm sm:text-base font-serif italic text-black/75 block"
           />
           <p
             className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.26em] mt-1"
@@ -260,31 +345,37 @@ export function StationerySectionCards({
                 >
                   {renderFloatingControls(secKey, 'Ceremony')}
 
-                  <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50]">
-                    The Gathering
-                  </p>
+                  <InlineEditableText
+                    value={values.ceremonyHeading || 'THE GATHERING'}
+                    onChange={(val) => onUpdateValues('ceremonyHeading', val)}
+                    className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50] block"
+                  />
 
                   {/* Ceremony Moment */}
                   <div className="space-y-1.5">
-                    <h3 className="font-serif text-xl sm:text-2xl text-[#934638] font-normal tracking-wide">
-                      The Ceremony
-                    </h3>
-                    <p className="font-serif italic text-xs sm:text-sm text-black/60">
-                      Ten o'clock in the morning
-                    </p>
+                    <InlineEditableText
+                      value={values.ceremonyTitle || 'The Ceremony'}
+                      onChange={(val) => onUpdateValues('ceremonyTitle', val)}
+                      as="h3"
+                      className="font-serif text-xl sm:text-2xl text-[#934638] font-normal tracking-wide block"
+                    />
+                    <InlineEditableText
+                      value={values.ceremonyTime || "Ten o'clock in the morning"}
+                      onChange={(val) => onUpdateValues('ceremonyTime', val)}
+                      as="p"
+                      className="font-serif italic text-xs sm:text-sm text-black/60 block"
+                    />
                     <div className="max-w-xs mx-auto pt-0.5 space-y-0.5">
-                      <input
-                        type="text"
+                      <InlineEditableText
                         value={values.venue || 'Our Lady of the Rosary'}
-                        onChange={(e) => onUpdateValues('venue', e.target.value)}
-                        className="w-full text-center bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] text-xs sm:text-sm font-serif font-medium text-black/85 focus:outline-none transition-colors p-0.5"
+                        onChange={(val) => onUpdateValues('venue', val)}
+                        className="text-xs sm:text-sm font-serif font-medium text-black/85 block"
                         placeholder="Ceremony Venue"
                       />
-                      <input
-                        type="text"
+                      <InlineEditableText
                         value={values.city || 'Ridgeways, Kiambu Road'}
-                        onChange={(e) => onUpdateValues('city', e.target.value)}
-                        className="w-full text-center bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] text-[11px] font-sans text-black/55 focus:outline-none transition-colors p-0.5"
+                        onChange={(val) => onUpdateValues('city', val)}
+                        className="text-[11px] font-sans text-black/55 block"
                         placeholder="Address / Location"
                       />
                     </div>
@@ -295,19 +386,25 @@ export function StationerySectionCards({
 
                   {/* Reception Moment */}
                   <div className="space-y-1.5">
-                    <h3 className="font-serif text-xl sm:text-2xl text-[#934638] font-normal tracking-wide">
-                      The Reception &amp; Dinner
-                    </h3>
-                    <p className="font-serif italic text-xs sm:text-sm text-black/60">
-                      Half past one in the afternoon
-                    </p>
+                    <InlineEditableText
+                      value={values.receptionTitle || 'The Reception & Dinner'}
+                      onChange={(val) => onUpdateValues('receptionTitle', val)}
+                      as="h3"
+                      className="font-serif text-xl sm:text-2xl text-[#934638] font-normal tracking-wide block"
+                    />
+                    <InlineEditableText
+                      value={values.receptionTime || 'Half past one in the afternoon'}
+                      onChange={(val) => onUpdateValues('receptionTime', val)}
+                      as="p"
+                      className="font-serif italic text-xs sm:text-sm text-black/60 block"
+                    />
                     <div className="max-w-xs mx-auto pt-0.5 space-y-0.5">
-                      <p className="text-xs sm:text-sm font-serif font-medium text-black/85">
-                        Windsor Golf &amp; Country Club
-                      </p>
-                      <p className="text-[11px] font-sans text-black/55">
-                        Kigwa Ridge, Nairobi
-                      </p>
+                      <InlineEditableText
+                        value={values.receptionLocation || 'Windsor Golf & Country Club · Kigwa Ridge, Nairobi'}
+                        onChange={(val) => onUpdateValues('receptionLocation', val)}
+                        className="text-xs sm:text-sm font-serif font-medium text-black/85 block"
+                        placeholder="Reception Venue & Location"
+                      />
                     </div>
                   </div>
 
@@ -335,30 +432,34 @@ export function StationerySectionCards({
                 >
                   {renderFloatingControls(secKey, 'Venue')}
 
-                  <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50]">
-                    Location &amp; Setting
-                  </p>
+                  <InlineEditableText
+                    value={values.venueHeading || 'LOCATION & SETTING'}
+                    onChange={(val) => onUpdateValues('venueHeading', val)}
+                    className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50] block"
+                  />
 
                   <div className="max-w-sm mx-auto space-y-1">
-                    <input
-                      type="text"
-                      value={values.venue}
-                      onChange={(e) => onUpdateValues('venue', e.target.value)}
-                      className="w-full text-center bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] font-serif text-xl sm:text-2xl text-black/85 font-normal focus:outline-none transition-colors p-0.5"
+                    <InlineEditableText
+                      value={values.venue || 'Windsor Golf & Country Club'}
+                      onChange={(val) => onUpdateValues('venue', val)}
+                      className="font-serif text-xl sm:text-2xl text-black/85 font-normal block"
                       placeholder="Venue Name"
                     />
-                    <input
-                      type="text"
-                      value={values.city}
-                      onChange={(e) => onUpdateValues('city', e.target.value)}
-                      className="w-full text-center bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] text-xs font-serif italic text-black/60 focus:outline-none transition-colors p-0.5"
+                    <InlineEditableText
+                      value={values.city || 'Kigwa Ridge, Nairobi'}
+                      onChange={(e) => onUpdateValues('city', e)}
+                      className="text-xs font-serif italic text-black/60 block"
                       placeholder="City or Region"
                     />
                   </div>
 
-                  <p className="font-serif italic text-xs text-black/55 max-w-xs mx-auto">
-                    Secured on-site parking &amp; valet services provided for all guests.
-                  </p>
+                  <InlineEditableText
+                    value={values.venueNote || 'Secured on-site parking & valet services provided for all guests.'}
+                    onChange={(val) => onUpdateValues('venueNote', val)}
+                    as="p"
+                    className="font-serif italic text-xs text-black/55 max-w-xs mx-auto block"
+                    placeholder="Directions or parking note"
+                  />
 
                   <div className="pt-1">
                     <span className="inline-flex items-center gap-1.5 text-xs font-serif text-[#0F766E] hover:text-[#0D5F58] border-b border-[#0F766E]/40 pb-0.5 cursor-pointer">
@@ -385,22 +486,28 @@ export function StationerySectionCards({
                 >
                   {renderFloatingControls(secKey, category === 'birthday' ? 'About' : 'Our Story')}
 
-                  <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50]">
-                    {category === 'birthday' ? 'The Honouree' : 'A Note From The Hosts'}
-                  </p>
+                  <InlineEditableText
+                    value={values.storyHeading || (category === 'birthday' ? 'THE HONOUREE' : 'A NOTE FROM THE HOSTS')}
+                    onChange={(val) => onUpdateValues('storyHeading', val)}
+                    className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50] block"
+                  />
 
-                  <h3 className="font-serif text-xl sm:text-2xl text-[#934638] font-normal">
-                    {category === 'birthday' ? 'A Milestone Celebration' : 'Our Story'}
-                  </h3>
+                  <InlineEditableText
+                    value={values.storyTitle || (category === 'birthday' ? 'A Milestone Celebration' : 'Our Story')}
+                    onChange={(val) => onUpdateValues('storyTitle', val)}
+                    as="h3"
+                    className="font-serif text-xl sm:text-2xl text-[#934638] font-normal block"
+                  />
 
                   {/* Seamless Editorial Letterpress Textarea (Zero Box, Zero Border) */}
                   <div className="relative max-w-sm mx-auto pt-1">
-                    <textarea
-                      rows={5}
+                    <InlineEditableText
                       value={values.story || ''}
-                      onChange={(e) => onUpdateValues('story', e.target.value)}
-                      className="w-full bg-transparent border-0 border-b border-transparent hover:border-black/15 focus:border-[#B99A62] text-xs sm:text-sm font-serif leading-[1.8] text-black/80 text-center focus:outline-none transition-colors resize-y p-1"
-                      placeholder="Write your story, tribute, or welcome note here..."
+                      onChange={(val) => onUpdateValues('story', val)}
+                      multiline
+                      as="p"
+                      className="text-xs sm:text-sm font-serif leading-[1.8] text-black/80 text-center block"
+                      placeholder="Click to write your story, tribute, or welcome note here..."
                     />
                   </div>
                 </section>
@@ -420,13 +527,18 @@ export function StationerySectionCards({
                 >
                   {renderFloatingControls(secKey, 'Gallery')}
 
-                  <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50]">
-                    Cherished Moments
-                  </p>
+                  <InlineEditableText
+                    value={values.galleryHeading || 'CHERISHED MOMENTS'}
+                    onChange={(val) => onUpdateValues('galleryHeading', val)}
+                    className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50] block"
+                  />
 
-                  <h3 className="font-serif text-xl sm:text-2xl text-[#934638] font-normal">
-                    Photo Memories
-                  </h3>
+                  <InlineEditableText
+                    value={values.galleryTitle || 'Photo Memories'}
+                    onChange={(val) => onUpdateValues('galleryTitle', val)}
+                    as="h3"
+                    className="font-serif text-xl sm:text-2xl text-[#934638] font-normal block"
+                  />
 
                   {/* Asymmetric Luxury Photo Arrangement with Soft Shadows */}
                   <div className="flex items-center justify-center gap-3 pt-2">
@@ -480,23 +592,31 @@ export function StationerySectionCards({
                 >
                   {renderFloatingControls(secKey, 'RSVP')}
 
-                  <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50]">
-                    Kindly Respond
-                  </p>
+                  <InlineEditableText
+                    value={values.rsvpHeading || 'KINDLY RESPOND'}
+                    onChange={(val) => onUpdateValues('rsvpHeading', val)}
+                    className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50] block"
+                  />
 
-                  <h3 className="font-serif text-2xl text-[#934638] font-normal">
-                    R . S . V . P
-                  </h3>
+                  <InlineEditableText
+                    value={values.rsvpTitle || 'R . S . V . P'}
+                    onChange={(val) => onUpdateValues('rsvpTitle', val)}
+                    as="h3"
+                    className="font-serif text-2xl text-[#934638] font-normal block"
+                  />
 
                   {/* Borderless Editable RSVP Deadline */}
                   <div className="inline-flex items-center justify-center gap-1.5 text-xs font-serif italic text-black/70">
-                    <span>Kindly confirm your attendance by:</span>
-                    <input
-                      type="text"
+                    <InlineEditableText
+                      value={values.rsvpSubtitle || 'Kindly confirm your attendance by:'}
+                      onChange={(val) => onUpdateValues('rsvpSubtitle', val)}
+                      className="text-black/70"
+                    />
+                    <InlineEditableText
                       value={values.rsvpDeadline || '1 December 2026'}
-                      onChange={(e) => onUpdateValues('rsvpDeadline', e.target.value)}
-                      className="bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] font-semibold text-[#8C4638] focus:outline-none transition-colors p-0.5 text-center"
-                      placeholder="e.g. 1 December 2026"
+                      onChange={(val) => onUpdateValues('rsvpDeadline', val)}
+                      className="font-semibold text-[#8C4638]"
+                      placeholder="RSVP Deadline Date"
                     />
                   </div>
 
@@ -521,7 +641,7 @@ export function StationerySectionCards({
               </React.Fragment>
             );
 
-          /* ── M-PESA & GIFT REGISTRY (REFINED BLESSINGS NOTE) ── */
+          /* ── M-PESA & GIFT REGISTRY (USER-SCREENSHOTTED SECTION, 100% INLINE EDITABLE) ── */
           case 'registry':
             return (
               <React.Fragment key={secKey}>
@@ -534,37 +654,58 @@ export function StationerySectionCards({
                 >
                   {renderFloatingControls(secKey, 'Registry')}
 
-                  <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50]">
-                    Gifts &amp; Blessings
-                  </p>
+                  {/* 1. Header label: "GIFTS & BLESSINGS" */}
+                  <InlineEditableText
+                    value={values.registryHeading || 'GIFTS & BLESSINGS'}
+                    onChange={(val) => onUpdateValues('registryHeading', val)}
+                    className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50] block"
+                  />
 
-                  <h3 className="font-serif text-xl sm:text-2xl text-[#934638] font-normal">
-                    M-Pesa Registry &amp; Harambee
-                  </h3>
+                  {/* 2. Title: "M-Pesa Registry & Harambee" */}
+                  <InlineEditableText
+                    value={values.registryTitle || 'M-Pesa Registry & Harambee'}
+                    onChange={(val) => onUpdateValues('registryTitle', val)}
+                    as="h3"
+                    className="font-serif text-xl sm:text-2xl text-[#934638] font-normal block"
+                  />
 
-                  <p className="font-serif italic text-xs text-black/60 max-w-sm mx-auto leading-relaxed">
-                    Your presence and blessings are our greatest gift. Should you wish to honour us with a contribution:
-                  </p>
+                  {/* 3. Description message: "Your presence and blessings..." */}
+                  <InlineEditableText
+                    value={
+                      values.registryMessage ||
+                      'Your presence and blessings are our greatest gift. Should you wish to honour us with a contribution:'
+                    }
+                    onChange={(val) => onUpdateValues('registryMessage', val)}
+                    multiline
+                    as="p"
+                    className="font-serif italic text-xs text-black/60 max-w-sm mx-auto leading-relaxed block"
+                    placeholder="Click to customize gift note..."
+                  />
 
-                  {/* Clean Typographic Mobile Money Line (NO FORM BOXES) */}
+                  {/* 4. Clean Typographic Mobile Money Lines (NO FORM BOXES, ZERO SAAS) */}
                   <div className="max-w-xs mx-auto py-2 space-y-1.5">
+                    {/* Buy Goods Till row */}
                     <div className="flex items-center justify-center gap-2 text-xs font-serif">
                       <span className="text-black/50">Buy Goods Till:</span>
-                      <input
-                        type="text"
+                      <InlineEditableText
                         value={values.mpesaNumber || '8249102'}
-                        onChange={(e) => onUpdateValues('mpesaNumber', e.target.value)}
-                        className="bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] font-mono font-bold text-sm text-[#0F766E] focus:outline-none transition-colors w-24 text-center p-0"
-                        placeholder="8249102"
+                        onChange={(val) => onUpdateValues('mpesaNumber', val)}
+                        className="font-mono font-bold text-sm text-[#0F766E]"
+                        placeholder="Till Number"
                       />
                     </div>
+
+                    {/* Account Name row */}
                     <div className="flex items-center justify-center gap-2 text-xs font-serif">
-                      <span className="text-black/50">Account Name:</span>
-                      <input
-                        type="text"
+                      <InlineEditableText
+                        value={values.registryAccountLabel || 'Account Name:'}
+                        onChange={(val) => onUpdateValues('registryAccountLabel', val)}
+                        className="text-black/50"
+                      />
+                      <InlineEditableText
                         value={values.mpesaRecipient || values.celebrants || 'Kevin & Wanjiku'}
-                        onChange={(e) => onUpdateValues('mpesaRecipient', e.target.value)}
-                        className="bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] font-medium text-black/80 focus:outline-none transition-colors text-center p-0"
+                        onChange={(val) => onUpdateValues('mpesaRecipient', val)}
+                        className="font-medium text-black/80"
                         placeholder="Recipient Name"
                       />
                     </div>
@@ -586,13 +727,18 @@ export function StationerySectionCards({
                 >
                   {renderFloatingControls(secKey, 'FAQ')}
 
-                  <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50]">
-                    Practical Details
-                  </p>
+                  <InlineEditableText
+                    value={values.faqHeading || 'PRACTICAL DETAILS'}
+                    onChange={(val) => onUpdateValues('faqHeading', val)}
+                    className="text-[10px] font-sans font-semibold uppercase tracking-[0.28em] text-[#8C5E50] block"
+                  />
 
-                  <h3 className="font-serif text-xl sm:text-2xl text-[#934638] font-normal">
-                    Guest Information
-                  </h3>
+                  <InlineEditableText
+                    value={values.faqTitle || 'Guest Information'}
+                    onChange={(val) => onUpdateValues('faqTitle', val)}
+                    as="h3"
+                    className="font-serif text-xl sm:text-2xl text-[#934638] font-normal block"
+                  />
 
                   <div className="max-w-sm mx-auto space-y-4 text-center pt-1">
                     {/* Dress Code Line */}
@@ -600,11 +746,10 @@ export function StationerySectionCards({
                       <p className="text-[11px] font-sans font-semibold uppercase tracking-wider text-black/60">
                         Dress Code
                       </p>
-                      <input
-                        type="text"
+                      <InlineEditableText
                         value={values.dressCode || 'Formal Traditional / Black Tie'}
-                        onChange={(e) => onUpdateValues('dressCode', e.target.value)}
-                        className="w-full text-center bg-transparent border-0 border-b border-transparent hover:border-black/20 focus:border-[#B99A62] text-xs sm:text-sm font-serif italic text-black/80 focus:outline-none transition-colors p-0.5"
+                        onChange={(val) => onUpdateValues('dressCode', val)}
+                        className="text-xs sm:text-sm font-serif italic text-black/80 block"
                         placeholder="e.g. Formal Traditional / Black Tie"
                       />
                     </div>
@@ -647,15 +792,26 @@ export function StationerySectionCards({
                   </div>
 
                   <div className="space-y-1">
-                    <p className="text-[10px] font-sans font-semibold tracking-[0.28em] text-[#8C5E50] uppercase">
-                      With Love &amp; Gratitude
-                    </p>
-                    <h3 className="font-serif text-2xl sm:text-3xl text-[#934638] font-normal">
-                      {values.celebrants}
-                    </h3>
-                    <p className="font-serif italic text-xs text-black/60 max-w-xs mx-auto pt-1 leading-relaxed">
-                      We look forward to celebrating this joyful milestone together with you.
-                    </p>
+                    <InlineEditableText
+                      value={values.closingHeading || 'WITH LOVE & GRATITUDE'}
+                      onChange={(val) => onUpdateValues('closingHeading', val)}
+                      className="text-[10px] font-sans font-semibold tracking-[0.28em] text-[#8C5E50] uppercase block"
+                    />
+                    <InlineEditableText
+                      value={values.celebrants || 'Kevin & Wanjiku'}
+                      onChange={(val) => onUpdateValues('celebrants', val)}
+                      as="h3"
+                      className="font-serif text-2xl sm:text-3xl text-[#934638] font-normal block"
+                      placeholder="Celebrants Names"
+                    />
+                    <InlineEditableText
+                      value={values.closingMessage || 'We look forward to celebrating this joyful milestone together with you.'}
+                      onChange={(val) => onUpdateValues('closingMessage', val)}
+                      multiline
+                      as="p"
+                      className="font-serif italic text-xs text-black/60 max-w-xs mx-auto pt-1 leading-relaxed block"
+                      placeholder="Closing message..."
+                    />
                   </div>
 
                   <div className="pt-4">
