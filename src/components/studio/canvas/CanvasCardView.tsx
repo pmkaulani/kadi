@@ -62,10 +62,13 @@ export function CanvasCardView({
       } justify-center overflow-visible select-none ${className}`}
     >
       <div
-        className="relative shrink-0 shadow-lg rounded-2xl overflow-visible transition-transform duration-75"
+        className="relative shrink-0 shadow-[0_12px_36px_-6px_rgba(0,0,0,0.18),0_4px_12px_-2px_rgba(0,0,0,0.08)] ring-1 ring-black/10 rounded-2xl overflow-visible transition-transform duration-75 kadi-canvas-artboard"
         style={{
           width: ARTBOARD_WIDTH,
+          minWidth: ARTBOARD_WIDTH,
+          maxWidth: 'none',
           height: ARTBOARD_HEIGHT,
+          minHeight: ARTBOARD_HEIGHT,
           transform: `scale(${scale})`,
           transformOrigin: fit === 'fill-width' ? 'top center' : 'center center',
           backgroundColor: bg,
@@ -139,21 +142,35 @@ export function CanvasCardView({
                 )}
 
                 {/* 3. STICKER */}
-                {elem.type === 'sticker' && (
-                  elem.content.startsWith('<svg') || elem.content.startsWith('<?xml') ? (
+                {elem.type === 'sticker' && (() => {
+                  let content = elem.content;
+                  const isBaby = elements.some((e) =>
+                    e.type === 'text' && e.content && e.content.toLowerCase().includes('baby')
+                  );
+                  if (
+                    isBaby &&
+                    (content.includes('romance-solitaire') ||
+                      content.includes('diamond-ring') ||
+                      content.includes('solitaire') ||
+                      content.includes('interlocking-rings'))
+                  ) {
+                    content = '/stickers/planner-doodle-heart.png';
+                  }
+
+                  return content.startsWith('<svg') || content.startsWith('<?xml') ? (
                     <div
                       className="w-full h-full flex items-center justify-center drop-shadow-xs"
-                      dangerouslySetInnerHTML={{ __html: elem.content }}
+                      dangerouslySetInnerHTML={{ __html: content }}
                     />
                   ) : (
                     <img
-                      src={elem.content}
+                      src={content}
                       alt={elem.name || 'Sticker'}
                       className="w-full h-full object-contain pointer-events-none select-none drop-shadow-md"
                       draggable={false}
                     />
-                  )
-                )}
+                  );
+                })()}
 
                 {/* 4. SHAPE */}
                 {elem.type === 'shape' && (

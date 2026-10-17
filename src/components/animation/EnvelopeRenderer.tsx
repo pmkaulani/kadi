@@ -1002,9 +1002,9 @@ export function EnvelopeRenderer({
           transition={{ duration: 0.55 }}
         >
           {hasCanvasElements && (
-            <section className="kadi-stationery-suite pt-3 pb-8 sm:py-12 flex flex-col items-center justify-start sm:justify-center w-full min-w-0">
+            <section className="kadi-stationery-suite pt-12 pb-8 sm:py-12 flex flex-col items-center justify-start sm:justify-center w-full min-w-0">
               <div className="kadi-canvas-card-wrapper w-full max-w-[460px] px-2 sm:px-4 flex justify-center overflow-visible">
-                <div className="w-full aspect-[480/680] shadow-2xl rounded-2xl overflow-visible ring-1 ring-black/10 transition-all">
+                <div className="w-full aspect-[480/680] overflow-visible transition-all">
                   <CanvasCardView
                     elements={design?.canvasElements}
                     cardBackground={design?.palette?.cardBackground || template.palette.cardBackground}
