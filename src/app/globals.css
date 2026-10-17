@@ -3037,50 +3037,30 @@ body:has(.kadi-stationery-sheet),
 .iv-world .iv-insert-paper--back {
   left: 24%;
   top: -2%;
+  width: 54%;
+  height: auto;
+  aspect-ratio: 480 / 680;
+  background-color: #f8f3e8;
+  background-image:
+    linear-gradient(145deg, rgba(255,255,255,.76), rgba(232,219,197,.2)),
+    repeating-linear-gradient(0deg, rgba(96,60,35,.025) 0 1px, transparent 1px 4px),
+    var(--iv-paper-grain);
+  background-size: auto, auto, 180px 180px;
 }
 
 .iv-world .iv-insert-paper--front {
   left: 22%;
   top: -1%;
-}
-
-.iv-world .iv-insert-emboss {
-  position: absolute;
-  inset: 9px;
-  border: 1px solid rgba(185,154,98,.25);
-  pointer-events: none;
-}
-
-.iv-world .iv-card-preview {
-  left: 24%;
-  top: -4%;
-  width: 52%;
+  width: 54%;
   height: auto;
   aspect-ratio: 480 / 680;
-  padding: 5px;
-  border-radius: 1px;
-  border-color: rgba(145,120,84,.46);
-  background-color: var(--iv-paper, #FAF6ED);
+  background-color: #fbf7ef;
   background-image:
-    linear-gradient(145deg, rgba(255,255,255,.86), rgba(247,239,225,.58)),
+    linear-gradient(145deg, rgba(255,255,255,.78), rgba(239,228,207,.2)),
+    repeating-linear-gradient(0deg, rgba(96,60,35,.022) 0 1px, transparent 1px 4px),
     var(--iv-paper-grain);
-  background-size: auto, 180px 180px;
-  box-shadow:
-    0 17px 30px rgba(18,8,6,.19),
-    0 4px 10px rgba(18,8,6,.1),
-    inset 0 1px 0 rgba(255,255,255,.95);
-  overflow: hidden;
-  transform-origin: 50% 88%;
-}
-
-.iv-world .iv-card-preview.iv-card-preview--canvas {
-  left: 24% !important;
-  top: -4% !important;
-  width: 52% !important;
-  height: auto !important;
-  aspect-ratio: 480 / 680;
-  padding: 0 !important;
-  overflow: visible;
+  background-size: auto, auto, 180px 180px;
+  box-shadow: 0 7px 18px rgba(40,25,20,.16);
 }
 
 .iv-world .iv-envelope-pocket {
@@ -3283,16 +3263,17 @@ body:has(.kadi-stationery-sheet),
 }
 
 .iv-world .iv-card-preview:not(.iv-card-preview--canvas) {
-  left: 22%;
-  width: 56%;
-  top: -14%;
-  height: 130%;
+  left: 24%;
+  width: 52%;
+  top: -4%;
+  height: auto;
+  aspect-ratio: 480 / 680;
   padding: clamp(7px, 1.8%, 12px);
   border-radius: 2px;
   border-color: color-mix(in srgb, var(--iv-gold, #b99a62) 52%, transparent);
   background-color: #fbf7ef;
   background-image:
-    linear-gradient(145deg, rgba(255,255,255,.8), rgba(250,246,237,.2) 38%, rgba(223,207,180,.1)),
+    linear-gradient(145deg, rgba(255,255,255,.82), rgba(250,246,237,.22) 38%, rgba(223,207,180,.12)),
     repeating-linear-gradient(0deg, rgba(96,60,35,.025) 0 1px, transparent 1px 4px),
     var(--iv-paper-grain);
   background-size: auto, auto, 180px 180px;
@@ -3304,77 +3285,11 @@ body:has(.kadi-stationery-sheet),
 }
 
 .iv-world .iv-card-preview--canvas {
-  left: 22%;
-  width: 56%;
-  top: -14% !important;
-  height: 130% !important;
-  border-radius: 1px;
-  filter: drop-shadow(0 13px 18px rgba(18,8,6,.2));
-}
-
-.iv-world .iv-letter-inner-border {
-  border-color: color-mix(in srgb, var(--iv-gold, #b99a62) 57%, transparent);
-  box-shadow:
-    inset 0 0 0 2px rgba(250,246,237,.92),
-    inset 0 0 0 3px color-mix(in srgb, var(--iv-gold, #b99a62) 22%, transparent);
-}
-
-.iv-world .iv-insert-paper--back {
-  left: 23%;
-  right: 23%;
-  top: 2%;
-  height: 96%;
-  background-color: #f8f3e8;
-  background-image:
-    linear-gradient(145deg, rgba(255,255,255,.76), rgba(232,219,197,.2)),
-    repeating-linear-gradient(0deg, rgba(96,60,35,.025) 0 1px, transparent 1px 4px),
-    var(--iv-paper-grain);
-  background-size: auto, auto, 180px 180px;
-}
-
-.iv-world .iv-insert-paper--front {
-  left: 19%;
-  right: 19%;
-  top: 3%;
-  height: 94%;
-  background-color: #fbf7ef;
-  background-image:
-    linear-gradient(145deg, rgba(255,255,255,.78), rgba(239,228,207,.2)),
-    repeating-linear-gradient(0deg, rgba(96,60,35,.022) 0 1px, transparent 1px 4px),
-    var(--iv-paper-grain);
-  background-size: auto, auto, 180px 180px;
-  box-shadow: 0 7px 18px rgba(40,25,20,.16);
-}
-
-.iv-world .iv-envelope-pocket {
-  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 34%, transparent);
-}
-
-.iv-world .iv-pocket-gold-rule {
-  opacity: .32;
-}
-
-.iv-world .iv-envelope-hitarea:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--iv-gold, #dab46f) 72%, white);
-  outline-offset: 7px;
-  border-radius: 3px;
-}
-
-@media (max-width: 700px) {
-  .iv-world .iv-card-preview:not(.iv-card-preview--canvas) {
-    left: 22%;
-    width: 56%;
-    top: -12%;
-    height: 128%;
-    padding: 6px;
-  }
-
-  .iv-world .iv-card-preview--canvas {
-    left: 22%;
-    width: 56%;
-    top: -12% !important;
-    height: 128% !important;
-  }
+  left: 24%;
+  width: 52%;
+  top: -4% !important;
+  height: auto !important;
+  aspect-ratio: 480 / 680;
 }
 
 @media (prefers-reduced-motion: reduce) {
