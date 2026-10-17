@@ -1212,38 +1212,17 @@
   font-size: 18px;
 }
 .iv-opening-stage.card-rising .iv-envelope-shadow { transform: scale(.84); opacity: .55; }
-.iv-opening-stage.card-rising .iv-seal-anchor,
-.iv-opening-stage.flap-open .iv-seal-anchor {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transition: opacity 0.25s ease;
+/* Framer Motion owns animated transforms and opacity; CSS controls visibility. */
+.iv-opening-stage--flap-open .iv-seal-anchor {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0s linear 0.25s;
 }
-/* Keep letter card completely hidden and tucked inside pocket when closed */
-.iv-opening-stage:not(.card-rising):not(.is-opening) .iv-card-preview {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-.iv-opening-stage.card-rising .iv-card-preview {
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: translateY(-145px) translateZ(22px) rotate(-0.5deg) scale(1.03);
-}
-@media (max-width: 640px) {
-  .iv-opening-stage.card-rising .iv-card-preview {
-    transform: translateY(-125px) translateZ(22px) rotate(-0.5deg) scale(1.02);
-  }
-}
-.iv-opening-stage.card-rising .iv-envelope-flap-hinge {
-  transform: rotateX(-178deg);
-}
-.iv-opening-stage.card-rising .iv-insert-paper--back {
-  transform: translateY(-48px) translateX(26px) rotate(5.5deg);
-  opacity: 1;
-}
-.iv-opening-stage.card-rising .iv-insert-paper--front {
-  transform: translateY(-42px) translateX(-26px) rotate(-4.5deg);
-  opacity: 1;
+/* Keep the invitation tucked away without overriding Motion interpolation. */
+.iv-opening-stage:not(.is-opening) .iv-card-preview {
+  visibility: hidden;
+  pointer-events: none;
 }
 .iv-opening-status {
   margin-top: clamp(20px, 3.5vh, 40px);
