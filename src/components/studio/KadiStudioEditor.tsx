@@ -220,7 +220,10 @@ function buildInitialDraft(
 
   const rawCanvasElements =
     design?.canvasElements ||
-    getTemplateCanvasElements(activeTemplate, initialValues);
+    getTemplateCanvasElements(activeTemplate, initialValues, {
+      palette: design?.palette,
+      headingFont: design?.typography?.headingFont || design?.fontFamily,
+    });
 
   const isBabyEvent =
     category === 'baby-shower' ||
@@ -395,7 +398,10 @@ export function KadiStudioEditor({
   const canvasElements = useMemo(() => {
     return (
       draft.design.canvasElements ||
-      getTemplateCanvasElements(activeTemplate, draft.values)
+      getTemplateCanvasElements(activeTemplate, draft.values, {
+        palette: draft.design.palette,
+        headingFont: draft.design.typography?.headingFont || draft.design.fontFamily,
+      })
     );
   }, [draft.design.canvasElements, activeTemplate, draft.values]);
 
@@ -783,7 +789,11 @@ export function KadiStudioEditor({
   const applyTemplateSwitch = (nextTemplate: TemplateDefinition, preserveDetails = true) => {
     const nextCanvasElements = getTemplateCanvasElements(
       nextTemplate,
-      preserveDetails ? draft.values : (nextTemplate.sampleData as any)
+      preserveDetails ? draft.values : (nextTemplate.sampleData as any),
+      {
+        palette: nextTemplate.palette,
+        headingFont: draft.design.typography?.headingFont || draft.design.fontFamily,
+      }
     );
 
     setDraftDirect({
