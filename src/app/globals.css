@@ -2984,20 +2984,20 @@ body:has(.kadi-stationery-sheet),
 .iv-world .iv-envelope-back {
   background-color: var(--iv-envelope-color, #4a111b);
   background-image:
-    linear-gradient(140deg, rgba(255,255,255,.12), transparent 42%),
+    linear-gradient(125deg, rgba(255,255,255,.045), transparent 42%, rgba(0,0,0,.045)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px),
     var(--iv-paper-grain);
-  background-size: auto, 180px 180px;
-  border: 1px solid color-mix(in srgb, var(--iv-envelope-color, #4a111b) 72%, white);
+  background-size: auto, auto, 180px 180px;
+  border: 1px solid color-mix(in srgb, var(--iv-gold, #c7a56a) 54%, transparent);
   border-radius: 2px;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    inset 0 -2px 5px rgba(14,7,6,.12),
-    0 2px 5px rgba(20,12,10,.08);
+    inset 0 0 0 3px rgba(20, 5, 8, .13),
+    inset 0 0 0 4px color-mix(in srgb, var(--iv-gold, #dab46f) 24%, transparent);
 }
 
 .iv-world .iv-envelope-back-border {
-  inset: 8px;
-  border-color: color-mix(in srgb, var(--iv-gold, #c7a56a) 48%, transparent);
+  inset: 11px;
+  border-color: color-mix(in srgb, var(--iv-gold, #c7a56a) 30%, transparent);
   box-shadow: none;
 }
 
@@ -3064,7 +3064,7 @@ body:has(.kadi-stationery-sheet),
 }
 
 .iv-world .iv-envelope-pocket {
-  border-color: color-mix(in srgb, var(--iv-envelope-color, #4a111b) 72%, white);
+  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 34%, transparent);
   box-shadow:
     inset 0 2px 7px rgba(0,0,0,.12),
     0 4px 12px rgba(20,12,10,.1);
@@ -3096,7 +3096,7 @@ body:has(.kadi-stationery-sheet),
 
 .iv-world .iv-pocket-gold-rule {
   height: 1px;
-  opacity: .48;
+  opacity: .32;
 }
 
 .iv-world .iv-envelope-flap-hinge {
@@ -3116,9 +3116,9 @@ body:has(.kadi-stationery-sheet),
 }
 
 .iv-world .iv-flap-gold-frame {
-  inset: 7px 7px 38%;
-  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 45%, transparent);
-  opacity: .66;
+  inset: 8px 9px 39%;
+  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 42%, transparent);
+  opacity: .48;
 }
 
 .iv-world .iv-flap-detail-rule {
@@ -3128,7 +3128,7 @@ body:has(.kadi-stationery-sheet),
   top: 43%;
   height: 1px;
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--iv-gold, #dab46f) 58%, transparent), transparent);
-  opacity: .5;
+  opacity: .32;
 }
 
 .iv-world .iv-seal-anchor {
@@ -3138,6 +3138,8 @@ body:has(.kadi-stationery-sheet),
 }
 
 .iv-world .kadi-envelope-wax-seal {
+  width: clamp(56px, 15vw, 72px) !important;
+  height: clamp(56px, 15vw, 72px) !important;
   transform-origin: center;
 }
 
@@ -3217,6 +3219,9 @@ body:has(.kadi-stationery-sheet),
 @media (prefers-reduced-motion: reduce) {
   .iv-world .iv-open-rule { animation: none; transform: none; opacity: .58; }
   .iv-world .iv-seal-anchor { transition: none; }
+  .iv-world .iv-card-preview,
+  .iv-world .iv-insert-paper,
+  .iv-world .iv-envelope-flap-hinge { transition: none !important; }
 }
 
 
@@ -3231,40 +3236,7 @@ body:has(.kadi-stationery-sheet),
   background-position: center, center, center;
 }
 
-
-
-/* --------------------------------------------------------------------------
-   Kadi stationery craft
-   Motion owns animated transforms; this layer defines the physical materials,
-   portrait proportions and restrained typography of the envelope experience.
-   -------------------------------------------------------------------------- */
-
-.iv-world .iv-envelope-back {
-  border-color: color-mix(in srgb, var(--iv-gold, #c7a56a) 54%, transparent);
-  box-shadow:
-    inset 0 0 0 3px rgba(20, 5, 8, .13),
-    inset 0 0 0 4px color-mix(in srgb, var(--iv-gold, #dab46f) 24%, transparent);
-  background-image:
-    linear-gradient(125deg, rgba(255,255,255,.045), transparent 42%, rgba(0,0,0,.045)),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px),
-    radial-gradient(ellipse at 25% 10%, rgba(255,255,255,.1), transparent 45%);
-}
-
-.iv-world .iv-envelope-back-border {
-  inset: 11px;
-  border-color: color-mix(in srgb, var(--iv-gold, #c7a56a) 30%, transparent);
-}
-
-.iv-world .iv-flap-gold-frame {
-  inset: 8px 9px 39%;
-  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 42%, transparent);
-  opacity: .48;
-}
-
-.iv-world .iv-flap-detail-rule {
-  opacity: .32;
-}
-
+/* Keep the printed card portrait-shaped, including user-created canvas art. */
 .iv-world .iv-card-preview:not(.iv-card-preview--canvas) {
   left: 24%;
   width: 52%;
@@ -3297,35 +3269,7 @@ body:has(.kadi-stationery-sheet),
   filter: drop-shadow(0 13px 18px rgba(18,8,6,.2));
 }
 
-.iv-world .iv-insert-paper--back {
-  left: 24%;
-  top: -2%;
-  width: 54%;
-  height: auto;
-  aspect-ratio: 480 / 680;
-  background-color: #f8f3e8;
-  background-image:
-    linear-gradient(145deg, rgba(255,255,255,.76), rgba(232,219,197,.2)),
-    repeating-linear-gradient(0deg, rgba(96,60,35,.025) 0 1px, transparent 1px 4px),
-    var(--iv-paper-grain);
-  background-size: auto, auto, 180px 180px;
-}
-
-.iv-world .iv-insert-paper--front {
-  left: 22%;
-  top: -1%;
-  width: 54%;
-  height: auto;
-  aspect-ratio: 480 / 680;
-  background-color: #fbf7ef;
-  background-image:
-    linear-gradient(145deg, rgba(255,255,255,.78), rgba(239,228,207,.2)),
-    repeating-linear-gradient(0deg, rgba(96,60,35,.022) 0 1px, transparent 1px 4px),
-    var(--iv-paper-grain);
-  background-size: auto, auto, 180px 180px;
-  box-shadow: 0 7px 18px rgba(40,25,20,.16);
-}
-
+/* Recipient details live on the envelope. The invitation face stays editorial. */
 .iv-world .iv-letter-inner-border {
   border-color: color-mix(in srgb, var(--iv-gold, #b99a62) 57%, transparent);
   box-shadow:
@@ -3413,14 +3357,6 @@ body:has(.kadi-stationery-sheet),
   overflow-wrap: anywhere;
 }
 
-.iv-world .iv-envelope-pocket {
-  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 34%, transparent);
-}
-
-.iv-world .iv-pocket-gold-rule {
-  opacity: .32;
-}
-
 .iv-world .iv-envelope-address {
   position: absolute;
   z-index: 8;
@@ -3458,11 +3394,6 @@ body:has(.kadi-stationery-sheet),
   font-weight: 500;
   line-height: 1.2;
   overflow-wrap: anywhere;
-}
-
-.iv-world .kadi-envelope-wax-seal {
-  width: clamp(56px, 15vw, 72px) !important;
-  height: clamp(56px, 15vw, 72px) !important;
 }
 
 .iv-world .iv-card-preview--canvas .kadi-canvas-artboard {
@@ -3510,3 +3441,4 @@ body:has(.kadi-stationery-sheet),
     gap: 3px;
   }
 }
+
