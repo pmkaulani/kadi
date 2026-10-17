@@ -191,9 +191,9 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'these-are-for-you') {
     return {
       eyebrow: 'A FEW OF YOUR FAVOURITE THINGS', request: 'For the people who make life feel special',
-      photo: { x: 40, y: 43, width: 286, height: 255 }, mask: 'polaroid',
-      secondaryPhoto: { x: 273, y: 123, width: 171, height: 180, mask: 'polaroid' },
-      requestY: 307, titleY: 337, titleHeight: 74, titleMax: 36, detailsY: 430, venueY: 468, venueHeight: 52,
+      photo: { x: 24, y: 45, width: 210, height: 252 }, mask: 'polaroid',
+      secondaryPhoto: { x: 220, y: 116, width: 166, height: 199, mask: 'polaroid' },
+      requestY: 321, titleY: 351, titleHeight: 74, titleMax: 36, detailsY: 440, venueY: 478, venueHeight: 52,
       detailSize: 11, headingFont: 'Playfair Display',
     };
   }
@@ -336,9 +336,9 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'silver-memories') {
     return {
       eyebrow: 'MOMENTS THAT MADE US', request: 'A little look back, a lot to celebrate',
-      photo: { x: 24, y: 43, width: 284, height: 236 }, mask: 'polaroid',
-      secondaryPhoto: { x: 278, y: 133, width: 176, height: 170, mask: 'polaroid' },
-      requestY: 307, titleY: 337, titleHeight: 78, titleMax: 37, detailsY: 430, venueY: 468, venueHeight: 50,
+      photo: { x: 18, y: 43, width: 220, height: 264 }, mask: 'polaroid',
+      secondaryPhoto: { x: 228, y: 125, width: 154, height: 185, mask: 'polaroid' },
+      requestY: 316, titleY: 346, titleHeight: 78, titleMax: 37, detailsY: 437, venueY: 475, venueHeight: 50,
       detailSize: 11, headingFont: 'Cormorant Garamond',
     };
   }
@@ -657,9 +657,9 @@ export function getTemplateCanvasElements(
   }
 
   // One occasion-specific motif is enough. Avoid duplicated corner stickers.
-  if (isWedding) {
+  if (isWedding && id !== 'silver-memories') {
     addSticker(elements, sticker('botanical-olive-branch', 'botanical-eucalyptus-garland', 'botanical-white-rose'), 'sticker-motif', { x: 367, y: 560, width: 64, height: 72 }, { rotation: 12, opacity: 0.92, zIndex: 3 });
-  } else if (isBirthday) {
+  } else if (isBirthday && id !== 'these-are-for-you') {
     addSticker(elements, sticker('party-disco-ball', 'party-gold-balloon-star', 'party-wedding-cake'), 'sticker-motif', { x: 371, y: 552, width: 70, height: 70 }, { rotation: 7, opacity: 0.96, zIndex: 3 });
   } else if (isBaby) {
     addSticker(elements, sticker('botanical-pink-peony', 'planner-doodle-heart', 'botanical-white-rose'), 'sticker-motif', { x: 370, y: 555, width: 64, height: 70 }, { rotation: 8, opacity: 0.9, zIndex: 3 });
