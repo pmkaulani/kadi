@@ -835,13 +835,16 @@ export function EnvelopeRenderer({
                     {motionStyle !== 'minimal-fade' && motionStyle !== 'dignified-memorial' && (
                       <span className="iv-postage-stamp" aria-hidden="true">
                         {data.heroImage && (
-                          <img
-                            className="iv-postage-stamp__image"
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              className="iv-postage-stamp__image"
                             src={data.heroImage}
                             alt=""
                             loading="eager"
-                            draggable={false}
-                          />
+                              draggable={false}
+                            />
+                          </>
                         )}
                         <span className="iv-postage-stamp__frame" />
                         <span className="iv-postage-stamp__mark">{computedMonogram}</span>
