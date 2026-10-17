@@ -685,6 +685,7 @@ export function EnvelopeRenderer({
                     cardBackground={design?.palette?.cardBackground || template.palette.cardBackground}
                     palette={design?.palette || template.palette}
                     fit="fill-width"
+                    animateElements={phase === 'card-rising' || phase === 'settling'}
                   />
                 ) : (
                   /* Inner Border Frame with Ornate Corner Scroll Brackets */
@@ -876,6 +877,7 @@ export function EnvelopeRenderer({
                     cardBackground={design?.palette?.cardBackground || template.palette.cardBackground}
                     palette={design?.palette || template.palette}
                     fit="fill-width"
+                    animateElements
                   />
                 </div>
               </div>
