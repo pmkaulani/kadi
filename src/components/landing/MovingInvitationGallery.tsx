@@ -963,21 +963,22 @@ function InvitationGalleryCard({
 
         {/* ── HOVER OVERLAY: "CUSTOMIZE THIS DESIGN" ACTION PILL ───────── */}
         <div
-          className={`absolute inset-0 z-30 bg-neutral-950/85 backdrop-blur-md rounded-xl sm:rounded-2xl flex flex-col items-center justify-center p-3 sm:p-5 transition-all duration-200 ${
+          className={`absolute inset-0 z-30 bg-black/25 backdrop-blur-[1px] rounded-xl sm:rounded-2xl flex items-center justify-center p-3 sm:p-4 transition-all duration-200 ${
             isHovered
               ? 'opacity-100 pointer-events-auto'
               : 'opacity-0 pointer-events-none'
           }`}
         >
-          <div className="w-full flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5">
-            <span className="text-[9px] sm:text-xs font-sans uppercase tracking-[0.24em] text-[#E6CA92] font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+          {/* Frosted Action Island (keeps the canvas fully visible while making text 100% legible) */}
+          <div className="flex flex-col items-center justify-center text-center px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-black/70 backdrop-blur-md border border-white/20 shadow-[0_12px_36px_rgba(0,0,0,0.6)] space-y-1.5 sm:space-y-2">
+            <span className="text-[8.5px] sm:text-[10.5px] font-sans uppercase tracking-[0.22em] text-[#E6CA92] font-bold">
               {card.categoryLabel}
             </span>
-            <div className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-full bg-white hover:bg-[#FAF8F5] text-[#112327] font-sans font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 shadow-[0_12px_30px_rgba(0,0,0,0.6)] border border-white/60 transform transition-transform group-hover:scale-105 active:scale-95">
+            <div className="px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white hover:bg-[#FAF8F5] text-[#112327] font-sans font-bold text-[11px] sm:text-xs flex items-center gap-1.5 shadow-md border border-white/80 transform transition-transform group-hover:scale-105 active:scale-95">
               <span>Customize</span>
-              <ArrowUpRight size={14} className="text-[#B99A62] stroke-[2.5]" />
+              <ArrowUpRight size={13} className="text-[#B99A62] stroke-[2.5]" />
             </div>
-            <span className="text-[8px] sm:text-[11px] text-white/90 font-sans font-medium tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+            <span className="text-[7.5px] sm:text-[9.5px] text-white/90 font-sans font-medium tracking-wide">
               No signup required
             </span>
           </div>
