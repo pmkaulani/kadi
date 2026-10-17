@@ -3362,36 +3362,46 @@ body:has(.kadi-stationery-sheet),
   z-index: 8;
   left: 50%;
   bottom: 5.5%;
-  width: min(68%, 270px);
+  width: min(72%, 300px);
   transform: translateX(-50%) translateZ(32px);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 5px 8px 6px;
-  color: #4f4036;
+  padding: 4px 8px 5px;
+  color: var(--iv-address-ink, #40372D);
   text-align: center;
-  background: color-mix(in srgb, var(--iv-paper, #fbf7ef) 94%, white);
-  border: 1px solid color-mix(in srgb, var(--iv-gold, #b99a62) 38%, transparent);
-  box-shadow: 0 2px 5px rgba(18,8,6,.12), inset 0 1px 0 rgba(255,255,255,.8);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   pointer-events: none;
+}
+
+.iv-world .iv-envelope-address::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 1px;
+  margin-bottom: 3px;
+  background: var(--iv-address-rule, rgba(64,48,31,.38));
 }
 
 .iv-world .iv-envelope-address__eyebrow {
   font-family: var(--font-inter), Inter, sans-serif;
-  font-size: 6px;
+  font-size: 5px;
   font-weight: 600;
-  letter-spacing: .18em;
+  letter-spacing: .24em;
   line-height: 1.2;
   text-transform: uppercase;
-  opacity: .66;
+  opacity: .78;
 }
 
 .iv-world .iv-envelope-address__name {
   max-width: 100%;
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: clamp(10px, 2.4vw, 13px);
+  font-size: clamp(11px, 2.6vw, 14px);
   font-weight: 500;
+  font-style: italic;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }
