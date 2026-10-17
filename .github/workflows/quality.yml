@@ -1,0 +1,57 @@
+name: Kadi quality checks
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kadi-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Typecheck, tests, and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NODE_ENV: test
+      NEXT_PUBLIC_APP_URL: http://localhost:3005
+      NEXT_PUBLIC_APP_NAME: Kadi
+      NEXT_PUBLIC_AUTH_PROVIDER: cookie_hmac_local
+      DATABASE_ADAPTER: memory
+      AUTH_SECRET: KADI_CI_AUTH_SECRET_NOT_FOR_PRODUCTION_0123456789
+      SESSION_COOKIE_NAME: kadi_session
+      STORAGE_PROVIDER: mock_local
+      EMAIL_PROVIDER: mock_console
+      WHATSAPP_AUTOMATED_ENABLED: 'false'
+      MPESA_ENVIRONMENT: sandbox
+      MPESA_DIRECT_COLLECTION_ENABLED: 'false'
+      NEXT_PUBLIC_ANALYTICS_ENABLED: 'false'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run regression tests
+        run: npm test
+
+      - name: Build production app
+        run: npm run build
