@@ -170,6 +170,7 @@ type ArtDirection = {
 };
 
 function resolveArtDirection(template: TemplateDefinition): ArtDirection {
+  const category = template.category as string;
   const id = template.id.toLowerCase();
   const isWedding = ['wedding', 'engagement', 'anniversary', 'bridal-shower'].includes(category);
   const isBirthday = category === 'birthday';
