@@ -51,6 +51,18 @@ function addText(
 ) {
   const text = content?.trim();
   if (!text) return;
+  const animation: CanvasElement['animation'] =
+    id === 'text-title'
+      ? { effect: 'rise', duration: 0.72, delay: 0.16 }
+      : id === 'text-hosts'
+        ? { effect: 'fadeIn', duration: 0.48, delay: 0.02 }
+        : id === 'text-request'
+          ? { effect: 'fadeIn', duration: 0.5, delay: 0.1 }
+          : id === 'text-date'
+            ? { effect: 'fadeIn', duration: 0.5, delay: 0.28 }
+            : id === 'text-venue'
+              ? { effect: 'fadeIn', duration: 0.5, delay: 0.36 }
+              : undefined;
   elements.push({
     id,
     type: 'text',
@@ -61,6 +73,7 @@ function addText(
     zIndex,
     opacity: 1,
     styleProps,
+    animation,
   });
 }
 
@@ -87,6 +100,7 @@ function addPhoto(
       stickerBorderWidth: 0,
       stickerBorderColor: '#FFFFFF',
     },
+    animation: { effect: 'fadeIn', duration: 0.7, delay: 0.02 },
     accessibilityLabel: name,
   });
 }
@@ -110,6 +124,7 @@ function addSticker(
     zIndex: options.zIndex ?? 7,
     opacity: options.opacity ?? 1,
     styleProps: {},
+    animation: { effect: 'gentleScale', duration: 0.62, delay: 0.3 },
     accessibilityLabel: asset.name,
   });
 }
@@ -275,7 +290,7 @@ export function getTemplateCanvasElements(
       width: direction.photo.width + 6,
       height: direction.photo.height + 6,
       rotation: 0,
-      zIndex: 0,
+      zIndex: 2,
       opacity: 1,
       styleProps: {
         shapeType: 'rectangle',
