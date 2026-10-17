@@ -89,7 +89,7 @@ export function CanvasCardView({
       >
         {/* Subtle Paper Linen texture */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.035] rounded-2xl overflow-hidden"
+          className="absolute inset-0 z-0 pointer-events-none opacity-[0.035] rounded-[2px] overflow-hidden"
           style={{
             backgroundImage: `radial-gradient(#000 1px, transparent 1px)`,
             backgroundSize: '8px 8px',
@@ -97,7 +97,7 @@ export function CanvasCardView({
         />
 
         {/* Inner Border Frame */}
-        <div className="absolute inset-3 border border-black/[0.08] pointer-events-none rounded-xl" />
+        <div className="absolute inset-3 z-[90] border border-black/[0.08] pointer-events-none rounded-[1px]" />
 
         {/* Elements */}
         {elements
