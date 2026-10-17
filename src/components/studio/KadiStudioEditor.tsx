@@ -321,7 +321,7 @@ export function KadiStudioEditor({
   // Studio Mode: Canvas editing (default) vs Guest Preview
   const [studioMode, setStudioMode] = useState<'canvas' | 'preview'>('canvas');
   const [activeRailTool, setActiveRailTool] = useState<
-    'templates' | 'text' | 'stickers' | 'photos' | 'buttons' | 'envelope' | 'sections' | 'layers' | null
+    'templates' | 'text' | 'stickers' | 'photos' | 'buttons' | 'style' | 'envelope' | 'sections' | 'layers' | null
   >(null);
 
   // Selected element ID on canvas
@@ -970,6 +970,14 @@ export function KadiStudioEditor({
             }
           />
           <RailButton
+            icon={Palette}
+            label="Style"
+            isActive={activeRailTool === 'style'}
+            onClick={() =>
+              setActiveRailTool(activeRailTool === 'style' ? null : 'style')
+            }
+          />
+          <RailButton
             icon={Mail}
             label="Envelope"
             isActive={activeRailTool === 'envelope'}
@@ -1014,6 +1022,7 @@ export function KadiStudioEditor({
                   {activeRailTool === 'photos' && 'Photos & Masking'}
                   {activeRailTool === 'buttons' && 'Buttons & Actions'}
                   {activeRailTool === 'templates' && 'Occasion Suites'}
+                  {activeRailTool === 'style' && 'Colors, Fonts & Theme'}
                   {activeRailTool === 'envelope' && 'Envelope & Motion'}
                   {activeRailTool === 'sections' && 'Guest Page Sections'}
                   {activeRailTool === 'layers' && 'Layers & Stacking'}
@@ -1173,6 +1182,15 @@ export function KadiStudioEditor({
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+                {activeRailTool === 'style' && (
+                  <div className="p-4 bg-[#FAF8F5] min-h-full text-[#272620]">
+                    <TypographyPaletteControls
+                      design={draft.design}
+                      onChange={patchDesign}
+                      category={draft.category}
+                    />
                   </div>
                 )}
                 {activeRailTool === 'envelope' && (
