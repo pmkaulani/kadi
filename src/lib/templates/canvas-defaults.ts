@@ -82,17 +82,19 @@ function addPhoto(
   src: string | undefined,
   box: { x: number; y: number; width: number; height: number },
   maskShape: MaskShape = 'none',
-  name = 'Invitation photograph'
+  name = 'Invitation photograph',
+  elementId = 'photo-hero',
+  zIndex = 1
 ) {
   if (!src?.trim()) return;
   elements.push({
-    id: 'photo-hero',
+    id: elementId,
     type: 'photo',
     name,
     content: src,
     ...box,
     rotation: 0,
-    zIndex: 1,
+    zIndex,
     opacity: 1,
     styleProps: {
       maskShape,
@@ -159,6 +161,7 @@ type ArtDirection = {
   request: string;
   photo: { x: number; y: number; width: number; height: number };
   mask: MaskShape;
+  secondaryPhoto?: { x: number; y: number; width: number; height: number; mask: MaskShape };
   titleY: number;
   titleHeight: number;
   titleMax: number;
@@ -180,6 +183,282 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   const isHousewarming = category === 'housewarming';
   const isCorporate = ['corporate', 'product-launch', 'fundraiser'].includes(category);
   const isHeritage = category === 'cultural-celebration' || id.includes('cultural') || id.includes('harambee') || id.includes('safari');
+
+  // Named art directions keep sibling templates visually distinct instead of recolouring one layout.
+  if (id === 'these-are-for-you') {
+    return {
+      eyebrow: 'A FEW OF YOUR FAVOURITE THINGS', request: 'For the people who make life feel special',
+      photo: { x: 40, y: 43, width: 292, height: 274 }, mask: 'polaroid',
+      secondaryPhoto: { x: 273, y: 132, width: 171, height: 206, mask: 'polaroid' },
+      titleY: 352, titleHeight: 74, titleMax: 36, detailsY: 446, venueY: 484, venueHeight: 52,
+      detailSize: 11, headingFont: 'Playfair Display',
+    };
+  }
+  if (id === 'coastal-romance') {
+    return {
+      eyebrow: 'A GATHERING BY THE INDIAN OCEAN', request: 'Two hearts, one beautiful horizon',
+      photo: { x: 40, y: 48, width: 400, height: 216 }, mask: 'none',
+      titleY: 300, titleHeight: 83, titleMax: 39, detailsY: 411, venueY: 451, venueHeight: 56,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'sage-love-letter') {
+    return {
+      eyebrow: 'A NOTE FROM THE HEART', request: 'With love, and a little room to linger',
+      photo: { x: 98, y: 48, width: 284, height: 226 }, mask: 'arch',
+      titleY: 312, titleHeight: 82, titleMax: 37, detailsY: 419, venueY: 459, venueHeight: 55,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'ruby-disco-birthday') {
+    return {
+      eyebrow: 'TONIGHT IS YOURS', request: 'A little sparkle. A lot of memories.',
+      photo: { x: 42, y: 42, width: 396, height: 238 }, mask: 'none',
+      titleY: 316, titleHeight: 86, titleMax: 43, detailsY: 424, venueY: 465, venueHeight: 54,
+      detailSize: 12, headingFont: 'Playfair Display',
+    };
+  }
+  if (id === 'pastel-garden-birthday') {
+    return {
+      eyebrow: 'A GARDEN GATHERING', request: 'Cake, flowers, and your favourite people',
+      photo: { x: 108, y: 45, width: 264, height: 220 }, mask: 'arch',
+      titleY: 302, titleHeight: 90, titleMax: 36, detailsY: 416, venueY: 456, venueHeight: 55,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'birthday-color-pop') {
+    return {
+      eyebrow: 'THE COLOUR IS JOY', request: 'Come as you are. Leave with a story.',
+      photo: { x: 31, y: 42, width: 418, height: 250 }, mask: 'none',
+      titleY: 326, titleHeight: 90, titleMax: 43, detailsY: 430, venueY: 470, venueHeight: 51,
+      detailSize: 12, headingFont: 'Playfair Display',
+    };
+  }
+  if (id === 'golden-soiree') {
+    return {
+      eyebrow: 'AN EVENING TO REMEMBER', request: 'An intimate gathering after hours',
+      photo: { x: 60, y: 48, width: 360, height: 210 }, mask: 'none',
+      titleY: 292, titleHeight: 92, titleMax: 38, detailsY: 407, venueY: 448, venueHeight: 56,
+      detailSize: 12, headingFont: 'Playfair Display',
+    };
+  }
+  if (id === 'first-home-botanical') {
+    return {
+      eyebrow: 'A PLACE TO CALL HOME', request: 'Come see where the next chapter begins',
+      photo: { x: 42, y: 45, width: 396, height: 242 }, mask: 'none',
+      titleY: 319, titleHeight: 82, titleMax: 38, detailsY: 423, venueY: 464, venueHeight: 53,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'new-address-modern') {
+    return {
+      eyebrow: 'NEW ADDRESS · SAME GOOD COMPANY', request: 'We have a key to share with you',
+      photo: { x: 48, y: 49, width: 384, height: 214 }, mask: 'none',
+      titleY: 292, titleHeight: 91, titleMax: 34, detailsY: 408, venueY: 449, venueHeight: 56,
+      detailSize: 12, headingFont: 'Inter',
+    };
+  }
+  if (id === 'terrace-open-house') {
+    return {
+      eyebrow: 'DOORS OPEN, TABLE SET', request: 'Drop by for a sunny afternoon',
+      photo: { x: 34, y: 47, width: 412, height: 238 }, mask: 'none',
+      titleY: 316, titleHeight: 84, titleMax: 36, detailsY: 422, venueY: 463, venueHeight: 54,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'future-in-gold') {
+    return {
+      eyebrow: 'THE NEXT CHAPTER', request: 'A proud day, shared with our people',
+      photo: { x: 62, y: 45, width: 356, height: 218 }, mask: 'arch',
+      titleY: 294, titleHeight: 96, titleMax: 39, detailsY: 415, venueY: 455, venueHeight: 56,
+      detailSize: 12, headingFont: 'Playfair Display',
+    };
+  }
+  if (id === 'laurel-achievement') {
+    return {
+      eyebrow: 'WITH PRIDE AND GRATITUDE', request: 'Honouring the work behind the milestone',
+      photo: { x: 106, y: 45, width: 268, height: 220 }, mask: 'arch',
+      titleY: 302, titleHeight: 88, titleMax: 37, detailsY: 414, venueY: 454, venueHeight: 56,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'quiet-remembrance') {
+    return {
+      eyebrow: 'IN LOVING REMEMBRANCE', request: 'Gathering in honour of a life well lived',
+      photo: { x: 60, y: 56, width: 360, height: 192 }, mask: 'none',
+      titleY: 286, titleHeight: 86, titleMax: 32, detailsY: 399, venueY: 439, venueHeight: 65,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'dignified-passage') {
+    return {
+      eyebrow: 'IN REMEMBRANCE', request: 'A service of love, gratitude, and farewell',
+      photo: { x: 160, y: 42, width: 160, height: 184 }, mask: 'oval',
+      titleY: 264, titleHeight: 84, titleMax: 32, detailsY: 379, venueY: 419, venueHeight: 68,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'serene-meadow') {
+    return {
+      eyebrow: 'A LIFE THAT STILL SURROUNDS US', request: 'In quiet remembrance',
+      photo: { x: 36, y: 48, width: 408, height: 230 }, mask: 'none',
+      titleY: 308, titleHeight: 82, titleMax: 33, detailsY: 417, venueY: 457, venueHeight: 60,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'lullaby-stars') {
+    return {
+      eyebrow: 'A LITTLE STAR IS ON THE WAY', request: 'A soft and sweet welcome',
+      photo: { x: 104, y: 45, width: 272, height: 220 }, mask: 'arch',
+      titleY: 300, titleHeight: 87, titleMax: 35, detailsY: 414, venueY: 454, venueHeight: 55,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'tender-welcome-baby') {
+    return {
+      eyebrow: 'MEET OUR LITTLE WONDER', request: 'We would love you to meet our newest love',
+      photo: { x: 74, y: 47, width: 332, height: 228 }, mask: 'none',
+      titleY: 306, titleHeight: 88, titleMax: 35, detailsY: 419, venueY: 459, venueHeight: 55,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'golden-legacy') {
+    return {
+      eyebrow: 'A LIFE, A LOVE, A LEGACY', request: 'An anniversary worth sharing',
+      photo: { x: 45, y: 48, width: 390, height: 218 }, mask: 'none',
+      titleY: 301, titleHeight: 86, titleMax: 39, detailsY: 412, venueY: 452, venueHeight: 56,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'silver-memories') {
+    return {
+      eyebrow: 'MOMENTS THAT MADE US', request: 'A little look back, a lot to celebrate',
+      photo: { x: 24, y: 43, width: 284, height: 250 }, mask: 'polaroid',
+      secondaryPhoto: { x: 278, y: 154, width: 176, height: 210, mask: 'polaroid' },
+      titleY: 373, titleHeight: 78, titleMax: 37, detailsY: 465, venueY: 503, venueHeight: 50,
+      detailSize: 11, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'summit-executive') {
+    return {
+      eyebrow: 'LEADERSHIP · IDEAS · CONNECTION', request: 'An evening of perspective and progress',
+      photo: { x: 52, y: 50, width: 376, height: 192 }, mask: 'none',
+      titleY: 281, titleHeight: 96, titleMax: 31, detailsY: 399, venueY: 440, venueHeight: 61,
+      detailSize: 12, headingFont: 'Inter',
+    };
+  }
+  if (id === 'modern-keynote') {
+    return {
+      eyebrow: 'IDEAS IN MOTION', request: 'Join the conversation',
+      photo: { x: 36, y: 44, width: 408, height: 214 }, mask: 'none',
+      titleY: 291, titleHeight: 96, titleMax: 32, detailsY: 408, venueY: 449, venueHeight: 58,
+      detailSize: 12, headingFont: 'Inter',
+    };
+  }
+  if (id === 'festive-lumiere') {
+    return {
+      eyebrow: 'GATHER CLOSE, GLOW BRIGHT', request: 'A seasonal evening with good company',
+      photo: { x: 50, y: 51, width: 380, height: 220 }, mask: 'none',
+      titleY: 302, titleHeight: 84, titleMax: 37, detailsY: 411, venueY: 451, venueHeight: 58,
+      detailSize: 12, headingFont: 'Playfair Display',
+    };
+  }
+  if (id === 'twilight-toast') {
+    return {
+      eyebrow: 'SOMETHING WONDERFUL IS BEGINNING', request: 'Join us for an engagement celebration',
+      photo: { x: 50, y: 49, width: 380, height: 218 }, mask: 'none',
+      titleY: 301, titleHeight: 86, titleMax: 38, detailsY: 411, venueY: 452, venueHeight: 56,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'harvest-table') {
+    return {
+      eyebrow: 'A PLACE AT THE TABLE', request: 'Food, stories, and neighbours',
+      photo: { x: 32, y: 47, width: 416, height: 240 }, mask: 'none',
+      titleY: 316, titleHeight: 84, titleMax: 38, detailsY: 422, venueY: 464, venueHeight: 55,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'blush-bridal-brunch') {
+    return {
+      eyebrow: 'A BRUNCH BEFORE THE BIG DAY', request: 'Raise a glass to the bride-to-be',
+      photo: { x: 112, y: 43, width: 256, height: 218 }, mask: 'arch',
+      titleY: 297, titleHeight: 88, titleMax: 36, detailsY: 410, venueY: 450, venueHeight: 56,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'nostalgic-alumni-reunion') {
+    return {
+      eyebrow: 'OLD FRIENDS, NEW MEMORIES', request: 'The years change; the stories stay',
+      photo: { x: 42, y: 46, width: 396, height: 238 }, mask: 'none',
+      titleY: 313, titleHeight: 84, titleMax: 38, detailsY: 420, venueY: 460, venueHeight: 56,
+      detailSize: 12, headingFont: 'Playfair Display',
+    };
+  }
+  if (id === 'sacred-light-milestone') {
+    return {
+      eyebrow: 'A MOMENT OF FAITH AND GRATITUDE', request: 'Gather with us for a sacred milestone',
+      photo: { x: 124, y: 44, width: 232, height: 218 }, mask: 'arch',
+      titleY: 300, titleHeight: 88, titleMax: 35, detailsY: 414, venueY: 454, venueHeight: 57,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'harambee-cultural-night') {
+    return {
+      eyebrow: 'CULTURE · FAMILY · CELEBRATION', request: 'With joy, we invite you to gather',
+      photo: { x: 42, y: 45, width: 396, height: 239 }, mask: 'none',
+      titleY: 315, titleHeight: 84, titleMax: 38, detailsY: 422, venueY: 462, venueHeight: 55,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'golden-horizon-retirement') {
+    return {
+      eyebrow: 'WITH GRATITUDE FOR A REMARKABLE JOURNEY', request: 'Please join us to honour the next chapter',
+      photo: { x: 158, y: 43, width: 164, height: 184 }, mask: 'oval',
+      titleY: 265, titleHeight: 84, titleMax: 32, detailsY: 379, venueY: 419, venueHeight: 66,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'nexus-product-unveil') {
+    return {
+      eyebrow: 'A FIRST LOOK', request: 'An idea becomes something real',
+      photo: { x: 35, y: 44, width: 410, height: 216 }, mask: 'none',
+      titleY: 292, titleHeight: 94, titleMax: 32, detailsY: 408, venueY: 449, venueHeight: 57,
+      detailSize: 12, headingFont: 'Inter',
+    };
+  }
+  if (id === 'beacon-of-hope-gala') {
+    return {
+      eyebrow: 'AN EVENING WITH PURPOSE', request: 'Together, we can make a difference',
+      photo: { x: 46, y: 50, width: 388, height: 214 }, mask: 'none',
+      titleY: 298, titleHeight: 89, titleMax: 36, detailsY: 413, venueY: 453, venueHeight: 57,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'bon-voyage-safari') {
+    return {
+      eyebrow: 'UNTIL THE NEXT ADVENTURE', request: 'Come send us off in good company',
+      photo: { x: 40, y: 46, width: 400, height: 240 }, mask: 'none',
+      titleY: 315, titleHeight: 83, titleMax: 37, detailsY: 421, venueY: 462, venueHeight: 55,
+      detailSize: 12, headingFont: 'Playfair Display',
+    };
+  }
+  if (id === 'gentle-healing-wishes') {
+    return {
+      eyebrow: 'SENDING YOU CARE', request: 'A small note, with a lot of love',
+      photo: { x: 94, y: 51, width: 292, height: 215 }, mask: 'arch',
+      titleY: 303, titleHeight: 84, titleMax: 35, detailsY: 410, venueY: 450, venueHeight: 55,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
+  if (id === 'bespoke-gathering') {
+    return {
+      eyebrow: 'MADE FOR THIS MOMENT', request: 'An invitation shaped around you',
+      photo: { x: 44, y: 46, width: 392, height: 231 }, mask: 'none',
+      titleY: 307, titleHeight: 85, titleMax: 36, detailsY: 417, venueY: 458, venueHeight: 55,
+      detailSize: 12, headingFont: 'Cormorant Garamond',
+    };
+  }
 
   if (isMemorial) {
     return {
@@ -276,8 +555,25 @@ export function getTemplateCanvasElements(
   const elements: CanvasElement[] = [];
 
   // One strong photograph is the hero artwork; secondary decorations stay deliberately few.
-  addPhoto(elements, values.heroImage || template.sampleData.heroImage, direction.photo, direction.mask,
+  const heroImage = values.heroImage || template.sampleData.heroImage;
+  addPhoto(elements, heroImage, direction.photo, direction.mask,
     isMemorial ? 'A quiet portrait or remembrance photograph' : 'Event photograph');
+
+  if (direction.secondaryPhoto) {
+    const gallery = values.galleryImages?.length
+      ? values.galleryImages
+      : template.sampleData.galleryImages || [];
+    const secondImage = gallery.find((image) => image && image !== heroImage);
+    addPhoto(
+      elements,
+      secondImage,
+      direction.secondaryPhoto,
+      direction.secondaryPhoto.mask,
+      'A second memory from the event',
+      'photo-secondary',
+      3
+    );
+  }
 
   // A fine frame sits behind rectangular photography only.
   if (direction.mask === 'none') {
