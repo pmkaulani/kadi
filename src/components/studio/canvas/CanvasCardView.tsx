@@ -119,14 +119,14 @@ export function CanvasCardView({
                   width: elem.width,
                   height: elem.height,
                   transform: `rotate(${elem.rotation}deg)`,
-                  translate: hasEntrance ? '0 0' : undefined,
                   zIndex: elem.zIndex,
                   opacity: elem.opacity ?? 1,
                   animationName,
                   animationDuration: hasEntrance ? `${elem.animation?.duration ?? 0.65}s` : undefined,
                   animationDelay: hasEntrance ? `${elem.animation?.delay ?? 0}s` : undefined,
                   animationTimingFunction: 'cubic-bezier(.22,1,.36,1)',
-                  animationFillMode: hasEntrance ? 'both' : undefined,
+                  // Restore the authored element opacity after the motion completes.
+                  animationFillMode: hasEntrance ? 'backwards' : undefined,
                 }}
               >
                 {/* 1. TEXT */}
