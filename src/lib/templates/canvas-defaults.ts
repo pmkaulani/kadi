@@ -564,11 +564,12 @@ export function getTemplateCanvasElements(
       ? values.galleryImages
       : template.sampleData.galleryImages || [];
     const secondImage = gallery.find((image) => image && image !== heroImage);
+    const { mask: secondaryMask, ...secondaryBox } = direction.secondaryPhoto;
     addPhoto(
       elements,
       secondImage,
-      direction.secondaryPhoto,
-      direction.secondaryPhoto.mask,
+      secondaryBox,
+      secondaryMask,
       'A second memory from the event',
       'photo-secondary',
       3
