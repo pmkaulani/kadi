@@ -48,18 +48,9 @@ export function SelectionTransformOverlay({
     );
   }
 
-  // If user is actively typing in text editing mode, don't intercept clicks inside
+  // If user is actively typing in text editing mode, don't show any box or handles
   if (isEditing) {
-    return (
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0 rounded-[2px]"
-          style={{
-            border: '1.5px dashed #B99A62',
-          }}
-        />
-      </div>
-    );
+    return null;
   }
 
   // Selected State (§5.3.1): Unmistakable, high-contrast, no-fill transform frame

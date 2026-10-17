@@ -100,6 +100,26 @@ export function InvitationCanvas({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
 
+  // Focus and place cursor at end without forced full-text highlight
+  useEffect(() => {
+    if (editingTextId) {
+      const el = document.getElementById(`canvas-text-${editingTextId}`);
+      if (el) {
+        el.focus();
+        try {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          range.collapse(false);
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        } catch {
+          // ignore
+        }
+      }
+    }
+  }, [editingTextId]);
+
   // Active transform state: dragging, resizing, rotating
   const activeTransform = useRef<{
     type: 'drag' | 'resize' | 'rotate' | null;
@@ -597,17 +617,41 @@ export function InvitationCanvas({
                   left: elem.x,
                   top: elem.y,
                   width: elem.width,
-                  height: elem.height,
+                  height: elem.type === 'text' ? 'auto' : elem.height,
+                  minHeight: elem.height,
                   transform: `rotate(${elem.rotation}deg)`,
                   zIndex: isSelected ? 999 : elem.zIndex,
                   opacity: elem.opacity ?? 1,
                   cursor: elem.isLocked ? 'default' : (elem.type === 'text' || elem.type === 'button') ? 'pointer' : 'move',
                 }}
               >
-                {/* ── 1. TEXT ELEMENT ──────────────────────────────────────── */}
+                {/* ── 1. TEXT ELEMENT (NATURAL SEAMLESS IN-PLACE EDITING) ────── */}
                 {elem.type === 'text' && (
                   <div
-                    className="w-full h-full flex items-center justify-center relative p-1"
+                    id={`canvas-text-${elem.id}`}
+                    contentEditable={isEditing}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      setEditingTextId(null);
+                      const newContent = e.currentTarget.innerText.trim();
+                      const measuredH = e.currentTarget.scrollHeight;
+                      if (newContent && newContent !== elem.content) {
+                        onUpdateElement(elem.id, {
+                          content: newContent,
+                          height: Math.max(elem.height, measuredH),
+                        });
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        e.preventDefault();
+                        e.currentTarget.innerText = elem.content;
+                        setEditingTextId(null);
+                      }
+                    }}
+                    className={`w-full min-h-full flex items-center justify-center p-1 outline-none select-text ${
+                      isEditing ? 'cursor-text ring-0 bg-transparent' : 'cursor-pointer'
+                    }`}
                     style={{
                       fontFamily: style.fontFamily || 'Inter',
                       fontSize: style.fontSize || 16,
@@ -619,26 +663,12 @@ export function InvitationCanvas({
                         ? `${style.letterSpacing}px`
                         : undefined,
                       lineHeight: style.lineHeight || 1.3,
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      overflow: 'visible',
                     }}
                   >
-                    {isEditing ? (
-                      <textarea
-                        autoFocus
-                        value={elem.content}
-                        onChange={(e) =>
-                          onUpdateElement(elem.id, { content: e.target.value })
-                        }
-                        onBlur={() => setEditingTextId(null)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Escape') setEditingTextId(null);
-                        }}
-                        className="w-full h-full bg-transparent text-inherit border-0 border-b border-[#B99A62] p-1 resize-none focus:outline-none"
-                      />
-                    ) : (
-                      <span className="w-full whitespace-pre-wrap select-text cursor-text">
-                        {elem.content}
-                      </span>
-                    )}
+                    {elem.content}
                   </div>
                 )}
 
