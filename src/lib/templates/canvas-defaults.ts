@@ -1,5 +1,5 @@
 import type { TemplateDefinition } from './types';
-import type { DraftInvitationValues } from '@/components/invitations/DraftInvitationPreview';
+import type { DraftInvitationValues } from '@/lib/invitations/config';
 import type { CanvasElement, CanvasElementStyle, MaskShape } from '@/types/canvas';
 import { STICKER_ASSETS, type StickerAsset } from '@/lib/assets/stickers';
 
