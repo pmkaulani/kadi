@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveEnvelopeMotionStyle } from '../src/components/animation/EnvelopeRenderer';
+import { ENVELOPE_OPENING_TIMELINE, resolveEnvelopeMotionStyle } from '../src/components/animation/EnvelopeRenderer';
 import { getTemplateById, TEMPLATES } from '../src/lib/templates/catalogue';
 
 test('Envelope Motion - resolves all 6 distinct opening styles accurately', () => {
@@ -92,14 +92,19 @@ test('Envelope Motion - category defaults match appropriate cultural and emotion
 
 test('Envelope Motion - timeline state machine transitions and cancellation safety', () => {
   // Simulate the timeline state machine and cancellation guarantees
-  const timelineBeats = [
-    { phase: 'seal-press', delayMs: 0 },
-    { phase: 'seal-release', delayMs: 260 },
-    { phase: 'flap-open', delayMs: 520 },
-    { phase: 'card-rising', delayMs: 1140 },
-    { phase: 'settling', delayMs: 1860 },
-    { phase: 'settled', delayMs: 2340 },
-  ];
+  const timelineBeats = ENVELOPE_OPENING_TIMELINE;
+
+  assert.deepEqual(
+    timelineBeats.map(({ phase, delayMs }) => [phase, delayMs]),
+    [
+      ['seal-release', 280],
+      ['flap-open', 600],
+      ['card-rising', 1300],
+      ['settling', 2050],
+      ['settled', 2620],
+    ],
+    'The tests use the same declared choreography as the React component'
+  );
 
   let currentPhase = 'closed';
   const timers = [];
@@ -113,7 +118,7 @@ test('Envelope Motion - timeline state machine transitions and cancellation safe
     timers.length = 0;
 
     currentPhase = 'seal-press';
-    timelineBeats.slice(1).forEach((beat) => {
+    timelineBeats.forEach((beat) => {
       const id = setTimeout(() => {
         currentPhase = beat.phase;
       }, beat.delayMs);
@@ -136,7 +141,7 @@ test('Envelope Motion - timeline state machine transitions and cancellation safe
   // 1. Normal run
   openEnvelope(false);
   assert.equal(currentPhase, 'seal-press');
-  assert.equal(timers.length, 5);
+  assert.equal(timers.length, ENVELOPE_OPENING_TIMELINE.length);
 
   // 2. Cancellation via skipToDetails
   skipToDetails();
