@@ -242,9 +242,9 @@ export function VenueSection({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-[var(--event-primary,#934638)] text-white text-xs sm:text-sm font-medium shadow-xs hover:opacity-95 transition-opacity"
                 >
-                  <Navigation className="w-4 h-4" />
-                  <span>Get Directions</span>
-                  <ExternalLink className="w-3 h-3 opacity-80" />
+                  <Navigation className="w-4 h-4 text-white" />
+                  <span className="text-white font-medium">Get Directions</span>
+                  <ExternalLink className="w-3 h-3 text-white opacity-90" />
                 </a>
 
                 {/* Add to Calendar Dropdown */}
@@ -257,7 +257,7 @@ export function VenueSection({
               </div>
 
               {/* Secondary Explicit Links: Google Maps & Apple Maps */}
-              <div className="flex items-center gap-3 text-[11px] text-[#8C8375] pt-1">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] text-[#8C8375] pt-1">
                 <span>Direct navigation:</span>
                 <a
                   href={googleUrl}
@@ -282,11 +282,11 @@ export function VenueSection({
 
           {/* Right Column: Safe Interactive Map Embed (OpenStreetMap) */}
           {embedUrl && (
-            <div className="md:col-span-7 rounded-2xl overflow-hidden border border-[rgba(39,38,32,0.12)] shadow-xs bg-[#FAF8F5] relative min-h-[320px] sm:min-h-[400px]">
+            <div className="md:col-span-7 rounded-2xl overflow-hidden border border-[rgba(39,38,32,0.12)] shadow-xs bg-[#FAF8F5] relative min-h-[240px] sm:min-h-[320px] md:min-h-[380px] w-full">
               <iframe
                 title={`Map of ${activeVenue.venueName}`}
                 src={embedUrl}
-                className="w-full h-full min-h-[320px] sm:min-h-[400px] border-0"
+                className="w-full h-full min-h-[240px] sm:min-h-[320px] md:min-h-[380px] border-0"
                 loading="lazy"
                 sandbox="allow-scripts allow-same-origin"
               />

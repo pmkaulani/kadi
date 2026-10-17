@@ -188,8 +188,8 @@ export function RegistrySection({
               variant="primary"
               size="sm"
               onClick={() => setIsStkModalOpen(true)}
-              className="w-full sm:w-auto shadow-xs"
-              leftIcon={<Smartphone className="w-3.5 h-3.5" />}
+              className="w-full sm:w-auto shadow-xs bg-[var(--event-primary,#934638)] text-white hover:bg-[#7b3226]"
+              leftIcon={<Smartphone className="w-3.5 h-3.5 text-white" />}
             >
               Test M-Pesa Prompt (STK Push)
             </Button>

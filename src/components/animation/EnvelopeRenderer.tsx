@@ -13,12 +13,15 @@ import {
   RotateCcw,
   Volume2,
   VolumeX,
+  Share2,
+  ArrowUp,
 } from 'lucide-react';
 import { TemplateDefinition } from '@/lib/templates/types';
 import type { EventDesignEntity } from '@/lib/db/types';
 import { WaxSeal } from '@/components/animation/WaxSeal';
 import { ScrollParallax, RevealText } from '@/components/animation/MotionToolkit';
 import { Logo } from '@/components/ui/Logo';
+import { CanvasCardView } from '@/components/studio/canvas/CanvasCardView';
 
 export type AnimationPhase =
   | 'closed'
@@ -295,6 +298,34 @@ export function EnvelopeRenderer({
   const data = template.sampleData;
   const isBirthday = template.category === 'birthday';
   const birthdayNumber = data.milestoneAge?.toString() || data.title.match(/\b(\d{1,2})(?:st|nd|rd|th)?\b/)?.[1] || '50';
+  const hasCanvasElements = Boolean(design?.canvasElements && design.canvasElements.length > 0);
+
+  const celebrantParts = React.useMemo(() => {
+    const rawCelebrants = data?.celebrants;
+    if (!rawCelebrants) return null;
+    if (rawCelebrants.includes(' & ')) {
+      return rawCelebrants.split(' & ').map((s: string) => s.trim());
+    }
+    if (rawCelebrants.includes(' and ')) {
+      return rawCelebrants.split(' and ').map((s: string) => s.trim());
+    }
+    return null;
+  }, [data?.celebrants]);
+
+  const computedMonogram = React.useMemo(() => {
+    if (design?.sealMonogram && design.sealMonogram !== 'W&O') {
+      return design.sealMonogram;
+    }
+    if (celebrantParts && celebrantParts.length >= 2) {
+      const c1 = celebrantParts[0].charAt(0).toUpperCase();
+      const c2 = celebrantParts[1].charAt(0).toUpperCase();
+      if (c1 && c2) return `${c1} & ${c2}`;
+    }
+    if (template.seal.monogram && template.seal.monogram !== 'W&O') {
+      return template.seal.monogram;
+    }
+    return 'K & W';
+  }, [design?.sealMonogram, celebrantParts, template.seal.monogram]);
 
   const changePhase = useCallback((next: AnimationPhase) => {
     setPhase(next);
@@ -662,13 +693,13 @@ export function EnvelopeRenderer({
 
               {/* Layer 5: Hero Formal Stationery Letter ("THE LETTER" in Reference Target) */}
               <motion.span
-                className="iv-card-preview"
+                className={`iv-card-preview ${hasCanvasElements ? 'iv-card-preview--canvas' : ''}`}
                 style={renderStyle}
                 animate={
                   phase === 'closed' || phase === 'seal-press'
-                    ? { y: 28, z: 10, rotate: 0, scale: 0.96, opacity: 0 }
+                    ? { y: 0, z: 10, rotate: 0, scale: 0.96, opacity: 0 }
                     : phase === 'flap-open'
-                    ? { y: 4, z: 14, rotate: 0, scale: 0.98, opacity: 1 }
+                    ? { y: 0, z: 14, rotate: 0, scale: 0.98, opacity: 1 }
                     : phase === 'card-rising'
                     ? { y: -136, z: 22, rotate: -0.5, scale: 1.03, opacity: 1 }
                     : phase === 'settling'
@@ -677,118 +708,127 @@ export function EnvelopeRenderer({
                 }
                 transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
               >
-                {/* Inner Border Frame with Ornate Corner Scroll Brackets */}
-                <span className="iv-letter-inner-border">
-                  <span className="iv-letter-corner iv-letter-corner--tl" />
-                  <span className="iv-letter-corner iv-letter-corner--tr" />
-                  <span className="iv-letter-corner iv-letter-corner--bl" />
-                  <span className="iv-letter-corner iv-letter-corner--br" />
+                {hasCanvasElements ? (
+                  <CanvasCardView
+                    elements={design?.canvasElements}
+                    cardBackground={design?.palette?.cardBackground || template.palette.cardBackground}
+                    palette={design?.palette || template.palette}
+                    fit="fill-width"
+                  />
+                ) : (
+                  /* Inner Border Frame with Ornate Corner Scroll Brackets */
+                  <span className="iv-letter-inner-border">
+                    <span className="iv-letter-corner iv-letter-corner--tl" />
+                    <span className="iv-letter-corner iv-letter-corner--tr" />
+                    <span className="iv-letter-corner iv-letter-corner--bl" />
+                    <span className="iv-letter-corner iv-letter-corner--br" />
 
-                  {/* Top Royal Monogram Crest inside Laurel Wreath */}
-                  <div className="iv-letter-crest">
-                    <span className="iv-crest-laurel iv-crest-laurel--left">❧</span>
-                    <span className="iv-crest-monogram">
-                      {sealMonogram === 'K&W' ? 'W&O' : sealMonogram}
+                    {/* Top Royal Monogram Crest inside Laurel Wreath */}
+                    <div className="iv-letter-crest">
+                      <span className="iv-crest-laurel iv-crest-laurel--left">❧</span>
+                      <span className="iv-crest-monogram">
+                        {computedMonogram}
+                      </span>
+                      <span className="iv-crest-laurel iv-crest-laurel--right">❧</span>
+                    </div>
+
+                    {/* Host Line */}
+                    <span className="iv-letter-hosts">
+                      {data.hosts || (
+                        template.category === 'memorial' || template.category === 'funeral'
+                          ? 'IN LOVING MEMORY'
+                          : isBirthday
+                          ? 'A SPECIAL CELEBRATION'
+                          : template.category === 'graduation'
+                          ? 'WITH PRIDE AND GRATITUDE'
+                          : template.category === 'housewarming'
+                          ? 'A NEW CHAPTER BEGINS'
+                          : template.category === 'corporate' || template.category === 'product-launch'
+                          ? 'CORDIOUSLY INVITING YOU'
+                          : 'TOGETHER WITH THEIR FAMILIES'
+                      )}
                     </span>
-                    <span className="iv-crest-laurel iv-crest-laurel--right">❧</span>
-                  </div>
 
-                  {/* Host Line */}
-                  <span className="iv-letter-hosts">
-                    {data.hosts || (
-                      template.category === 'memorial' || template.category === 'funeral'
-                        ? 'IN LOVING MEMORY'
+                    {/* Formal Request Line */}
+                    <span className="iv-letter-request">
+                      {template.category === 'wedding' || template.category === 'engagement'
+                        ? 'joyfully invite'
                         : isBirthday
-                        ? 'A SPECIAL CELEBRATION'
+                        ? 'invite you to join in celebrating'
+                        : template.category === 'memorial' || template.category === 'funeral'
+                        ? 'invite you to gather in memory of'
                         : template.category === 'graduation'
-                        ? 'WITH PRIDE AND GRATITUDE'
+                        ? 'invite you to celebrate the achievement of'
                         : template.category === 'housewarming'
-                        ? 'A NEW CHAPTER BEGINS'
+                        ? 'invite you to celebrate the new home of'
                         : template.category === 'corporate' || template.category === 'product-launch'
-                        ? 'CORDIOUSLY INVITING YOU'
-                        : 'TOGETHER WITH THEIR FAMILIES'
-                    )}
-                  </span>
-
-                  {/* Formal Request Line */}
-                  <span className="iv-letter-request">
-                    {template.category === 'wedding' || template.category === 'engagement'
-                      ? 'joyfully invite'
-                      : isBirthday
-                      ? 'invite you to join in celebrating'
-                      : template.category === 'memorial' || template.category === 'funeral'
-                      ? 'invite you to gather in memory of'
-                      : template.category === 'graduation'
-                      ? 'invite you to celebrate the achievement of'
-                      : template.category === 'housewarming'
-                      ? 'invite you to celebrate the new home of'
-                      : template.category === 'corporate' || template.category === 'product-launch'
-                      ? 'request the pleasure of your company at'
-                      : 'invite you to celebrate with'}
-                  </span>
-
-                  {/* Prominent Guest Name Line ("Mr. & Mrs. Kamau" in Reference Target) */}
-                  <span className="iv-letter-guest-line">
-                    {guestName || 'Mr. & Mrs. Kamau'}
-                  </span>
-
-                  <span className="iv-letter-joining">
-                    {template.category === 'wedding'
-                      ? 'to celebrate the wedding of'
-                      : template.category === 'graduation'
-                      ? 'in honour of this achievement'
-                      : template.category === 'housewarming'
-                      ? 'at their new home'
-                      : template.category === 'memorial' || template.category === 'funeral'
-                      ? 'in loving memory of'
-                      : template.category === 'birthday'
-                      ? 'for a special birthday'
-                      : 'for this special gathering'}
-                  </span>
-
-                  {/* Prominent Editorial Names */}
-                  <span className={`iv-letter-names ${template.category === 'wedding' ? 'iv-letter-names--script' : ''}`}>
-                    {isBirthday
-                      ? data.celebrants || data.title
-                      : template.category === 'wedding'
-                      ? (data.celebrants || data.title.replace(/^The Wedding of\s*/i, ''))
-                      : data.celebrants || data.title}
-                  </span>
-
-                  {/* Milestone age badge for birthday */}
-                  {isBirthday && (
-                    <span className="iv-letter-badge">
-                      Celebrating {birthdayNumber} Years
+                        ? 'request the pleasure of your company at'
+                        : 'invite you to celebrate with'}
                     </span>
-                  )}
 
-                  {/* Gold Tapered Rule with Diamond Fleuron */}
-                  <div className="iv-letter-divider">
-                    <span className="iv-divider-diamond">✦ ─── ❦ ─── ✦</span>
-                  </div>
+                    {/* Prominent Guest Name Line ("Mr. & Mrs. Kamau" in Reference Target) */}
+                    <span className="iv-letter-guest-line">
+                      {guestName || 'Mr. & Mrs. Kamau'}
+                    </span>
 
-                  {/* Date, Time & Venue with Icons */}
-                  <div className="iv-letter-details-grid">
-                    <div className="iv-letter-detail-item">
-                      <CalendarDays size={11} className="text-amber-800/80" />
-                      <span>{data.date}</span>
-                    </div>
-                    <div className="iv-letter-detail-item">
-                      <Clock3 size={11} className="text-amber-800/80" />
-                      <span>{data.time}</span>
-                    </div>
-                    <div className="iv-letter-detail-item">
-                      <MapPin size={11} className="text-amber-800/80" />
-                      <span>{data.venue}{data.city ? `, ${data.city}` : ''}</span>
-                    </div>
-                  </div>
+                    <span className="iv-letter-joining">
+                      {template.category === 'wedding'
+                        ? 'to celebrate the wedding of'
+                        : template.category === 'graduation'
+                        ? 'in honour of this achievement'
+                        : template.category === 'housewarming'
+                        ? 'at their new home'
+                        : template.category === 'memorial' || template.category === 'funeral'
+                        ? 'in loving memory of'
+                        : template.category === 'birthday'
+                        ? 'for a special birthday'
+                        : 'for this special gathering'}
+                    </span>
 
-                  {/* Bottom Flourish & RSVP */}
-                  <div className="iv-letter-bottom-section">
-                    <span className="iv-letter-bottom-flourish">❦</span>
-                    <span className="iv-letter-rsvp-hint">R . S . V . P .</span>
-                  </div>
-                </span>
+                    {/* Prominent Editorial Names */}
+                    <span className={`iv-letter-names ${template.category === 'wedding' ? 'iv-letter-names--script' : ''}`}>
+                      {isBirthday
+                        ? data.celebrants || data.title
+                        : template.category === 'wedding'
+                        ? (data.celebrants || data.title.replace(/^The Wedding of\s*/i, ''))
+                        : data.celebrants || data.title}
+                    </span>
+
+                    {/* Milestone age badge for birthday */}
+                    {isBirthday && (
+                      <span className="iv-letter-badge">
+                        Celebrating {birthdayNumber} Years
+                      </span>
+                    )}
+
+                    {/* Gold Tapered Rule with Diamond Fleuron */}
+                    <div className="iv-letter-divider">
+                      <span className="iv-divider-diamond">✦ ─── ❦ ─── ✦</span>
+                    </div>
+
+                    {/* Date, Time & Venue with Icons */}
+                    <div className="iv-letter-details-grid">
+                      <div className="iv-letter-detail-item">
+                        <CalendarDays size={11} className="text-amber-800/80" />
+                        <span>{data.date}</span>
+                      </div>
+                      <div className="iv-letter-detail-item">
+                        <Clock3 size={11} className="text-amber-800/80" />
+                        <span>{data.time}</span>
+                      </div>
+                      <div className="iv-letter-detail-item">
+                        <MapPin size={11} className="text-amber-800/80" />
+                        <span>{data.venue}{data.city ? `, ${data.city}` : ''}</span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Flourish & RSVP */}
+                    <div className="iv-letter-bottom-section">
+                      <span className="iv-letter-bottom-flourish">❦</span>
+                      <span className="iv-letter-rsvp-hint">R . S . V . P .</span>
+                    </div>
+                  </span>
+                )}
               </motion.span>
 
               {/* Layer 6: Front Mitred Pocket with Left, Right, Bottom Panels, Gold Filigree & Rule */}
@@ -915,7 +955,7 @@ export function EnvelopeRenderer({
 
                   <span className="iv-wax-rim" aria-hidden="true" />
                   <span className="iv-wax-monogram">
-                    {sealMonogram === 'K&W' ? 'W&O' : sealMonogram}
+                    {computedMonogram}
                   </span>
                   <span className="iv-wax-imprint" aria-hidden="true">❦</span>
 
@@ -961,7 +1001,27 @@ export function EnvelopeRenderer({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.55 }}
         >
-          {(theme === 'savannah-twilight' || theme === 'sage-love-letter') && (
+          {hasCanvasElements && (
+            <section className="kadi-stationery-suite py-8 sm:py-12 flex flex-col items-center justify-center">
+              <div className="w-[320px] sm:w-[420px] aspect-[480/680] shadow-2xl rounded-2xl overflow-hidden ring-1 ring-black/10">
+                <CanvasCardView
+                  elements={design?.canvasElements}
+                  cardBackground={design?.palette?.cardBackground || template.palette.cardBackground}
+                  palette={design?.palette || template.palette}
+                  fit="contain"
+                />
+              </div>
+              <a
+                href="#iv-content-start"
+                className="mt-6 flex items-center gap-1.5 text-xs uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity"
+              >
+                <span>View Event Details & RSVP</span>
+                <ChevronDown size={14} className="animate-bounce" />
+              </a>
+            </section>
+          )}
+
+          {!hasCanvasElements && (theme === 'savannah-twilight' || theme === 'sage-love-letter') && (
             <div className="kadi-stationery-suite">
               <article className="kadi-stationery-sheet">
                 {/* Master Ornate Double Hairline Gold Border with Corner Scrolls */}
@@ -973,84 +1033,206 @@ export function EnvelopeRenderer({
                 </div>
 
                 {/* Top Formal Monogram Crest inside Laurel Wreath */}
-                <header className="text-center relative z-10 pt-2 pb-6 space-y-3">
-                  <div className="iv-letter-crest mx-auto mb-2">
-                    <span className="iv-crest-laurel iv-crest-laurel--left">❧</span>
-                    <span className="iv-crest-monogram">{sealMonogram === 'K&W' ? 'W&O' : sealMonogram}</span>
-                    <span className="iv-crest-laurel iv-crest-laurel--right">❧</span>
+                <header className="kadi-stationery-page kadi-stationery-header text-center relative z-10 space-y-3">
+                  {/* Ornate Gold Botanical Laurel Crest */}
+                  <div className="mx-auto mb-2 flex items-center justify-center gap-3 select-none" aria-hidden="true">
+                    {/* Left Laurel Branch */}
+                    <svg width="28" height="24" viewBox="0 0 28 24" fill="none" className="text-[#B99A62]">
+                      <path d="M26 22 C 18 20, 10 16, 4 10 C 2 7, 3 3, 7 2 C 10 2, 13 4, 15 7 C 18 11, 22 17, 26 19" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="6" cy="3" r="1.2" fill="currentColor" />
+                      <path d="M7 11 C 9 9, 13 9, 15 11" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+                      <path d="M12 16 C 15 15, 18 16, 20 18" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+                    </svg>
+
+                    {/* Interlocking Monogram */}
+                    <span className="font-serif italic font-semibold text-xl tracking-wider text-[#934638]">
+                      {computedMonogram}
+                    </span>
+
+                    {/* Right Laurel Branch */}
+                    <svg width="28" height="24" viewBox="0 0 28 24" fill="none" className="text-[#B99A62]">
+                      <path d="M2 22 C 10 20, 18 16, 24 10 C 26 7, 25 3, 21 2 C 18 2, 15 4, 13 7 C 10 11, 6 17, 2 19" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="22" cy="3" r="1.2" fill="currentColor" />
+                      <path d="M21 11 C 19 9, 15 9, 13 11" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+                      <path d="M16 16 C 13 15, 10 16, 8 18" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+                    </svg>
                   </div>
 
-                  <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-[#934638]">
+                  {/* Host Line */}
+                  <p className="text-[11px] sm:text-xs font-serif font-bold uppercase tracking-[0.26em] text-[#8C5E50]">
                     {data.hosts || 'TOGETHER WITH THEIR FAMILIES'}
                   </p>
 
-                  <p className="text-xs sm:text-sm font-serif italic text-[#756F64]">
-                    joyfully invite you to celebrate the wedding of
-                  </p>
-
-                  {guestName && (
-                    <div className="py-1">
-                      <p className="font-serif text-lg sm:text-2xl text-[#272620] font-medium italic underline decoration-[#B99A62]/40 underline-offset-4">
-                        {guestName}
+                  {/* Formal Invitation & Guest Honor Line */}
+                  {guestName ? (
+                    <div className="space-y-1.5 my-2">
+                      <p className="text-xs sm:text-sm font-serif italic text-[#756F64]">
+                        {template.category === 'wedding' || template.category === 'engagement'
+                          ? 'joyfully invite'
+                          : 'cordially invite'}
+                      </p>
+                      <div className="py-0.5">
+                        <span className="font-serif text-xl sm:text-2xl lg:text-3xl text-[#272620] font-medium italic tracking-wide inline-block">
+                          {guestName}
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm font-serif italic text-[#756F64]">
+                        {template.category === 'wedding' || template.category === 'engagement'
+                          ? 'to celebrate the wedding of'
+                          : template.category === 'memorial' || template.category === 'funeral'
+                          ? 'to gather in memory of'
+                          : 'to celebrate'}
                       </p>
                     </div>
+                  ) : (
+                    <p className="text-xs sm:text-sm font-serif italic text-[#756F64] my-2">
+                      {template.category === 'wedding' || template.category === 'engagement'
+                        ? 'joyfully invite you to celebrate the wedding of'
+                        : isBirthday
+                        ? 'invite you to join in celebrating'
+                        : template.category === 'memorial' || template.category === 'funeral'
+                        ? 'invite you to gather in memory of'
+                        : 'invite you to celebrate'}
+                    </p>
                   )}
 
-                  <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#934638] font-medium tracking-tight my-2">
-                    {data.celebrants}
-                  </h1>
+                  {/* Prominent Celebrants' Names (Balanced Lines, Zero Orphan Words) */}
+                  {celebrantParts ? (
+                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#934638] font-normal tracking-tight my-2.5 leading-tight flex flex-col items-center">
+                      <span className="block">{celebrantParts[0]}</span>
+                      <span className="inline-flex items-center justify-center gap-2.5 my-1 text-xl sm:text-2xl font-serif italic text-[#B99A62] select-none">
+                        <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-[#B99A62]/60" />
+                        &amp;
+                        <span className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-[#B99A62]/60" />
+                      </span>
+                      <span className="block">{celebrantParts[1]}</span>
+                    </h1>
+                  ) : (
+                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#934638] font-normal tracking-tight my-2.5 [text-wrap:balance]">
+                      {data.celebrants}
+                    </h1>
+                  )}
 
-                  <div className="text-center text-[#B99A62] text-sm my-3 select-none">
+                  {/* Decorative Stationery Divider */}
+                  <div className="text-center text-[#B99A62] text-xs sm:text-sm my-2.5 select-none" aria-hidden="true">
                     ✦ ─── ❦ ─── ✦
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-[#272620] font-medium pt-1">
-                    <span className="flex items-center gap-1.5">
-                      <CalendarDays size={13} className="text-[#934638]" />
-                      {data.date}
-                    </span>
-                    <span className="text-[#B99A62]">·</span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock3 size={13} className="text-[#934638]" />
-                      {data.time}
-                    </span>
-                    <span className="text-[#B99A62]">·</span>
-                    <span className="flex items-center gap-1.5">
-                      <MapPin size={13} className="text-[#934638]" />
-                      {data.venue}{data.city ? `, ${data.city}` : ''}
-                    </span>
+                  {/* Date, Time & Venue Vignette */}
+                  <div className="space-y-2 pt-1 max-w-sm mx-auto">
+                    <div className="inline-flex items-center justify-center flex-wrap gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF5EE] border border-[#B99A62]/35 text-xs sm:text-sm text-[#272620]">
+                      <span className="font-serif font-semibold text-[#8C4638] flex items-center gap-1.5">
+                        <CalendarDays size={13} className="text-[#8C4638]" />
+                        {data.date}
+                      </span>
+                      <span className="text-[#B99A62]">·</span>
+                      <span className="font-serif text-[#5E564D] flex items-center gap-1.5">
+                        <Clock3 size={13} className="text-[#8C4638]" />
+                        {data.time}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-1.5 text-xs sm:text-sm text-[#4A453E] font-serif px-2">
+                      <MapPin size={13} className="text-[#8C4638] shrink-0" />
+                      <span>
+                        <strong className="font-medium text-[#272620]">{data.venue}</strong>
+                        {data.city ? <span className="text-[#756F64]"> · {data.city}</span> : ''}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Scroll Down Prompt */}
+                  <div className="pt-4 sm:pt-6">
+                    <a
+                      href="#iv-content-start"
+                      className="inline-flex flex-col items-center gap-1 text-[#8C5E50] hover:text-[#934638] tracking-widest uppercase transition-colors group cursor-pointer"
+                      aria-label="Scroll to event details"
+                    >
+                      <span className="text-[10px] font-sans font-semibold tracking-[0.22em] text-[#8C5E50] group-hover:text-[#934638]">
+                        Explore Details
+                      </span>
+                      <ChevronDown size={14} className="animate-bounce text-[#B99A62]" />
+                    </a>
                   </div>
                 </header>
 
                 {/* Flowing Content Sections on Continuous Stationery Sheet */}
-                <div id="iv-content-start" className="iv-content-sections relative z-10 pt-4 border-t border-[#B99A62]/30">
+                <div id="iv-content-start" className="iv-content-sections relative z-10">
                   {children}
                 </div>
 
-                {/* Ending / Footer inside the Stationery Document */}
-                <footer className="iv-ending relative z-10 pt-8 mt-8 border-t border-[#B99A62]/30">
-                  <Logo size="sm" color="#c4a16a" />
-                  <p className="font-serif italic text-sm text-[#756F64] mt-2">
-                    Made with care, shared with love.
-                  </p>
-                  <button type="button" onClick={shareInvitation} aria-label="Share this invitation link">
-                    {copied ? <Check size={14} /> : null}
-                    {copied ? 'Link copied' : 'Share this invitation'}
-                  </button>
-                  <button
-                    type="button"
-                    className="iv-ending__back"
-                    onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })}
-                    aria-label="Scroll back to top of invitation"
-                  >
-                    Back to the beginning ↑
-                  </button>
+                {/* Ending / Closing Back Cover of the Stationery Document */}
+                <footer className="kadi-stationery-page iv-ending relative z-10 text-center flex flex-col items-center justify-center space-y-6">
+                  {/* Ornate Gold Monogram / Seal Crest */}
+                  <div className="space-y-2.5">
+                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-full border border-[#B99A62]/40 bg-[#FFFDF9] shadow-xs mx-auto">
+                      <span className="font-serif italic text-xl font-bold text-[#934638] tracking-wider">
+                        {computedMonogram}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-sans font-semibold tracking-[0.25em] text-[#8C5E50] uppercase">
+                        With Love &amp; Gratitude
+                      </p>
+                      <h3 className="font-serif text-2xl sm:text-3xl text-[#934638] font-normal">
+                        {data.celebrants}
+                      </h3>
+                      <p className="font-serif italic text-xs sm:text-sm text-[#756F64] max-w-xs mx-auto pt-1 leading-relaxed">
+                        We look forward to celebrating this joyful milestone and making memories together.
+                      </p>
+                    </div>
+
+                    <div className="text-center text-[#B99A62] text-xs py-1 select-none" aria-hidden="true">
+                      ✦ ─── ❦ ─── ✦
+                    </div>
+                  </div>
+
+                  {/* Elegant Interaction Actions */}
+                  <div className="flex flex-col items-center gap-3 w-full max-w-xs pt-1">
+                    <button
+                      type="button"
+                      onClick={shareInvitation}
+                      aria-label="Share this invitation link"
+                      className="!w-full sm:!w-auto !inline-flex !items-center !justify-center !gap-2 !px-7 !py-3 !rounded-full !bg-[#934638] !text-white text-xs font-semibold tracking-wide shadow-sm hover:!bg-[#7A3326] active:scale-95 transition-all cursor-pointer !border-none"
+                    >
+                      {copied ? (
+                        <>
+                          <Check size={14} className="text-emerald-300" />
+                          <span>Invitation Link Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Share2 size={14} />
+                          <span>Share This Invitation</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })}
+                      aria-label="Scroll back to top of invitation"
+                      className="!inline-flex !items-center !gap-1.5 text-xs font-serif italic text-[#756F64] hover:text-[#934638] transition-colors py-1 cursor-pointer !border-none !bg-transparent"
+                    >
+                      <span>Return to the beginning</span>
+                      <ArrowUp size={13} />
+                    </button>
+                  </div>
+
+                  {/* Colophon / Brand Stamp */}
+                  <div className="pt-6 border-t border-[rgba(185,154,98,0.25)] w-full max-w-[220px] mx-auto flex flex-col items-center gap-1.5">
+                    <Logo size="sm" color="#c4a16a" />
+                    <p className="font-serif italic text-[11px] text-[#8C8375]">
+                      Made with care, shared with love.
+                    </p>
+                  </div>
                 </footer>
               </article>
             </div>
           )}
 
-          {theme === 'ruby-disco' && (
+          {!hasCanvasElements && theme === 'ruby-disco' && (
             <>
               <section className="iv-disco-cover">
                 <div className="iv-disco-cover__top">
@@ -1110,7 +1292,7 @@ export function EnvelopeRenderer({
             </>
           )}
 
-          {theme === 'pastel-garden' && (
+          {!hasCanvasElements && theme === 'pastel-garden' && (
             <>
               <section className="iv-garden-cover">
                 <div className="iv-garden-frame">
@@ -1155,11 +1337,11 @@ export function EnvelopeRenderer({
             </>
           )}
 
-          {theme === 'gift-box' && (
+          {!hasCanvasElements && theme === 'gift-box' && (
             <>
               <section className="iv-gifts-cover">
                 <p className="iv-eyebrow">A little something made for you</p>
-                <p className="iv-script">These are for you</p>
+                <p className="iv-script">{data.subtitle || 'These are for you'}</p>
                 <ScrollParallax offset={12}>
                   <div className="iv-gifts-hero">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1279,7 +1461,7 @@ export function EnvelopeRenderer({
             </>
           )}
 
-          {theme === 'memorial' && (
+          {!hasCanvasElements && theme === 'memorial' && (
             <section className="iv-memorial-cover">
               <p className="iv-eyebrow">In loving memory</p>
               <ScrollParallax offset={10}>
@@ -1297,7 +1479,7 @@ export function EnvelopeRenderer({
             </section>
           )}
 
-          {(theme === 'graduation' || theme === 'housewarming' || theme === 'corporate' || theme === 'holiday-celebration' || theme === 'modern-editorial') && (
+          {!hasCanvasElements && (theme === 'graduation' || theme === 'housewarming' || theme === 'corporate' || theme === 'holiday-celebration' || theme === 'modern-editorial') && (
             <section className={`iv-occasion-cover iv-occasion-cover--${theme}`}>
               <div className="iv-occasion-cover__frame">
                 <div className="iv-occasion-cover__copy">
@@ -1334,8 +1516,8 @@ export function EnvelopeRenderer({
             </section>
           )}
 
-          {/* Content sections & footer for other occasion themes */}
-          {theme !== 'savannah-twilight' && theme !== 'sage-love-letter' && (
+          {/* Content sections & footer for other occasion themes or custom canvas */}
+          {(hasCanvasElements || (theme !== 'savannah-twilight' && theme !== 'sage-love-letter')) && (
             <>
               <div id="iv-content-start" className="iv-content-sections max-w-4xl mx-auto px-4 sm:px-6">{children}</div>
 

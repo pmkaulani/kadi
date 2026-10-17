@@ -1,20 +1,36 @@
 'use client';
 
-import React, { useRef, useState, Suspense } from 'react';
+import React, { useRef, useState, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { EventService } from '@/lib/services/event-service';
 import { TEMPLATES, getTemplateById } from '@/lib/templates/catalogue';
 import { KadiStudioEditor, type StudioDraft } from '@/components/studio/KadiStudioEditor';
 import { Modal } from '@/components/ui/Modal';
+import { QrCode } from '@/components/ui/QrCode';
 import { type EventEntity } from '@/lib/db/types';
-import { ArrowLeft, CheckCircle2, Copy, Check, ExternalLink } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Copy, Check, ExternalLink, Share2 } from 'lucide-react';
 
 function NewEventStudioContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isBlank = searchParams.get('blank') === 'true';
   const templateParam = searchParams.get('templateId') || searchParams.get('template');
   const matchedTemplate = getTemplateById(templateParam || 'sage-botanical') || TEMPLATES[0];
+
+  const initialEvent = useMemo(() => {
+    if (!isBlank) return undefined;
+    return {
+      title: 'Your Event Title',
+      hosts: 'Host Names',
+      celebrants: 'Celebrants',
+      date: 'Date & Time',
+      time: 'Time',
+      venue: 'Venue Name',
+      city: 'City',
+      heroImage: '',
+    };
+  }, [isBlank]);
 
   const createdEventIdRef = useRef<string | null>(null);
   const [publishedEvent, setPublishedEvent] = useState<EventEntity | null>(null);
@@ -95,34 +111,22 @@ function NewEventStudioContent() {
   };
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto py-2 px-2 sm:px-4 flex flex-col h-[calc(100vh-80px)]">
-      {/* Top back navigation */}
-      <div className="flex items-center justify-between pb-2 mb-2 border-b border-[rgba(39,38,32,0.08)] shrink-0">
-        <Link
-          href="/app/events"
-          className="inline-flex items-center gap-1.5 text-xs text-[#756F64] hover:text-[#934638] font-medium transition-colors"
-        >
-          <ArrowLeft size={14} />
-          <span>Back to dashboard</span>
-        </Link>
-        <span className="text-[10px] uppercase font-bold tracking-widest text-[#8C8375]">
-          New Invitation
-        </span>
-      </div>
-
-      <div className="flex-1 min-h-0">
-        <KadiStudioEditor
-          template={matchedTemplate}
-          availableTemplates={TEMPLATES}
-          onSaveDraft={handleSaveDraft}
-          onPublish={handlePublish}
-        />
-      </div>
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#18181A] z-40">
+      <KadiStudioEditor
+        initialEvent={initialEvent}
+        template={matchedTemplate}
+        availableTemplates={TEMPLATES}
+        onSaveDraft={handleSaveDraft}
+        onPublish={handlePublish}
+        defaultExpanded={true}
+        hideExpandButton={true}
+        backHref="/"
+      />
 
       {publishedEvent && (
         <Modal
           isOpen={true}
-          onClose={() => router.push(`/app/events/${publishedEvent.id}`)}
+          onClose={() => router.push(`/e/${publishedEvent.slug}`)}
           title="Invitation Published & Live!"
           description="Your gathering is now open for guests to view and reply."
           maxWidth="md"
@@ -136,7 +140,7 @@ function NewEventStudioContent() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8D867A] mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
                 Live Public Link
               </label>
               <div className="flex items-center gap-2">
@@ -144,7 +148,7 @@ function NewEventStudioContent() {
                   type="text"
                   readOnly
                   value={`${typeof window !== 'undefined' ? window.location.origin : ''}/e/${publishedEvent.slug}`}
-                  className="flex-1 text-xs bg-black/5 border border-[rgba(39,38,32,0.15)] rounded-lg px-3 py-2 text-[#272620] select-all font-mono"
+                  className="flex-1 text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-900 select-all font-mono"
                 />
                 <button
                   type="button"
@@ -163,7 +167,50 @@ function NewEventStudioContent() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[rgba(39,38,32,0.1)] flex flex-col sm:flex-row gap-3">
+            {/* Quick Share Options: Native Share & WhatsApp */}
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  const url = `${window.location.origin}/e/${publishedEvent.slug}`;
+                  const text = `You are joyfully invited to ${publishedEvent.title}: ${url}`;
+                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+                }}
+                className="flex-1 py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+              >
+                <span>Share via WhatsApp</span>
+              </button>
+
+              {typeof navigator !== 'undefined' && 'share' in navigator && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.share({
+                      title: publishedEvent.title,
+                      text: `You are invited to ${publishedEvent.title}`,
+                      url: `${window.location.origin}/e/${publishedEvent.slug}`,
+                    }).catch(() => {});
+                  }}
+                  className="py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 font-medium text-xs flex items-center gap-1.5 transition-colors"
+                >
+                  <Share2 size={13} />
+                  <span>Share</span>
+                </button>
+              )}
+            </div>
+
+            {/* Printable & Scannable QR Code */}
+            <div className="pt-2 flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-slate-200">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Scan with Phone Camera
+              </div>
+              <QrCode
+                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/e/${publishedEvent.slug}`}
+                size={130}
+              />
+            </div>
+
+            <div className="pt-3 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
               <Link
                 href={`/app/events/${publishedEvent.id}?tab=guests`}
                 className="kadi-button flex-1 justify-center text-xs"

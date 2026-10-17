@@ -4,7 +4,16 @@ import { SESSION_COOKIE_NAME, isEdgeSessionPresent, getEdgeSessionPayload } from
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Protect /app routes server-side
+  // Allow public access to creating/customizing invitations and browsing templates
+  const isPublicAppRoute =
+    pathname.startsWith('/app/events/new') ||
+    pathname.startsWith('/app/templates');
+
+  if (isPublicAppRoute) {
+    return NextResponse.next();
+  }
+
+  // Protect private host dashboard & event management routes server-side
   if (pathname.startsWith('/app')) {
     const token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
     const isValid = isEdgeSessionPresent(token);

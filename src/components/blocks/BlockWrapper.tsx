@@ -9,9 +9,16 @@ interface BlockWrapperProps {
   children: React.ReactNode;
   className?: string;
   id?: string;
+  previewMode?: boolean;
 }
 
-export function BlockWrapper({ settings, children, className = '', id }: BlockWrapperProps) {
+export function BlockWrapper({
+  settings,
+  children,
+  className = '',
+  id,
+  previewMode = false,
+}: BlockWrapperProps) {
   // Padding map
   const paddingClass =
     settings.padding === 'compact'
@@ -58,10 +65,13 @@ export function BlockWrapper({ settings, children, className = '', id }: BlockWr
           ? 'border border-dashed border-[rgba(39,38,32,0.18)]'
           : 'border-0'; // none
 
-  // Motion variants
+  // Motion variants: in previewMode or with scrollMotion === 'none', do not hide behind opacity: 0
   const motionProps =
-    settings.scrollMotion === 'none'
-      ? {}
+    settings.scrollMotion === 'none' || previewMode
+      ? {
+          initial: false,
+          animate: { opacity: 1, y: 0, scale: 1, x: 0 },
+        }
       : {
           initial: {
             opacity: 0,
@@ -70,19 +80,19 @@ export function BlockWrapper({ settings, children, className = '', id }: BlockWr
             x: settings.scrollMotion === 'slide-in' ? -20 : 0,
           },
           whileInView: { opacity: 1, y: 0, scale: 1, x: 0 },
-          viewport: { once: true, margin: '-40px' },
+          viewport: { once: true, amount: 0.05 },
           transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
         };
 
   return (
     <motion.section
       id={id}
-      className={`w-full mx-auto ${paddingClass} ${className}`.trim()}
+      className={`w-full mx-auto iv-stationery-page ${paddingClass} ${className}`.trim()}
       style={settings.background ? { backgroundColor: settings.background } : undefined}
       {...motionProps}
     >
       <div
-        className={`mx-auto ${maxWidthClass} ${textAlignClass} ${cornerClass} ${borderClass} transition-all`}
+        className={`w-full mx-auto ${maxWidthClass} ${textAlignClass} ${cornerClass} ${borderClass} transition-all`}
       >
         {children}
       </div>

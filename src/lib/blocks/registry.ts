@@ -101,7 +101,7 @@ export const BLOCK_DEFINITIONS: Record<InvitationBlockType, BlockDefinition<any>
           caption: 'Where it all began',
         },
         {
-          url: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=800&q=80',
+          url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
           caption: 'Celebration moments',
         },
       ],

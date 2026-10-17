@@ -482,7 +482,7 @@ export function RSVPSection({
               type="submit"
               size="lg"
               variant="primary"
-              className="w-full py-3.5 text-sm font-semibold shadow-md"
+              className="w-full py-3.5 text-sm font-semibold shadow-md bg-[var(--event-primary,#934638)] text-white hover:bg-[#7b3226]"
               isLoading={isSubmitting}
             >
               Submit RSVP Response

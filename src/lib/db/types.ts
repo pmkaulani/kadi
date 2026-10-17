@@ -179,6 +179,7 @@ export interface EventDesignEntity {
   headingLineHeight?: 'tight' | 'snug' | 'normal';
   countdownLabel?: string;
   blocks?: import('@/lib/blocks/types').InvitationBlockConfig[];
+  canvasElements?: import('@/types/canvas').CanvasElement[];
   typography?: {
     headingFont?: string;
     bodyFont?: string;

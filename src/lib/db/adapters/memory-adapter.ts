@@ -73,7 +73,7 @@ export class MemoryDatabaseAdapter implements IDatabaseAdapter {
       story: 'From meeting in Westlands to climbing Mount Longonot together, every step led us to this day of joy.',
       heroImage: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80',
       galleryImages: [
-        'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=1000&q=80',
+        'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80',
         'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1000&q=80',
       ],
       rsvpDeadline: '1 November 2026',

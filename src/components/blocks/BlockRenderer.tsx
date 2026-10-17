@@ -16,10 +16,13 @@ import {
   Quote,
   Heart,
   ChevronDown,
+  Camera,
+  Maximize2,
 } from 'lucide-react';
 import type { InvitationBlockConfig } from '@/lib/blocks/types';
 import { BlockWrapper } from './BlockWrapper';
 import { sanitizeUrl, sanitizeVideoUrl, sanitizeLivestreamUrl } from '@/lib/blocks/registry';
+import { GalleryLightbox } from '@/components/animation/MotionToolkit';
 import { CountdownSection } from '@/components/invitations/CountdownSection';
 import { VenueSection } from '@/components/invitations/VenueSection';
 import { RSVPSection } from '@/components/invitations/RSVPSection';
@@ -32,6 +35,159 @@ export interface BlockRendererProps {
   guestToken?: string;
   guestName?: string;
   previewMode?: boolean;
+}
+
+function BlockGallery({
+  content,
+  settings,
+  id,
+  previewMode,
+}: {
+  content: any;
+  settings: any;
+  id: string;
+  previewMode?: boolean;
+}) {
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+  const rawImages = content.images || [];
+
+  const images = (Array.isArray(rawImages) ? rawImages : []).map((img: any, idx: number) => {
+    let url = typeof img === 'string' ? img : img?.url || '';
+    if (url.includes('1586075010923') || !url) {
+      url = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80';
+    }
+    return {
+      url,
+      caption: typeof img === 'object' && img?.caption ? img.caption : (idx === 0 ? 'Featured Moment' : `Memory ${idx + 1}`),
+      alt: typeof img === 'object' && (img?.alt || img?.caption) ? (img.alt || img.caption) : `Gallery photo ${idx + 1}`,
+    };
+  });
+
+  if (images.length === 0) return null;
+
+  const heroImage = images[0];
+  const secondaryImages = images.slice(1);
+
+  return (
+    <BlockWrapper settings={settings} id={id} previewMode={previewMode}>
+      <div className="space-y-4">
+        {/* Editorial Title & Subtitle */}
+        <div className="text-center space-y-1">
+          {content.subtitle && (
+            <p className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[var(--event-primary,#934638)]">
+              {content.subtitle}
+            </p>
+          )}
+          {content.title && (
+            <h2 className="font-serif text-2xl sm:text-3xl font-medium text-[var(--event-ink,#272620)]">
+              {content.title}
+            </h2>
+          )}
+          <div className="text-center text-[#B99A62] text-xs py-0.5 select-none" aria-hidden="true">
+            ✦ ─── ❦ ─── ✦
+          </div>
+        </div>
+
+        {/* Dynamic Editorial Photo Layout (Bigger, High-Impact & Interesting) */}
+        {images.length === 1 ? (
+          <div
+            className="relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl overflow-hidden bg-white p-2 border border-[#B99A62]/35 shadow-sm group cursor-pointer"
+            onClick={() => setSelectedPhotoIndex(0)}
+          >
+            <div className="relative w-full h-full rounded-xl overflow-hidden">
+              <Image
+                src={heroImage.url}
+                alt={heroImage.alt}
+                fill
+                sizes="(max-width: 640px) 100vw, 768px"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-3.5 text-white">
+                <span className="text-xs font-serif italic">{heroImage.caption}</span>
+                <span className="p-1.5 rounded-full bg-white/20 backdrop-blur-sm">
+                  <Maximize2 size={14} />
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3 pt-1">
+            {/* Grand Hero Photo (Takes Full Available Width, Much Bigger) */}
+            <div
+              className="relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl overflow-hidden bg-white p-2 border border-[#B99A62]/35 shadow-md group cursor-pointer"
+              onClick={() => setSelectedPhotoIndex(0)}
+            >
+              <div className="relative w-full h-full rounded-xl overflow-hidden">
+                <Image
+                  src={heroImage.url}
+                  alt={heroImage.alt}
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 100vw, 768px"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+                <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] uppercase tracking-widest text-white font-medium flex items-center gap-1.5">
+                  <Camera size={12} className="text-[#B99A62]" />
+                  <span>Featured Moment</span>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-3.5 text-white">
+                  <span className="text-xs font-serif italic">{heroImage.caption}</span>
+                  <span className="p-1.5 rounded-full bg-white/20 backdrop-blur-sm">
+                    <Maximize2 size={14} />
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Paired Curated Duo Grid (Side-by-Side with Polaroid Matting & Subtle Angle) */}
+            {secondaryImages.length > 0 && (
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5">
+                {secondaryImages.map((img: any, i: number) => {
+                  const actualIdx = i + 1;
+                  const tiltClass = i % 2 === 0 ? '-rotate-1 hover:rotate-0' : 'rotate-1 hover:rotate-0';
+                  return (
+                    <div
+                      key={actualIdx}
+                      onClick={() => setSelectedPhotoIndex(actualIdx)}
+                      className={`group cursor-pointer transition-all duration-300 transform ${tiltClass} bg-white p-2 rounded-2xl border border-[rgba(185,154,98,0.3)] shadow-xs hover:shadow-md hover:scale-[1.02]`}
+                    >
+                      <div className="relative aspect-[4/5] sm:aspect-square rounded-xl overflow-hidden bg-[#FAF8F5]">
+                        <Image
+                          src={img.url}
+                          alt={img.alt}
+                          fill
+                          sizes="(max-width: 640px) 50vw, 360px"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute bottom-2 right-2 p-1.5 rounded-full bg-black/40 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Maximize2 size={12} />
+                        </div>
+                      </div>
+                      {img.caption && (
+                        <p className="mt-2 text-center text-[11px] font-serif italic text-[#756F64] truncate px-1">
+                          {img.caption}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Lightbox Modal */}
+        {selectedPhotoIndex !== null && (
+          <GalleryLightbox
+            photos={images.map((img: any) => img.url)}
+            selectedIndex={selectedPhotoIndex}
+            onClose={() => setSelectedPhotoIndex(null)}
+            onSelectIndex={(idx) => setSelectedPhotoIndex(idx)}
+          />
+        )}
+      </div>
+    </BlockWrapper>
+  );
 }
 
 export function BlockRenderer({
@@ -48,7 +204,7 @@ export function BlockRenderer({
   switch (type) {
     case 'hero': {
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="space-y-4">
             {content.tagline && (
               <p className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[var(--event-accent,#934638)]">
@@ -91,7 +247,7 @@ export function BlockRenderer({
     case 'rich-text': {
       const paragraphs = (content.body || '').split('\n\n').filter(Boolean);
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="space-y-4">
             {content.subheading && (
               <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-[var(--event-accent,#934638)]">
@@ -128,7 +284,7 @@ export function BlockRenderer({
                 : 'min-h-[260px] sm:min-h-[380px]';
 
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <figure className="space-y-2.5">
             <div className={`relative w-full ${aspectClasses} rounded-lg overflow-hidden shadow-sm border border-[rgba(39,38,32,0.12)] bg-[#FAF8F5]`}>
               {content.imageUrl ? (
@@ -157,56 +313,20 @@ export function BlockRenderer({
     }
 
     case 'gallery': {
-      const images = content.images || [];
-      const colClass =
-        content.columns === 4
-          ? 'grid-cols-2 md:grid-cols-4'
-          : content.columns === 3
-            ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
-            : 'grid-cols-1 sm:grid-cols-2';
-
       return (
-        <BlockWrapper settings={settings} id={block.id}>
-          <div className="space-y-4">
-            {content.subtitle && (
-              <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-[var(--event-accent,#934638)]">
-                {content.subtitle}
-              </p>
-            )}
-            {content.title && (
-              <h2 className="font-serif text-2xl sm:text-3xl font-medium text-[var(--event-ink,#272620)]">
-                {content.title}
-              </h2>
-            )}
-            <div className={`grid ${colClass} gap-3 sm:gap-4 pt-2`}>
-              {images.map((img: any, i: number) => (
-                <figure key={i} className="group space-y-1 text-left">
-                  <div className="relative aspect-[4/3] rounded-md overflow-hidden bg-[#FAF8F5] border border-[rgba(39,38,32,0.1)]">
-                    <Image
-                      src={img.url}
-                      alt={img.alt || img.caption || `Gallery image ${i + 1}`}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 300px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  {img.caption && (
-                    <figcaption className="text-[11px] text-[var(--event-ink,#272620)] opacity-70 italic font-serif truncate">
-                      {img.caption}
-                    </figcaption>
-                  )}
-                </figure>
-              ))}
-            </div>
-          </div>
-        </BlockWrapper>
+        <BlockGallery
+          content={content}
+          settings={settings}
+          id={block.id}
+          previewMode={previewMode}
+        />
       );
     }
 
     case 'video': {
       const sanitized = sanitizeVideoUrl(content.videoId || content.url);
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="space-y-3">
             {content.title && (
               <h2 className="font-serif text-2xl font-medium text-[var(--event-ink,#272620)]">
@@ -244,7 +364,7 @@ export function BlockRenderer({
 
     case 'venue-map': {
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <VenueSection
             venue={content.venueName || event.venue}
             address={content.address || event.address}
@@ -265,7 +385,7 @@ export function BlockRenderer({
       const targetDate = content.targetDate || event.date;
       if (!targetDate) return null;
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <CountdownSection
             eventDate={targetDate}
             eventTime={content.targetTime || event.time}
@@ -282,7 +402,7 @@ export function BlockRenderer({
 
     case 'rsvp': {
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <RSVPSection
             eventId={event.id}
             deadline={content.deadline || event.rsvpDeadline}
@@ -297,7 +417,7 @@ export function BlockRenderer({
 
     case 'contribution': {
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <RegistrySection
             mpesaType={content.type || event.mpesaType || 'till'}
             mpesaNumber={content.number || event.mpesaNumber}
@@ -314,7 +434,7 @@ export function BlockRenderer({
     case 'timeline': {
       const items = content.items || [];
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="space-y-6">
             <div className="space-y-1">
               {content.subtitle && (
@@ -361,7 +481,7 @@ export function BlockRenderer({
 
     case 'quote': {
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <blockquote className="space-y-3 py-4">
             <Quote
               size={28}
@@ -387,7 +507,7 @@ export function BlockRenderer({
 
     case 'divider': {
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="flex items-center justify-center py-2" aria-hidden="true">
             {content.style === 'flourish' ? (
               <div className="flex items-center gap-2 text-[var(--event-accent,#934638)] opacity-60">
@@ -421,7 +541,7 @@ export function BlockRenderer({
           : 'bg-[var(--event-accent,#934638)] text-white hover:opacity-90';
 
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="space-y-1.5">
             <a
               href={safeUrl}
@@ -445,7 +565,7 @@ export function BlockRenderer({
     case 'faq': {
       const items = content.items || [];
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="space-y-6">
             <div className="space-y-1">
               {content.subtitle && (
@@ -480,7 +600,7 @@ export function BlockRenderer({
 
     case 'music': {
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <MusicPlayerWidget
             audioUrl={content.audioUrl}
             title={content.title}
@@ -493,7 +613,7 @@ export function BlockRenderer({
 
     case 'guestbook': {
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="p-6 rounded-xl bg-white border border-[rgba(39,38,32,0.12)] space-y-4 max-w-lg mx-auto">
             <Heart size={20} className="text-[var(--event-accent,#934638)] mx-auto" />
             <div className="space-y-1">
@@ -523,7 +643,7 @@ export function BlockRenderer({
       const isLive = content.status === 'live';
 
       return (
-        <BlockWrapper settings={settings} id={block.id}>
+        <BlockWrapper settings={settings} id={block.id} previewMode={previewMode}>
           <div className="space-y-3">
             <div className="flex items-center justify-center gap-2">
               <span
