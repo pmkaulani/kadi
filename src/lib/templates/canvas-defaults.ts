@@ -537,6 +537,19 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   };
 }
 
+/**
+ * Treat the font mapped from a template as its default, not as a custom override.
+ * This lets each stationery suite retain its own art-directed type pairing.
+ */
+export function getCanvasHeadingFontOverride(
+  template: TemplateDefinition,
+  design?: { fontFamily?: string; typography?: { headingFont?: string } }
+): string | undefined {
+  const candidate = design?.typography?.headingFont || design?.fontFamily;
+  const templateDefault = template.fonts.heading === 'sans' ? 'Inter' : 'Playfair Display';
+  return candidate && candidate !== templateDefault ? candidate : undefined;
+}
+
 export interface CanvasArtDirectionOverrides {
   palette?: Partial<TemplateDefinition['palette']>;
   headingFont?: string;
