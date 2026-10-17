@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getTemplateCanvasElements } from '../src/lib/templates/canvas-defaults';
+import { getCanvasHeadingFontOverride, getTemplateCanvasElements } from '../src/lib/templates/canvas-defaults';
 import { getTemplateById, TEMPLATES } from '../src/lib/templates/catalogue';
 
 function valuesFor(template, overrides = {}) {
@@ -179,4 +179,36 @@ test('Canvas art direction - collage templates intentionally use two distinct ph
       { x: photos[1].x, y: photos[1].y, width: photos[1].width, height: photos[1].height }
     );
   }
+});
+
+
+test('Canvas art direction - host palette and a genuinely custom heading font are respected', () => {
+  const tpl = template('savannah-twilight');
+  const elements = getTemplateCanvasElements(tpl, valuesFor(tpl), {
+    palette: {
+      primary: '#274C5A',
+      secondary: '#77552D',
+      cardBackground: '#FCFAF7',
+      text: '#222222',
+    },
+    headingFont: 'Inter',
+  });
+
+  assert.equal(byId(elements, 'text-title').styleProps?.fontFamily, 'Inter');
+  assert.equal(byId(elements, 'text-title').styleProps?.color, '#274C5A');
+  assert.equal(byId(elements, 'text-hosts').styleProps?.color, '#77552D');
+});
+
+test('Canvas art direction - a stored template-default font does not erase occasion art direction', () => {
+  const wedding = template('savannah-twilight');
+  assert.equal(
+    getCanvasHeadingFontOverride(wedding, { fontFamily: 'Playfair Display' }),
+    undefined,
+    'The mapped Studio default should allow the wedding suite to use its own type pairing'
+  );
+  assert.equal(
+    getCanvasHeadingFontOverride(wedding, { fontFamily: 'Cormorant Garamond' }),
+    'Cormorant Garamond',
+    'An actual host-selected font remains an override'
+  );
 });
