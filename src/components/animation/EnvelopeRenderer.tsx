@@ -694,13 +694,9 @@ export function EnvelopeRenderer({
                     <span className="iv-letter-corner iv-letter-corner--bl" />
                     <span className="iv-letter-corner iv-letter-corner--br" />
 
-                    {/* Top Royal Monogram Crest inside Laurel Wreath */}
+                    {/* Quiet printer's mark: let the invitation artwork lead. */}
                     <div className="iv-letter-crest">
-                      <span className="iv-crest-laurel iv-crest-laurel--left">❧</span>
-                      <span className="iv-crest-monogram">
-                        {computedMonogram}
-                      </span>
-                      <span className="iv-crest-laurel iv-crest-laurel--right">❧</span>
+                      <span className="iv-crest-monogram">{computedMonogram}</span>
                     </div>
 
                     {/* Host Line */}
@@ -737,11 +733,6 @@ export function EnvelopeRenderer({
                         : 'invite you to celebrate with'}
                     </span>
 
-                    {/* Prominent Guest Name Line ("Mr. & Mrs. Kamau" in Reference Target) */}
-                    <span className="iv-letter-guest-line">
-                      {guestName || 'Mr. & Mrs. Kamau'}
-                    </span>
-
                     <span className="iv-letter-joining">
                       {template.category === 'wedding'
                         ? 'to celebrate the wedding of'
@@ -772,31 +763,24 @@ export function EnvelopeRenderer({
                       </span>
                     )}
 
-                    {/* Gold Tapered Rule with Diamond Fleuron */}
-                    <div className="iv-letter-divider">
-                      <span className="iv-divider-diamond">✦ ─── ❦ ─── ✦</span>
+                    {/* A restrained printer's rule instead of stock decorative glyphs. */}
+                    <div className="iv-letter-divider" aria-hidden="true">
+                      <span />
                     </div>
 
-                    {/* Date, Time & Venue with Icons */}
+                    {/* Print-like details: aligned type, no interface icons. */}
                     <div className="iv-letter-details-grid">
-                      <div className="iv-letter-detail-item">
-                        <CalendarDays size={11} className="text-amber-800/80" />
-                        <span>{data.date}</span>
-                      </div>
-                      <div className="iv-letter-detail-item">
-                        <Clock3 size={11} className="text-amber-800/80" />
-                        <span>{data.time}</span>
-                      </div>
-                      <div className="iv-letter-detail-item">
-                        <MapPin size={11} className="text-amber-800/80" />
-                        <span>{data.venue}{data.city ? `, ${data.city}` : ''}</span>
-                      </div>
-                    </div>
-
-                    {/* Bottom Flourish & RSVP */}
-                    <div className="iv-letter-bottom-section">
-                      <span className="iv-letter-bottom-flourish">❦</span>
-                      <span className="iv-letter-rsvp-hint">R . S . V . P .</span>
+                      {data.date && (
+                        <div className="iv-letter-detail-item">{data.date}</div>
+                      )}
+                      {data.time && (
+                        <div className="iv-letter-detail-item">{data.time}</div>
+                      )}
+                      {(data.venue || data.city) && (
+                        <div className="iv-letter-detail-item">
+                          {[data.venue, data.city].filter(Boolean).join(', ')}
+                        </div>
+                      )}
                     </div>
                   </span>
                 )}
@@ -810,6 +794,14 @@ export function EnvelopeRenderer({
                 <span className="iv-pocket-gold-rule" />
                 <span className="iv-pocket-crease-shadow" />
               </span>
+
+              {/* Address belongs on the envelope, not on the printed invitation. */}
+              {guestName && (
+                <span className="iv-envelope-address" aria-hidden="true">
+                  <span className="iv-envelope-address__eyebrow">Prepared for</span>
+                  <span className="iv-envelope-address__name">{guestName}</span>
+                </span>
+              )}
 
               {/* Layer 7 & 8: Hinged Flap with 3D Rotation and Inner Liner Face */}
               <motion.span
