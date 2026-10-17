@@ -853,6 +853,11 @@ export const TEMPLATES: TemplateDefinition[] = [
       hosts: 'Ken & Mercy', celebrants: 'Ken & Mercy Chege', date: 'Sunday, 20 December 2026', time: '3:00 PM',
       venue: 'Enashipai Resort & Spa, Naivasha', city: 'Naivasha, Kenya',
       heroImage: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=82',
+      galleryImages: [
+        'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=82',
+        'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1000&q=80',
+        'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1000&q=80',
+      ],
       story: 'Join us at the shores of Lake Naivasha to renew our vows under the yellow fever trees.',
     },
   },
