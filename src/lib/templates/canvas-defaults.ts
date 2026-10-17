@@ -248,15 +248,15 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'first-home-botanical') {
     return {
       eyebrow: 'A PLACE TO CALL HOME', request: 'Come see where the next chapter begins',
-      photo: { x: 42, y: 45, width: 396, height: 242 }, mask: 'none',
-      titleY: 319, titleHeight: 82, titleMax: 38, detailsY: 423, venueY: 464, venueHeight: 53,
+      photo: { x: 42, y: 45, width: 396, height: 238 }, mask: 'none',
+      titleY: 322, titleHeight: 82, titleMax: 38, detailsY: 426, venueY: 467, venueHeight: 53,
       detailSize: 12, headingFont: 'Cormorant Garamond',
     };
   }
   if (id === 'new-address-modern') {
     return {
       eyebrow: 'NEW ADDRESS · SAME GOOD COMPANY', request: 'We have a key to share with you',
-      photo: { x: 48, y: 49, width: 384, height: 214 }, mask: 'none',
+      photo: { x: 48, y: 49, width: 384, height: 210 }, mask: 'none',
       titleY: 292, titleHeight: 91, titleMax: 34, detailsY: 408, venueY: 449, venueHeight: 56,
       detailSize: 12, headingFont: 'Inter',
     };
@@ -264,7 +264,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'terrace-open-house') {
     return {
       eyebrow: 'DOORS OPEN, TABLE SET', request: 'Drop by for a sunny afternoon',
-      photo: { x: 34, y: 47, width: 412, height: 238 }, mask: 'none',
+      photo: { x: 34, y: 47, width: 412, height: 228 }, mask: 'none',
       titleY: 316, titleHeight: 84, titleMax: 36, detailsY: 422, venueY: 463, venueHeight: 54,
       detailSize: 12, headingFont: 'Cormorant Garamond',
     };
@@ -272,7 +272,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'future-in-gold') {
     return {
       eyebrow: 'THE NEXT CHAPTER', request: 'A proud day, shared with our people',
-      photo: { x: 62, y: 45, width: 356, height: 218 }, mask: 'arch',
+      photo: { x: 62, y: 45, width: 356, height: 210 }, mask: 'arch',
       titleY: 294, titleHeight: 96, titleMax: 39, detailsY: 415, venueY: 455, venueHeight: 56,
       detailSize: 12, headingFont: 'Playfair Display',
     };
@@ -304,7 +304,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'serene-meadow') {
     return {
       eyebrow: 'A LIFE THAT STILL SURROUNDS US', request: 'In quiet remembrance',
-      photo: { x: 36, y: 48, width: 408, height: 230 }, mask: 'none',
+      photo: { x: 36, y: 48, width: 408, height: 220 }, mask: 'none',
       titleY: 308, titleHeight: 82, titleMax: 33, detailsY: 417, venueY: 457, venueHeight: 60,
       detailSize: 12, headingFont: 'Cormorant Garamond',
     };
@@ -320,7 +320,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'tender-welcome-baby') {
     return {
       eyebrow: 'MEET OUR LITTLE WONDER', request: 'We would love you to meet our newest love',
-      photo: { x: 74, y: 47, width: 332, height: 228 }, mask: 'none',
+      photo: { x: 74, y: 47, width: 332, height: 220 }, mask: 'none',
       titleY: 306, titleHeight: 88, titleMax: 35, detailsY: 419, venueY: 459, venueHeight: 55,
       detailSize: 12, headingFont: 'Cormorant Garamond',
     };
@@ -361,7 +361,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'festive-lumiere') {
     return {
       eyebrow: 'GATHER CLOSE, GLOW BRIGHT', request: 'A seasonal evening with good company',
-      photo: { x: 50, y: 51, width: 380, height: 220 }, mask: 'none',
+      photo: { x: 50, y: 51, width: 380, height: 210 }, mask: 'none',
       titleY: 302, titleHeight: 84, titleMax: 37, detailsY: 411, venueY: 451, venueHeight: 58,
       detailSize: 12, headingFont: 'Playfair Display',
     };
@@ -393,7 +393,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'nostalgic-alumni-reunion') {
     return {
       eyebrow: 'OLD FRIENDS, NEW MEMORIES', request: 'The years change; the stories stay',
-      photo: { x: 42, y: 46, width: 396, height: 238 }, mask: 'none',
+      photo: { x: 42, y: 46, width: 396, height: 230 }, mask: 'none',
       titleY: 313, titleHeight: 84, titleMax: 38, detailsY: 420, venueY: 460, venueHeight: 56,
       detailSize: 12, headingFont: 'Playfair Display',
     };
@@ -409,7 +409,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'harambee-cultural-night') {
     return {
       eyebrow: 'CULTURE · FAMILY · CELEBRATION', request: 'With joy, we invite you to gather',
-      photo: { x: 42, y: 45, width: 396, height: 239 }, mask: 'none',
+      photo: { x: 42, y: 45, width: 396, height: 228 }, mask: 'none',
       titleY: 315, titleHeight: 84, titleMax: 38, detailsY: 422, venueY: 462, venueHeight: 55,
       detailSize: 12, headingFont: 'Cormorant Garamond',
     };
@@ -425,7 +425,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'nexus-product-unveil') {
     return {
       eyebrow: 'A FIRST LOOK', request: 'An idea becomes something real',
-      photo: { x: 35, y: 44, width: 410, height: 216 }, mask: 'none',
+      photo: { x: 35, y: 44, width: 410, height: 210 }, mask: 'none',
       titleY: 292, titleHeight: 94, titleMax: 32, detailsY: 408, venueY: 449, venueHeight: 57,
       detailSize: 12, headingFont: 'Inter',
     };
@@ -457,7 +457,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'bespoke-gathering') {
     return {
       eyebrow: 'MADE FOR THIS MOMENT', request: 'An invitation shaped around you',
-      photo: { x: 44, y: 46, width: 392, height: 231 }, mask: 'none',
+      photo: { x: 44, y: 46, width: 392, height: 220 }, mask: 'none',
       titleY: 307, titleHeight: 85, titleMax: 36, detailsY: 417, venueY: 458, venueHeight: 55,
       detailSize: 12, headingFont: 'Cormorant Garamond',
     };
@@ -467,7 +467,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
     return {
       eyebrow: 'IN LOVING MEMORY', request: 'A life remembered with love',
       photo: { x: 166, y: 54, width: 148, height: 154 }, mask: 'oval',
-      titleY: 245, titleHeight: 76, titleMax: 31, detailsY: 360, venueY: 401, venueHeight: 62,
+      titleY: 252, titleHeight: 76, titleMax: 31, detailsY: 365, venueY: 406, venueHeight: 62,
       detailSize: 12, headingFont: 'Cormorant Garamond',
     };
   }
