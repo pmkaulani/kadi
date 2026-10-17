@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import type { CanvasElement } from '@/types/canvas';
+import { PhotoMaskRenderer } from './PhotoMaskRenderer';
 
 export interface CanvasCardViewProps {
   elements?: CanvasElement[];
@@ -126,23 +127,15 @@ export function CanvasCardView({
 
                 {/* 2. PHOTO */}
                 {elem.type === 'photo' && (
-                  <div
-                    className={`w-full h-full overflow-hidden ${
-                      style.maskShape === 'circle'
-                        ? 'rounded-full aspect-square'
-                        : style.maskShape === 'oval'
-                        ? 'rounded-[50%]'
-                        : style.maskShape === 'rounded'
-                        ? 'rounded-3xl'
-                        : 'rounded-md'
-                    }`}
-                  >
-                    <img
-                      src={elem.content}
-                      alt={elem.name || 'Photo'}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <PhotoMaskRenderer
+                    id={elem.id}
+                    src={elem.content}
+                    alt={elem.name || 'Photo'}
+                    maskShape={style.maskShape || 'none'}
+                    stickerEffect={style.stickerEffect}
+                    stickerBorderWidth={style.stickerBorderWidth || 8}
+                    stickerBorderColor={style.stickerBorderColor || '#FFFFFF'}
+                  />
                 )}
 
                 {/* 3. STICKER */}

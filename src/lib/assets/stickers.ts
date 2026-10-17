@@ -2,6 +2,7 @@ export interface StickerAsset {
   id: string;
   name: string;
   category:
+    | 'planner'
     | 'stationery'
     | 'botanical'
     | 'party'
@@ -42,7 +43,235 @@ function createSticker(
 
 export const STICKER_ASSETS: StickerAsset[] = [
   // ═════════════════════════════════════════════════════════════════════════
-  // 1. STATIONERY, WASHI TAPE & WAX SEALS
+  // 1. HAND-DRAWN WEDDING PLANNER & KEEPSAKE DOODLES (Paperless Post Style)
+  // ═════════════════════════════════════════════════════════════════════════
+  createSticker(
+    'planner-wedding-day-wreath',
+    'Wedding Day Wreath',
+    'planner',
+    ['wedding day', 'wreath', 'botanical', 'foliage', 'leaves', 'circle', 'handdrawn', 'planner'],
+    160,
+    160
+  ),
+  createSticker(
+    'planner-bride-and-groom',
+    'Bride & Groom Illustration',
+    'planner',
+    ['bride', 'groom', 'couple', 'ballgown', 'veil', 'suit', 'portrait', 'handdrawn', 'love'],
+    150,
+    200
+  ),
+  createSticker(
+    'planner-save-the-date',
+    'Save The Date Calligraphy',
+    'planner',
+    ['save the date', 'calligraphy', 'script', 'handlettered', 'botanical', 'sprig'],
+    180,
+    90
+  ),
+  createSticker(
+    'planner-champagne-toast',
+    'Champagne & Clinking Flutes',
+    'planner',
+    ['champagne', 'flutes', 'bubbly', 'toast', 'cheers', 'celebrate', 'handdrawn'],
+    140,
+    140
+  ),
+  createSticker(
+    'planner-wedding-bells',
+    'Wedding Bells & Bow',
+    'planner',
+    ['bells', 'wedding bells', 'church', 'bow', 'ribbon', 'rings', 'handdrawn'],
+    130,
+    115
+  ),
+  createSticker(
+    'planner-washi-pink-stripes',
+    'Striped Blush Washi Tape',
+    'planner',
+    ['washi', 'tape', 'stripes', 'pink', 'scrapbook', 'planner', 'paper'],
+    200,
+    55
+  ),
+  createSticker(
+    'planner-washi-dusty-rose',
+    'Dusty Rose Washi Tape',
+    'planner',
+    ['washi', 'tape', 'dusty rose', 'blush', 'masking', 'planner', 'scrapbook'],
+    200,
+    55
+  ),
+  createSticker(
+    'planner-order-flowers',
+    'Order Flowers Bouquet',
+    'planner',
+    ['order flowers', 'roses', 'bouquet', 'florals', 'ribbon', 'checklist', 'planner'],
+    140,
+    150
+  ),
+  createSticker(
+    'planner-book-photographer',
+    'Book Photographer Camera',
+    'planner',
+    ['book photographer', 'camera', 'vintage', 'slr', 'photo', 'checklist', 'planner'],
+    140,
+    120
+  ),
+  createSticker(
+    'planner-hair-appointment',
+    'Hair Appointment & Scissors',
+    'planner',
+    ['hair', 'appointment', 'scissors', 'comb', 'bobby pin', 'styling', 'planner'],
+    140,
+    115
+  ),
+  createSticker(
+    'planner-makeup-lashes',
+    'Makeup & Lashes',
+    'planner',
+    ['makeup', 'lashes', 'mascara', 'beauty', 'eyelashes', 'glam', 'planner'],
+    140,
+    100
+  ),
+  createSticker(
+    'planner-dress-fitting',
+    'Dress Fitting & Diamond Ring',
+    'planner',
+    ['fitting', 'dress', 'diamond', 'ring', 'solitaire', 'checklist', 'planner'],
+    160,
+    85
+  ),
+  createSticker(
+    'planner-youre-invited',
+    'You\'re Invited Note',
+    'planner',
+    ['youre invited', 'envelope', 'letter', 'note', 'handwritten', 'mail', 'planner'],
+    130,
+    115
+  ),
+  createSticker(
+    'planner-i-do',
+    '"I do" Script',
+    'planner',
+    ['i do', 'script', 'calligraphy', 'vows', 'wedding', 'heart', 'handlettered'],
+    140,
+    80
+  ),
+  createSticker(
+    'planner-bridal-shower',
+    'Bridal Shower Script',
+    'planner',
+    ['bridal shower', 'script', 'party', 'celebrate', 'girls', 'handlettered'],
+    150,
+    85
+  ),
+  createSticker(
+    'planner-scalloped-bunting',
+    'Scalloped Garland Bunting',
+    'planner',
+    ['bunting', 'garland', 'scallops', 'banner', 'pennant', 'party', 'pink'],
+    200,
+    75
+  ),
+  createSticker(
+    'planner-ribbon-scroll',
+    'Blush Ribbon Scroll Banner',
+    'planner',
+    ['ribbon', 'scroll', 'banner', 'blush', 'folded', 'frame', 'handdrawn'],
+    200,
+    75
+  ),
+  createSticker(
+    'planner-wedding-journal',
+    'Wedding Planner Notebook',
+    'planner',
+    ['journal', 'notebook', 'binder', 'wedding planner', 'spiral', 'heart', 'notes'],
+    120,
+    130
+  ),
+  createSticker(
+    'planner-high-heels',
+    'Bridal Stiletto High Heels',
+    'planner',
+    ['high heels', 'stiletto', 'shoes', 'bridal', 'pump', 'glam', 'fashion'],
+    140,
+    110
+  ),
+  createSticker(
+    'planner-gift-box',
+    'Wrapped Wedding Gift Box',
+    'planner',
+    ['gift box', 'present', 'ribbon', 'bow', 'surprise', 'registry', 'wedding'],
+    120,
+    120
+  ),
+  createSticker(
+    'planner-doodle-heart',
+    'Hand-Drawn Pink Heart',
+    'planner',
+    ['heart', 'pink', 'sparks', 'doodle', 'love', 'blush', 'sketch'],
+    100,
+    95
+  ),
+  createSticker(
+    'planner-days-countdown',
+    '"— Days" Countdown',
+    'planner',
+    ['days', 'countdown', 'calendar', 'timer', 'checklist', 'days to go'],
+    160,
+    75
+  ),
+  createSticker(
+    'planner-love-line',
+    'Continuous "Love" Ribbon',
+    'planner',
+    ['love', 'cursive', 'ribbon', 'divider', 'script', 'monoline', 'romance'],
+    220,
+    55
+  ),
+  createSticker(
+    'planner-swirl-divider',
+    'Swirl Flourish Divider',
+    'planner',
+    ['swirl', 'flourish', 'divider', 'scroll', 'accent', 'vintage', 'ornament'],
+    200,
+    65
+  ),
+  createSticker(
+    'planner-wedding-cake',
+    'Frosted 3-Tier Wedding Cake',
+    'planner',
+    ['wedding cake', 'cake', 'stand', 'pedestal', 'tiers', 'frosting', 'sweet'],
+    120,
+    145
+  ),
+  createSticker(
+    'planner-best-day-ever',
+    '"Best Day Ever" Script',
+    'planner',
+    ['best day ever', 'calligraphy', 'script', 'sparkles', 'stars', 'celebration'],
+    160,
+    90
+  ),
+  createSticker(
+    'planner-harusi-yetu',
+    '"Harusi Yetu" Swahili Script',
+    'planner',
+    ['harusi yetu', 'harusi', 'swahili', 'kenya', 'script', 'wedding', 'botanical'],
+    170,
+    85
+  ),
+  createSticker(
+    'planner-sherehe',
+    '"Sherehe" Swahili Script',
+    'planner',
+    ['sherehe', 'party', 'swahili', 'kenya', 'celebration', 'confetti', 'turnup'],
+    160,
+    80
+  ),
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // 2. STATIONERY, WASHI TAPE & WAX SEALS
   // ═════════════════════════════════════════════════════════════════════════
   createSticker(
     'stationery-washi-gold',

@@ -5,18 +5,31 @@ import { UploadCloud, Image as ImageIcon, Plus, Check } from 'lucide-react';
 import type { MaskShape } from '@/types/canvas';
 
 interface UploadsPanelProps {
-  onInsertPhoto: (photoUrl: string, maskShape: MaskShape) => void;
+  onInsertPhoto: (photoUrl: string, maskShape: MaskShape, stickerEffect?: boolean) => void;
 }
+
+const MASK_OPTIONS: { id: MaskShape; label: string; icon: string }[] = [
+  { id: 'heart', label: 'Heart', icon: '❤️' },
+  { id: 'arch', label: 'Arch', icon: '🏛️' },
+  { id: 'polaroid', label: 'Polaroid', icon: '📷' },
+  { id: 'stamp', label: 'Stamp', icon: '💌' },
+  { id: 'circle', label: 'Circle', icon: '⚪' },
+  { id: 'oval', label: 'Oval', icon: '🥚' },
+  { id: 'star', label: 'Star', icon: '⭐' },
+  { id: 'flower', label: 'Badge', icon: '🌸' },
+  { id: 'rounded', label: 'Rounded', icon: '🔲' },
+  { id: 'none', label: 'Full', icon: '⬛' },
+];
 
 const SAMPLE_PHOTOS = [
   {
     id: 'sample-wedding-couple',
-    label: 'Couple Portrait',
+    label: 'Romantic Couple',
     url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'sample-outdoor-ceremony',
-    label: 'Romantic Landscape',
+    label: 'Sunset Portrait',
     url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80',
   },
   {
@@ -26,14 +39,15 @@ const SAMPLE_PHOTOS = [
   },
   {
     id: 'sample-birthday-friend',
-    label: 'Birthday Portrait',
+    label: 'Birthday Glow',
     url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
   },
 ];
 
 export function UploadsPanel({ onInsertPhoto }: UploadsPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedMask, setSelectedMask] = useState<MaskShape>('oval');
+  const [selectedMask, setSelectedMask] = useState<MaskShape>('heart');
+  const [stickerEffect, setStickerEffect] = useState<boolean>(true);
   const [userPhotos, setUserPhotos] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -47,7 +61,7 @@ export function UploadsPanel({ onInsertPhoto }: UploadsPanelProps) {
       const dataUrl = event.target?.result as string;
       if (dataUrl) {
         setUserPhotos((prev) => [dataUrl, ...prev]);
-        onInsertPhoto(dataUrl, selectedMask);
+        onInsertPhoto(dataUrl, selectedMask, stickerEffect);
       }
       setIsUploading(false);
     };
@@ -58,29 +72,59 @@ export function UploadsPanel({ onInsertPhoto }: UploadsPanelProps) {
     <div className="flex flex-col h-full bg-[#1F1F1F] text-white p-4 space-y-4">
       {/* Mask Shape Selector */}
       <div>
-        <label className="text-xs font-semibold text-white/50 uppercase tracking-wider block mb-2">
-          Photo Mask &amp; Frame Shape
-        </label>
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { id: 'oval' as MaskShape, label: 'Oval' },
-            { id: 'circle' as MaskShape, label: 'Circle' },
-            { id: 'rounded' as MaskShape, label: 'Rounded' },
-            { id: 'none' as MaskShape, label: 'Full' },
-          ].map((mask) => (
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs font-semibold text-white/70 uppercase tracking-wider block">
+            Photo Mask &amp; Keepsake Shape
+          </label>
+          <span className="text-[10px] text-[#B99A62] font-medium">
+            {MASK_OPTIONS.find((m) => m.id === selectedMask)?.label}
+          </span>
+        </div>
+        <div className="grid grid-cols-5 gap-1.5">
+          {MASK_OPTIONS.map((mask) => (
             <button
               key={mask.id}
               onClick={() => setSelectedMask(mask.id)}
-              className={`py-2 rounded-lg text-xs font-medium border transition-all ${
+              className={`py-2 px-1 rounded-lg text-[11px] font-medium border flex flex-col items-center gap-1 transition-all ${
                 selectedMask === mask.id
-                  ? 'border-[#B99A62] bg-[#B99A62]/20 text-white font-semibold'
-                  : 'border-white/10 bg-white/5 text-white/60 hover:text-white'
+                  ? 'border-[#B99A62] bg-[#B99A62]/20 text-white font-semibold shadow-xs'
+                  : 'border-white/10 bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
+              title={mask.label}
             >
-              {mask.label}
+              <span className="text-sm">{mask.icon}</span>
+              <span className="text-[9px] truncate max-w-full">{mask.label}</span>
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Die-Cut Vinyl Sticker Border Toggle */}
+      <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between">
+        <div className="flex flex-col">
+          <span className="text-xs font-semibold text-white flex items-center gap-1.5">
+            <span>✨ Vinyl Sticker Border</span>
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#B99A62]/20 text-[#B99A62] font-mono">
+              3D DIE-CUT
+            </span>
+          </span>
+          <span className="text-[10px] text-white/50">
+            Physical white border + keepsake drop shadow
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setStickerEffect(!stickerEffect)}
+          className={`w-9 h-5 rounded-full transition-colors relative p-0.5 shrink-0 ${
+            stickerEffect ? 'bg-[#B99A62]' : 'bg-white/20'
+          }`}
+        >
+          <div
+            className={`w-4 h-4 rounded-full bg-white transition-transform ${
+              stickerEffect ? 'translate-x-4' : 'translate-x-0'
+            }`}
+          />
+        </button>
       </div>
 
       {/* Upload Dropzone */}
@@ -114,7 +158,7 @@ export function UploadsPanel({ onInsertPhoto }: UploadsPanelProps) {
             {userPhotos.map((photo, i) => (
               <div
                 key={i}
-                onClick={() => onInsertPhoto(photo, selectedMask)}
+                onClick={() => onInsertPhoto(photo, selectedMask, stickerEffect)}
                 className="group relative aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-[#B99A62] cursor-pointer"
               >
                 <img src={photo} alt="Upload" className="w-full h-full object-cover" />
@@ -136,7 +180,7 @@ export function UploadsPanel({ onInsertPhoto }: UploadsPanelProps) {
           {SAMPLE_PHOTOS.map((sample) => (
             <div
               key={sample.id}
-              onClick={() => onInsertPhoto(sample.url, selectedMask)}
+              onClick={() => onInsertPhoto(sample.url, selectedMask, stickerEffect)}
               className="group relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 hover:border-[#B99A62] cursor-pointer transition-all hover:scale-[1.02]"
               title={`Click to add ${sample.label}`}
             >

@@ -11,6 +11,7 @@ interface StickersPanelProps {
 
 const CATEGORIES = [
   { id: 'all', label: 'All Stickers' },
+  { id: 'planner', label: '🎨 Doodles & Planner' },
   { id: 'stationery', label: '💌 Washi & Wax Seals' },
   { id: 'botanical', label: '🌿 Florals & Botanicals' },
   { id: 'party', label: '🥂 Toast & Celebration' },

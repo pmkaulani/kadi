@@ -69,10 +69,16 @@ const ANIMATION_EFFECTS: { id: AnimationEffect; label: string }[] = [
 ];
 
 const MASK_SHAPES: { id: MaskShape; label: string }[] = [
-  { id: 'none', label: 'Square / Full' },
-  { id: 'rounded', label: 'Soft Rounded' },
-  { id: 'oval', label: 'Portrait Oval' },
-  { id: 'circle', label: 'Classic Circle' },
+  { id: 'heart', label: '❤️ Heart Sticker' },
+  { id: 'arch', label: '🏛️ Arch Window' },
+  { id: 'polaroid', label: '📷 Polaroid Frame' },
+  { id: 'stamp', label: '💌 Postage Stamp' },
+  { id: 'circle', label: '⚪ Circle Sticker' },
+  { id: 'oval', label: '🥚 Portrait Oval' },
+  { id: 'star', label: '⭐ Star Sticker' },
+  { id: 'flower', label: '🌸 Scallop Badge' },
+  { id: 'rounded', label: '🔲 Soft Rounded' },
+  { id: 'none', label: '⬛ Full / Square' },
 ];
 
 export function ContextualElementToolbar({
@@ -298,17 +304,30 @@ export function ContextualElementToolbar({
               </button>
 
               {showMaskPicker && (
-                <div className="absolute top-full left-0 mt-2 bg-[#262626] border border-white/20 p-1.5 rounded-lg shadow-xl flex flex-col gap-1 z-50">
+                <div className="absolute top-full left-0 mt-2 bg-[#262626] border border-white/20 p-1.5 rounded-lg shadow-xl flex flex-col gap-1 z-50 min-w-[150px]">
                   {MASK_SHAPES.map((mask) => (
                     <button
                       key={mask.id}
                       type="button"
                       onClick={() => {
-                        onUpdateStyle({ maskShape: mask.id });
+                        // When selecting a fun sticker shape (heart, star, stamp, polaroid), default stickerEffect to true if not specified
+                        const enableSticker =
+                          mask.id === 'heart' ||
+                          mask.id === 'star' ||
+                          mask.id === 'polaroid' ||
+                          mask.id === 'stamp' ||
+                          mask.id === 'flower';
+                        onUpdateStyle({
+                          maskShape: mask.id,
+                          stickerEffect:
+                            style.stickerEffect !== undefined
+                              ? style.stickerEffect
+                              : enableSticker,
+                        });
                         setShowMaskPicker(false);
                       }}
-                      className={`px-3 py-1 text-left text-xs rounded hover:bg-white/15 ${
-                        style.maskShape === mask.id ? 'text-[#B99A62] font-semibold' : 'text-white'
+                      className={`px-3 py-1.5 text-left text-xs rounded hover:bg-white/15 transition-colors ${
+                        style.maskShape === mask.id ? 'text-[#B99A62] font-semibold bg-white/5' : 'text-white'
                       }`}
                     >
                       {mask.label}
@@ -317,6 +336,29 @@ export function ContextualElementToolbar({
                 </div>
               )}
             </div>
+          )}
+
+          {/* Die-Cut Vinyl Sticker Border Toggle Button */}
+          {isPhoto && (
+            <button
+              type="button"
+              onClick={() =>
+                onUpdateStyle({
+                  stickerEffect: !style.stickerEffect,
+                  stickerBorderWidth: style.stickerBorderWidth || 8,
+                  stickerBorderColor: style.stickerBorderColor || '#FFFFFF',
+                })
+              }
+              className={`px-2 py-1 rounded flex items-center gap-1.5 text-[11px] transition-colors border ${
+                style.stickerEffect
+                  ? 'bg-[#B99A62] text-[#112327] border-[#B99A62] font-semibold shadow-xs'
+                  : 'bg-white/10 hover:bg-white/20 text-white/90 border-white/10'
+              }`}
+              title="Toggle Die-Cut Vinyl Sticker Border & 3D Shadow"
+            >
+              <Sparkles size={11} className={style.stickerEffect ? 'text-[#112327]' : 'text-amber-300'} />
+              <span>Sticker Border</span>
+            </button>
           )}
 
           <div className="w-[1px] h-4 bg-white/15 mx-0.5" />

@@ -620,23 +620,49 @@ export function KadiStudioEditor({
     setActiveRailTool(null);
   };
 
-  // Add new Photo to canvas
-  const handleInsertPhoto = (photoUrl: string, maskShape: MaskShape) => {
+  // Add new Photo to canvas (with keepsake die-cut shapes & sticker borders)
+  const handleInsertPhoto = (
+    photoUrl: string,
+    maskShape: MaskShape,
+    stickerEffect: boolean = false
+  ) => {
+    const isSticker =
+      stickerEffect ||
+      maskShape === 'heart' ||
+      maskShape === 'star' ||
+      maskShape === 'polaroid' ||
+      maskShape === 'stamp' ||
+      maskShape === 'flower';
+
+    const photoName =
+      maskShape === 'heart'
+        ? 'Heart Photo Sticker'
+        : maskShape === 'polaroid'
+        ? 'Polaroid Keepsake'
+        : maskShape === 'stamp'
+        ? 'Postage Stamp Photo'
+        : maskShape === 'arch'
+        ? 'Arch Photo Frame'
+        : 'User Photo';
+
     const newPhoto: CanvasElement = {
       id: `photo-${Date.now()}`,
       type: 'photo',
-      name: 'User Photo',
+      name: photoName,
       content: photoUrl,
       originalAssetUrl: photoUrl,
       x: 140,
-      y: 220,
+      y: 200,
       width: 200,
-      height: 200,
+      height: maskShape === 'polaroid' ? 240 : 200,
       rotation: 0,
       zIndex: Math.max(...canvasElements.map((e) => e.zIndex), 0) + 1,
       opacity: 1,
       styleProps: {
         maskShape,
+        stickerEffect: isSticker,
+        stickerBorderWidth: 8,
+        stickerBorderColor: '#FFFFFF',
       },
     };
 

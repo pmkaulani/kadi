@@ -33,6 +33,7 @@ import type { TemplateDefinition } from '@/lib/templates/types';
 import { SelectionTransformOverlay } from './SelectionTransformOverlay';
 import { ContextualElementToolbar } from './ContextualElementToolbar';
 import { StationerySectionCards } from './StationerySectionCards';
+import { PhotoMaskRenderer } from './PhotoMaskRenderer';
 
 interface InvitationCanvasProps {
   elements: CanvasElement[];
@@ -690,27 +691,17 @@ export function InvitationCanvas({
                   )
                 )}
 
-                {/* ── 3. PHOTO ELEMENT (WITH NON-DESTRUCTIVE MASK SHAPES) ──── */}
+                {/* ── 3. PHOTO ELEMENT (WITH NON-DESTRUCTIVE MASK SHAPES & VINYL STICKER BORDER) ──── */}
                 {elem.type === 'photo' && (
-                  <div
-                    className="w-full h-full overflow-hidden shadow-sm select-none"
-                    style={{
-                      borderRadius:
-                        style.maskShape === 'circle'
-                          ? '9999px'
-                          : style.maskShape === 'oval'
-                          ? '50% / 40%'
-                          : style.maskShape === 'rounded'
-                          ? '20px'
-                          : '0px',
-                    }}
-                  >
-                    <img
-                      src={elem.content}
-                      alt={elem.name || 'User photo'}
-                      className="w-full h-full object-cover pointer-events-none"
-                    />
-                  </div>
+                  <PhotoMaskRenderer
+                    id={elem.id}
+                    src={elem.content}
+                    alt={elem.name || 'User photo'}
+                    maskShape={style.maskShape || 'none'}
+                    stickerEffect={style.stickerEffect}
+                    stickerBorderWidth={style.stickerBorderWidth || 8}
+                    stickerBorderColor={style.stickerBorderColor || '#FFFFFF'}
+                  />
                 )}
 
                 {/* ── 4. BUTTON ELEMENT (FREELY POSITIONABLE CALL TO ACTION) ─ */}

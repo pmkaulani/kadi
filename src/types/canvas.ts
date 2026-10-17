@@ -1,6 +1,16 @@
 export type CanvasElementType = 'text' | 'sticker' | 'photo' | 'shape' | 'button';
 
-export type MaskShape = 'none' | 'circle' | 'oval' | 'rounded' | 'arch';
+export type MaskShape =
+  | 'none'
+  | 'circle'
+  | 'oval'
+  | 'rounded'
+  | 'arch'
+  | 'heart'
+  | 'star'
+  | 'polaroid'
+  | 'stamp'
+  | 'flower';
 
 export type AnimationEffect =
   | 'none'
@@ -29,6 +39,10 @@ export interface CanvasElementStyle {
   shapeType?: 'rectangle' | 'circle' | 'rounded';
   fill?: string;
   buttonVariant?: 'filled' | 'outline' | 'pill' | 'gold-foil';
+  // Photo Die-Cut Vinyl Sticker Styling (§Photo Keepsake)
+  stickerEffect?: boolean;
+  stickerBorderWidth?: number;
+  stickerBorderColor?: string;
 }
 
 export interface CanvasElementAnimation {
