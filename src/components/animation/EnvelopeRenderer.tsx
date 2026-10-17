@@ -669,7 +669,7 @@ export function EnvelopeRenderer({
                     : phase === 'seal-release'
                     ? { y: '22%', z: 10, rotate: -0.25, scale: 0.99, opacity: 0 }
                     : phase === 'flap-open'
-                    ? { y: '7%', z: 14, rotate: -0.2, scale: 0.995, opacity: 1 }
+                    ? { y: '-2%', z: 14, rotate: -0.2, scale: 0.995, opacity: 1 }
                     : phase === 'card-rising'
                     ? { y: '-46%', z: 22, rotate: -0.55, scale: 1.005, opacity: 1 }
                     : { y: '-50%', z: 24, rotate: 0, scale: 1.006, opacity: 1 }
