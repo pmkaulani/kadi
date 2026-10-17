@@ -408,21 +408,41 @@ export function KadiStudioEditor({
       update((prev) => {
         let updatedCanvasElements = prev.design?.canvasElements;
         if (typeof value === 'string' && updatedCanvasElements && updatedCanvasElements.length > 0) {
-          if (key === 'title') {
+          if (key === 'title' || key === 'celebrants') {
             updatedCanvasElements = updatedCanvasElements.map((el) =>
               el.id === 'text-title' ? { ...el, content: value } : el
             );
           } else if (key === 'date') {
-            updatedCanvasElements = updatedCanvasElements.map((el) =>
-              el.id === 'text-date' ? { ...el, content: value } : el
-            );
+            updatedCanvasElements = updatedCanvasElements.map((el) => {
+              if (el.id !== 'text-date') return el;
+              const timePart = prev.values.time ? ` · ${prev.values.time}` : '';
+              return { ...el, content: `${value}${timePart}` };
+            });
+          } else if (key === 'time') {
+            updatedCanvasElements = updatedCanvasElements.map((el) => {
+              if (el.id !== 'text-date') return el;
+              const datePart = prev.values.date || 'Saturday, 14 November 2026';
+              return { ...el, content: `${datePart} · ${value}` };
+            });
           } else if (key === 'venue') {
-            updatedCanvasElements = updatedCanvasElements.map((el) =>
-              el.id === 'text-venue' ? { ...el, content: value } : el
-            );
+            updatedCanvasElements = updatedCanvasElements.map((el) => {
+              if (el.id !== 'text-venue') return el;
+              const cityPart = prev.values.city ? `\n${prev.values.city}` : '';
+              return { ...el, content: `${value}${cityPart}` };
+            });
+          } else if (key === 'city') {
+            updatedCanvasElements = updatedCanvasElements.map((el) => {
+              if (el.id !== 'text-venue') return el;
+              const venuePart = prev.values.venue || 'Safari Park Hotel';
+              return { ...el, content: `${venuePart}\n${value}` };
+            });
           } else if (key === 'hosts') {
             updatedCanvasElements = updatedCanvasElements.map((el) =>
               el.id === 'text-hosts' ? { ...el, content: value } : el
+            );
+          } else if (key === 'countdownLabel') {
+            updatedCanvasElements = updatedCanvasElements.map((el) =>
+              el.id === 'text-request' ? { ...el, content: value } : el
             );
           }
         }
@@ -460,13 +480,27 @@ export function KadiStudioEditor({
       el.id === id ? { ...el, ...updates } : el
     );
 
-    // Sync title/celebrants or hosts if text element content changed
-    if (updates.content) {
+    // Sync values if canvas text element content changed
+    if (updates.content !== undefined) {
       if (id === 'text-title') {
         patchValues('title', updates.content);
         patchValues('celebrants', updates.content);
       } else if (id === 'text-hosts') {
         patchValues('hosts', updates.content);
+      } else if (id === 'text-date') {
+        const parts = updates.content.split('·');
+        patchValues('date', parts[0].trim());
+        if (parts[1]) {
+          patchValues('time', parts[1].trim());
+        }
+      } else if (id === 'text-venue') {
+        const parts = updates.content.split('\n');
+        patchValues('venue', parts[0].trim());
+        if (parts[1]) {
+          patchValues('city', parts[1].trim());
+        }
+      } else if (id === 'text-request') {
+        patchValues('countdownLabel', updates.content);
       }
     }
 
@@ -1400,12 +1434,23 @@ export function KadiStudioEditor({
 
                 {/* Replay & Share */}
                 <div className="flex items-center gap-2">
+                  {replayKey > 0 && (
+                    <button
+                      onClick={() => setReplayKey(0)}
+                      className="px-2.5 py-1 rounded border border-[#0F766E]/30 bg-[#0F766E]/10 hover:bg-[#0F766E]/20 text-[#0F766E] flex items-center gap-1 font-medium"
+                      title="Skip animation and view full invitation directly"
+                    >
+                      <Eye size={12} />
+                      <span>Full Invitation</span>
+                    </button>
+                  )}
                   <button
-                    onClick={() => setReplayKey((k) => k + 1)}
+                    onClick={() => setReplayKey((k) => (k > 0 ? k + 1 : 1))}
                     className="px-2.5 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1 font-medium"
+                    title="Play the 3D envelope and wax seal opening animation"
                   >
                     <RotateCcw size={12} />
-                    <span>Replay</span>
+                    <span>Replay Opening</span>
                   </button>
                   <button
                     onClick={handleSharePreview}

@@ -291,32 +291,60 @@ export function buildTemplatePreviewInvitationConfig(
   };
 }
 
+export interface DraftInvitationValues {
+  title: string;
+  hosts: string;
+  celebrants: string;
+  date: string;
+  time: string;
+  timezone?: string;
+  venue: string;
+  city: string;
+  heroImage: string;
+  galleryImages?: string[];
+  rsvpDeadline?: string;
+  dressCode?: string;
+  story?: string;
+  countdownLabel?: string;
+  imageCropFocalPosition?: string;
+  audioUrl?: string;
+  mpesaType?: 'till' | 'paybill' | 'send_money';
+  mpesaNumber?: string;
+  mpesaRecipient?: string;
+  mpesaReference?: string;
+  // Section text overrides for direct in-place editing across the stationery
+  registryHeading?: string;
+  registryTitle?: string;
+  registryMessage?: string;
+  registryAccountLabel?: string;
+  ceremonyHeading?: string;
+  ceremonyTitle?: string;
+  ceremonyTime?: string;
+  receptionTitle?: string;
+  receptionTime?: string;
+  receptionLocation?: string;
+  venueHeading?: string;
+  venueNote?: string;
+  storyHeading?: string;
+  storyTitle?: string;
+  galleryHeading?: string;
+  galleryTitle?: string;
+  rsvpHeading?: string;
+  rsvpTitle?: string;
+  rsvpSubtitle?: string;
+  faqHeading?: string;
+  faqTitle?: string;
+  closingHeading?: string;
+  closingTitle?: string;
+  closingMessage?: string;
+}
+
 /**
  * Build canonical config for live studio draft preview.
  */
 export function buildDraftPreviewInvitationConfig(
   template: TemplateDefinition,
-  values: {
-    title: string;
-    hosts: string;
-    celebrants: string;
-    date: string;
-    time: string;
-    timezone?: string;
-    venue: string;
-    city: string;
-    heroImage: string;
-    galleryImages?: string[];
-    rsvpDeadline?: string;
-    dressCode?: string;
-    story?: string;
-    countdownLabel?: string;
-    audioUrl?: string;
-    mpesaType?: 'till' | 'paybill' | 'send_money';
-    mpesaNumber?: string;
-    mpesaRecipient?: string;
-    mpesaReference?: string;
-  },
+  values: DraftInvitationValues,
   design: Partial<EventDesignEntity>,
   options?: {
     guestName?: string;
@@ -425,12 +453,71 @@ export function buildDraftPreviewInvitationConfig(
           },
         ]
       : undefined,
+    ceremonyDetails: {
+      name: values.ceremonyTitle || 'The Ceremony',
+      time: values.ceremonyTime || values.time || '10:00 AM',
+      address: [values.venue, values.city].filter(Boolean).join(', ') || 'Ceremony Venue',
+    },
+    receptionDetails: {
+      name: values.receptionTitle || 'The Reception & Dinner',
+      time: values.receptionTime || '1:30 PM',
+      address: values.receptionLocation || [values.venue, values.city].filter(Boolean).join(', ') || 'Reception Venue',
+    },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
   const activeSections = resolveActiveSections(template.category, design);
-  const blocks = design.blocks || migrateEventToBlocks(draftEvent, design);
+  const rawBlocks = design.blocks || migrateEventToBlocks(draftEvent, design);
+
+  // Synchronize draftEvent and values into blocks so BlockRenderer always displays current authored content
+  const blocks = rawBlocks.map((blk) => {
+    const nextContent = { ...blk.content };
+    if (blk.type === 'hero') {
+      nextContent.title = draftEvent.title;
+      nextContent.celebrants = draftEvent.celebrants;
+      nextContent.date = draftEvent.date;
+      nextContent.time = draftEvent.time;
+      nextContent.venue = draftEvent.venue;
+      nextContent.city = draftEvent.city;
+      if (draftEvent.hosts) nextContent.subtitle = draftEvent.hosts;
+      if (values.countdownLabel) nextContent.tagline = values.countdownLabel;
+    } else if (blk.type === 'venue-map') {
+      nextContent.venueName = draftEvent.venue;
+      nextContent.city = draftEvent.city;
+      nextContent.address = draftEvent.address || [draftEvent.venue, draftEvent.city].filter(Boolean).join(', ');
+    } else if (blk.type === 'countdown') {
+      nextContent.date = draftEvent.date;
+      nextContent.time = draftEvent.time;
+      if (values.countdownLabel) nextContent.label = values.countdownLabel;
+    } else if (blk.type === 'rich-text') {
+      if (values.story) nextContent.body = values.story;
+      if (values.storyHeading) nextContent.headline = values.storyHeading;
+      if (values.storyTitle) nextContent.subheading = values.storyTitle;
+    } else if (blk.type === 'rsvp') {
+      if (values.rsvpDeadline) {
+        nextContent.deadline = values.rsvpDeadline;
+        nextContent.headline = values.rsvpHeading || `Kindly RSVP by ${values.rsvpDeadline}`;
+      }
+      if (values.rsvpTitle) nextContent.instructions = values.rsvpTitle;
+    } else if (blk.type === 'contribution') {
+      if (values.mpesaNumber) nextContent.number = values.mpesaNumber;
+      if (values.mpesaRecipient) nextContent.recipientName = values.mpesaRecipient;
+      if (values.mpesaReference) nextContent.accountReference = values.mpesaReference;
+      if (values.mpesaType) nextContent.type = values.mpesaType;
+      if (values.registryTitle) nextContent.title = values.registryTitle;
+      if (values.registryMessage) nextContent.instructions = values.registryMessage;
+    } else if (blk.type === 'gallery') {
+      if (draftEvent.galleryImages && draftEvent.galleryImages.length > 0) {
+        nextContent.images = draftEvent.galleryImages.map((img: any) =>
+          typeof img === 'string' ? { url: img } : img
+        );
+      }
+    } else if (blk.type === 'music') {
+      if (values.audioUrl) nextContent.audioUrl = values.audioUrl;
+    }
+    return { ...blk, content: nextContent };
+  });
 
   return {
     version: '1.0.0',

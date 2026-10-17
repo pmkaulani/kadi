@@ -963,22 +963,24 @@ function InvitationGalleryCard({
 
         {/* ── HOVER OVERLAY: "CUSTOMIZE THIS DESIGN" ACTION PILL ───────── */}
         <div
-          className={`absolute inset-0 bg-black/45 backdrop-blur-[2px] rounded-xl sm:rounded-2xl flex flex-col items-center justify-center p-2 sm:p-4 transition-all duration-200 ${
+          className={`absolute inset-0 bg-neutral-950/80 backdrop-blur-md rounded-xl sm:rounded-2xl flex flex-col items-center justify-center p-3 sm:p-5 transition-all duration-200 ${
             isHovered
               ? 'opacity-100 pointer-events-auto'
               : 'opacity-0 pointer-events-none'
           }`}
         >
-          <span className="text-[8px] sm:text-[11px] font-sans uppercase tracking-[0.2em] text-[#F3E5C8] mb-1 sm:mb-2 font-semibold text-center">
-            {card.categoryLabel}
-          </span>
-          <div className="px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-[#FAF8F5] text-[#112327] font-sans font-semibold text-[10px] sm:text-xs flex items-center gap-1 sm:gap-2 shadow-xl transform transition-transform group-hover:scale-105">
-            <span>Customize</span>
-            <ArrowUpRight size={12} className="text-[#B99A62]" />
+          <div className="w-full flex flex-col items-center justify-center text-center space-y-2 sm:space-y-2.5">
+            <span className="text-[9px] sm:text-xs font-sans uppercase tracking-[0.24em] text-[#E6CA92] font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              {card.categoryLabel}
+            </span>
+            <div className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-full bg-white hover:bg-[#FAF8F5] text-[#112327] font-sans font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 shadow-[0_12px_30px_rgba(0,0,0,0.6)] border border-white/60 transform transition-transform group-hover:scale-105 active:scale-95">
+              <span>Customize</span>
+              <ArrowUpRight size={14} className="text-[#B99A62] stroke-[2.5]" />
+            </div>
+            <span className="text-[8px] sm:text-[11px] text-white/90 font-sans font-medium tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              No signup required
+            </span>
           </div>
-          <span className="text-[7px] sm:text-[10px] text-white/80 mt-1 sm:mt-3 font-sans text-center">
-            No signup required
-          </span>
         </div>
       </div>
     </div>

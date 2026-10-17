@@ -633,11 +633,12 @@ export function InvitationCanvas({
                     suppressContentEditableWarning
                     onBlur={(e) => {
                       setEditingTextId(null);
-                      const newContent = e.currentTarget.innerText.trim();
+                      const rawContent = e.currentTarget.innerText;
+                      const newContent = rawContent.replace(/\r\n/g, '\n').trim();
                       const measuredH = e.currentTarget.scrollHeight;
-                      if (newContent && newContent !== elem.content) {
+                      if (newContent !== elem.content) {
                         onUpdateElement(elem.id, {
-                          content: newContent,
+                          content: newContent || 'Click to edit text',
                           height: Math.max(elem.height, measuredH),
                         });
                       }
