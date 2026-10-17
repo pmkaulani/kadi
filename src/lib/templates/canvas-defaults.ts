@@ -47,11 +47,12 @@ function addText(
   content: string | undefined,
   box: { x: number; y: number; width: number; height: number },
   styleProps: CanvasElementStyle,
-  zIndex = 5
+  zIndex = 5,
+  animationOverride?: CanvasElement['animation']
 ) {
   const text = content?.trim();
   if (!text) return;
-  const animation: CanvasElement['animation'] =
+  const animation: CanvasElement['animation'] = animationOverride ?? (
     id === 'text-title'
       ? { effect: 'rise', duration: 0.72, delay: 0.16 }
       : id === 'text-hosts'
@@ -62,7 +63,8 @@ function addText(
             ? { effect: 'fadeIn', duration: 0.5, delay: 0.28 }
             : id === 'text-venue'
               ? { effect: 'fadeIn', duration: 0.5, delay: 0.36 }
-              : undefined;
+              : undefined
+  );
   elements.push({
     id,
     type: 'text',
@@ -161,6 +163,7 @@ type ArtDirection = {
   request: string;
   photo: { x: number; y: number; width: number; height: number };
   mask: MaskShape;
+  requestY?: number;
   secondaryPhoto?: { x: number; y: number; width: number; height: number; mask: MaskShape };
   titleY: number;
   titleHeight: number;
@@ -188,9 +191,9 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'these-are-for-you') {
     return {
       eyebrow: 'A FEW OF YOUR FAVOURITE THINGS', request: 'For the people who make life feel special',
-      photo: { x: 40, y: 43, width: 292, height: 274 }, mask: 'polaroid',
-      secondaryPhoto: { x: 273, y: 132, width: 171, height: 206, mask: 'polaroid' },
-      titleY: 352, titleHeight: 74, titleMax: 36, detailsY: 446, venueY: 484, venueHeight: 52,
+      photo: { x: 40, y: 43, width: 286, height: 255 }, mask: 'polaroid',
+      secondaryPhoto: { x: 273, y: 123, width: 171, height: 180, mask: 'polaroid' },
+      requestY: 307, titleY: 337, titleHeight: 74, titleMax: 36, detailsY: 430, venueY: 468, venueHeight: 52,
       detailSize: 11, headingFont: 'Playfair Display',
     };
   }
@@ -229,7 +232,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'birthday-color-pop') {
     return {
       eyebrow: 'THE COLOUR IS JOY', request: 'Come as you are. Leave with a story.',
-      photo: { x: 31, y: 42, width: 418, height: 250 }, mask: 'none',
+      photo: { x: 31, y: 42, width: 418, height: 226 }, mask: 'none',
       titleY: 326, titleHeight: 90, titleMax: 43, detailsY: 430, venueY: 470, venueHeight: 51,
       detailSize: 12, headingFont: 'Playfair Display',
     };
@@ -333,9 +336,9 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'silver-memories') {
     return {
       eyebrow: 'MOMENTS THAT MADE US', request: 'A little look back, a lot to celebrate',
-      photo: { x: 24, y: 43, width: 284, height: 250 }, mask: 'polaroid',
-      secondaryPhoto: { x: 278, y: 154, width: 176, height: 210, mask: 'polaroid' },
-      titleY: 373, titleHeight: 78, titleMax: 37, detailsY: 465, venueY: 503, venueHeight: 50,
+      photo: { x: 24, y: 43, width: 284, height: 236 }, mask: 'polaroid',
+      secondaryPhoto: { x: 278, y: 133, width: 176, height: 170, mask: 'polaroid' },
+      requestY: 307, titleY: 337, titleHeight: 78, titleMax: 37, detailsY: 430, venueY: 468, venueHeight: 50,
       detailSize: 11, headingFont: 'Cormorant Garamond',
     };
   }
@@ -374,7 +377,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'harvest-table') {
     return {
       eyebrow: 'A PLACE AT THE TABLE', request: 'Food, stories, and neighbours',
-      photo: { x: 32, y: 47, width: 416, height: 240 }, mask: 'none',
+      photo: { x: 32, y: 47, width: 416, height: 232 }, mask: 'none',
       titleY: 316, titleHeight: 84, titleMax: 38, detailsY: 422, venueY: 464, venueHeight: 55,
       detailSize: 12, headingFont: 'Cormorant Garamond',
     };
@@ -438,7 +441,7 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'bon-voyage-safari') {
     return {
       eyebrow: 'UNTIL THE NEXT ADVENTURE', request: 'Come send us off in good company',
-      photo: { x: 40, y: 46, width: 400, height: 240 }, mask: 'none',
+      photo: { x: 40, y: 46, width: 400, height: 230 }, mask: 'none',
       titleY: 315, titleHeight: 83, titleMax: 37, detailsY: 421, venueY: 462, venueHeight: 55,
       detailSize: 12, headingFont: 'Playfair Display',
     };
@@ -604,8 +607,16 @@ export function getTemplateCanvasElements(
     { x: 40, y: 18, width: 400, height: 20 },
     { fontFamily: 'Inter', fontSize: isMemorial ? 10 : 9, fontWeight: 600, color: accent, textAlign: 'center', letterSpacing: isMemorial ? 1.8 : 2.0 }, 4);
 
+  const secondaryPhotoBottom = direction.secondaryPhoto
+    ? direction.secondaryPhoto.y + direction.secondaryPhoto.height
+    : 0;
+  const photoBottom = Math.max(
+    direction.photo.y + direction.photo.height,
+    secondaryPhotoBottom
+  );
+  const requestY = direction.requestY ?? Math.max(isMemorial ? 220 : 0, photoBottom + 6);
   addText(elements, 'text-request', 'Invitation request', direction.request,
-    { x: 40, y: isMemorial ? 220 : 286, width: 400, height: 24 },
+    { x: 40, y: requestY, width: 400, height: 24 },
     { fontFamily: isMemorial ? 'Cormorant Garamond' : direction.headingFont, fontSize: 15, fontStyle: isCorporate ? 'normal' : 'italic', fontWeight: 400, color: muted, textAlign: 'center', letterSpacing: 0.2 }, 5);
 
   let titleFontSize = direction.titleMax;
@@ -617,7 +628,8 @@ export function getTemplateCanvasElements(
 
   addText(elements, 'text-title', 'Celebrants / event title', headingText,
     { x: 30, y: direction.titleY, width: 420, height: direction.titleHeight },
-    { fontFamily: direction.headingFont, fontSize: Math.max(22, titleFontSize), fontWeight: isCorporate ? 600 : 500, color: heading, textAlign: 'center', lineHeight: 1.12, letterSpacing: isCorporate ? -0.6 : -0.25 }, 6);
+    { fontFamily: direction.headingFont, fontSize: Math.max(22, titleFontSize), fontWeight: isCorporate ? 600 : 500, color: heading, textAlign: 'center', lineHeight: 1.12, letterSpacing: isCorporate ? -0.6 : -0.25 }, 6,
+    isMemorial ? { effect: 'fadeIn', duration: 0.7, delay: 0.12 } : undefined);
 
   const date = values.date?.trim() || template.sampleData.date;
   const time = values.time?.trim() || template.sampleData.time;
@@ -633,10 +645,10 @@ export function getTemplateCanvasElements(
 
   const rsvp = values.rsvpDeadline?.trim();
   if (rsvp) {
-    addRule(elements, 'rule-rsvp', 190, 548, 100, accent);
+    addRule(elements, 'rule-rsvp', 48, 548, 58, accent);
     addText(elements, 'text-rsvp', 'Kindly reply by', 'PLEASE REPLY BY ' + rsvp.toUpperCase(),
-      { x: 48, y: 561, width: 384, height: 23 },
-      { fontFamily: 'Inter', fontSize: 9, fontWeight: 500, color: muted, textAlign: 'center', letterSpacing: 1.1 }, 7);
+      { x: 48, y: 561, width: 286, height: 23 },
+      { fontFamily: 'Inter', fontSize: 8.5, fontWeight: 500, color: muted, textAlign: 'left', letterSpacing: 0.8 }, 7);
   } else if (isMemorial) {
     addRule(elements, 'rule-remembrance', 210, 535, 60, accent);
     addText(elements, 'text-remembrance', 'Remembrance', 'FOREVER IN OUR HEARTS',
