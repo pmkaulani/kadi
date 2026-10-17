@@ -832,6 +832,21 @@ export function EnvelopeRenderer({
                   <span className="iv-flap-outer-polygon">
                     <span className="iv-flap-gold-frame" />
                     {motionStyle !== 'minimal-fade' && <span className="iv-flap-detail-rule" aria-hidden="true" />}
+                    {motionStyle !== 'minimal-fade' && motionStyle !== 'dignified-memorial' && (
+                      <span className="iv-postage-stamp" aria-hidden="true">
+                        {data.heroImage && (
+                          <img
+                            className="iv-postage-stamp__image"
+                            src={data.heroImage}
+                            alt=""
+                            loading="eager"
+                            draggable={false}
+                          />
+                        )}
+                        <span className="iv-postage-stamp__frame" />
+                        <span className="iv-postage-stamp__mark">{computedMonogram}</span>
+                      </span>
+                    )}
                   </span>
                 </span>
 
