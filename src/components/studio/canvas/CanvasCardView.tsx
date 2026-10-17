@@ -74,7 +74,7 @@ export function CanvasCardView({
       } justify-center overflow-visible select-none ${className}`}
     >
       <div
-        className="relative shrink-0 ring-1 ring-black/[0.08] rounded-[2px] overflow-hidden transition-transform duration-100 kadi-canvas-artboard"
+        className="relative shrink-0 rounded-[2px] shadow-[0_8px_24px_rgba(34,25,18,0.12),0_1px_3px_rgba(34,25,18,0.08)] ring-1 ring-black/[0.08] overflow-hidden transition-transform duration-100 kadi-canvas-artboard"
         style={{
           width: ARTBOARD_WIDTH,
           minWidth: ARTBOARD_WIDTH,
