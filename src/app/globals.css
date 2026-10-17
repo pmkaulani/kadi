@@ -3442,3 +3442,51 @@ body:has(.kadi-stationery-sheet),
   }
 }
 
+
+
+/* Subtle entrance choreography for authored canvas elements.
+   These use individual transform properties so a user's rotation is preserved. */
+.kadi-canvas-element[data-canvas-effect] {
+  will-change: opacity, translate, scale, rotate;
+}
+
+@keyframes kadi-canvas-fade-in {
+  from { opacity: 0; translate: 0 5px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes kadi-canvas-rise {
+  from { opacity: 0; translate: 0 14px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes kadi-canvas-gentle-scale {
+  from { opacity: 0; scale: .965; }
+  to { opacity: 1; scale: 1; }
+}
+
+@keyframes kadi-canvas-drift {
+  from { opacity: 0; translate: -8px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes kadi-canvas-sway {
+  from { opacity: 0; rotate: -2deg; translate: 0 5px; }
+  to { opacity: 1; rotate: 0deg; translate: 0 0; }
+}
+
+@keyframes kadi-canvas-sparkle {
+  0% { opacity: 0; scale: .97; filter: brightness(.98); }
+  55% { opacity: 1; scale: 1.015; filter: brightness(1.04); }
+  100% { opacity: 1; scale: 1; filter: brightness(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kadi-canvas-element[data-canvas-effect] {
+    animation: none !important;
+    will-change: auto;
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+  }
+}
