@@ -836,9 +836,6 @@ export function EnvelopeRenderer({
                 <span className="iv-pocket-fold iv-pocket-fold--left" />
                 <span className="iv-pocket-fold iv-pocket-fold--right" />
                 <span className="iv-pocket-fold iv-pocket-fold--bottom" />
-                {motionStyle !== 'minimal-fade' && (
-                  {/* Clean fold geometry; let paper, liner and seal carry the detail. */}
-                )}
                 <span className="iv-pocket-gold-rule" />
                 <span className="iv-pocket-crease-shadow" />
               </span>

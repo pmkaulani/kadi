@@ -3259,3 +3259,15 @@ body:has(.kadi-stationery-sheet),
   .iv-world .iv-open-rule { animation: none; transform: none; opacity: .58; }
   .iv-world .iv-seal-anchor { transition: none; }
 }
+
+
+/* The inside of the hinged flap uses the same selected liner as the envelope throat. */
+.iv-world .iv-flap-inner-liner {
+  background-color: var(--iv-liner-base, #f4f1e8);
+  background-image:
+    var(--iv-liner-pattern, none),
+    linear-gradient(145deg, rgba(255,255,255,.48), rgba(85,55,35,.04)),
+    var(--iv-paper-grain);
+  background-size: auto, auto, 180px 180px;
+  background-position: center, center, center;
+}
