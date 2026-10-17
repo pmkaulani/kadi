@@ -104,8 +104,8 @@ export function WaxSeal({
   const idSuffix = React.useId().replace(/:/g, '');
 
   return (
-    <motion.div
-      className={`relative select-none ${className}`}
+    <motion.span
+      className={`relative block select-none ${className}`}
       style={{
         width: size,
         height: size,
@@ -332,6 +332,6 @@ export function WaxSeal({
           </>
         )}
       </svg>
-    </motion.div>
+    </motion.span>
   );
 }

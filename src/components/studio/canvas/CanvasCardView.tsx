@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import type { CanvasElement } from '@/types/canvas';
+import type { AnimationEffect, CanvasElement } from '@/types/canvas';
 import { PhotoMaskRenderer } from './PhotoMaskRenderer';
 
 export interface CanvasCardViewProps {
@@ -15,10 +15,21 @@ export interface CanvasCardViewProps {
   };
   fit?: 'contain' | 'fill-width';
   className?: string;
+  /** Play per-element entrance motion in the guest experience, never in the editor canvas. */
+  animateElements?: boolean;
 }
 
 const ARTBOARD_WIDTH = 480;
 const ARTBOARD_HEIGHT = 680;
+
+const ELEMENT_ANIMATIONS: Partial<Record<AnimationEffect, string>> = {
+  fadeIn: 'kadi-canvas-fade-in',
+  rise: 'kadi-canvas-rise',
+  gentleScale: 'kadi-canvas-gentle-scale',
+  drift: 'kadi-canvas-drift',
+  sway: 'kadi-canvas-sway',
+  sparkle: 'kadi-canvas-sparkle',
+};
 
 export function CanvasCardView({
   elements = [],
@@ -26,6 +37,7 @@ export function CanvasCardView({
   palette,
   fit = 'contain',
   className = '',
+  animateElements = false,
 }: CanvasCardViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.65);
@@ -62,7 +74,7 @@ export function CanvasCardView({
       } justify-center overflow-visible select-none ${className}`}
     >
       <div
-        className="relative shrink-0 shadow-[0_12px_36px_-6px_rgba(0,0,0,0.18),0_4px_12px_-2px_rgba(0,0,0,0.08)] ring-1 ring-black/10 rounded-2xl overflow-visible transition-transform duration-75 kadi-canvas-artboard"
+        className="relative shrink-0 rounded-[2px] shadow-[0_8px_24px_rgba(34,25,18,0.12),0_1px_3px_rgba(34,25,18,0.08)] ring-1 ring-black/[0.08] overflow-hidden transition-transform duration-100 kadi-canvas-artboard"
         style={{
           width: ARTBOARD_WIDTH,
           minWidth: ARTBOARD_WIDTH,
@@ -77,7 +89,7 @@ export function CanvasCardView({
       >
         {/* Subtle Paper Linen texture */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.035] rounded-2xl overflow-hidden"
+          className="absolute inset-0 z-0 pointer-events-none opacity-[0.035] rounded-[2px] overflow-hidden"
           style={{
             backgroundImage: `radial-gradient(#000 1px, transparent 1px)`,
             backgroundSize: '8px 8px',
@@ -85,7 +97,7 @@ export function CanvasCardView({
         />
 
         {/* Inner Border Frame */}
-        <div className="absolute inset-3 border border-black/[0.08] pointer-events-none rounded-xl" />
+        <div className="absolute inset-3 z-[90] border border-black/[0.08] pointer-events-none rounded-[1px]" />
 
         {/* Elements */}
         {elements
@@ -93,10 +105,14 @@ export function CanvasCardView({
           .sort((a, b) => a.zIndex - b.zIndex)
           .map((elem) => {
             const style = elem.styleProps || {};
+            const effect = animateElements ? elem.animation?.effect : undefined;
+            const animationName = effect ? ELEMENT_ANIMATIONS[effect] : undefined;
+            const hasEntrance = Boolean(animationName);
             return (
               <div
                 key={elem.id}
-                className="absolute select-none pointer-events-none"
+                data-canvas-effect={hasEntrance ? effect : undefined}
+                className="kadi-canvas-element absolute select-none pointer-events-none"
                 style={{
                   left: elem.x,
                   top: elem.y,
@@ -105,6 +121,12 @@ export function CanvasCardView({
                   transform: `rotate(${elem.rotation}deg)`,
                   zIndex: elem.zIndex,
                   opacity: elem.opacity ?? 1,
+                  animationName,
+                  animationDuration: hasEntrance ? `${elem.animation?.duration ?? 0.65}s` : undefined,
+                  animationDelay: hasEntrance ? `${elem.animation?.delay ?? 0}s` : undefined,
+                  animationTimingFunction: 'cubic-bezier(.22,1,.36,1)',
+                  // Restore the authored element opacity after the motion completes.
+                  animationFillMode: hasEntrance ? 'backwards' : undefined,
                 }}
               >
                 {/* 1. TEXT */}

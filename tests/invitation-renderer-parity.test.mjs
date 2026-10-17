@@ -227,3 +227,78 @@ test('Backwards Compatibility Contract - older template versions and partial fie
   const activeSections = resolveActiveSections(legacyEvent.category);
   assert.ok(Array.isArray(activeSections));
 });
+
+
+test('Renderer integration - every guest and preview mode receives the art-directed default canvas', () => {
+  const template = getTemplateById('savannah-twilight');
+  const event = mockDb.events.find((candidate) => candidate.id === 'event-wedding-1');
+  assert.ok(template && event);
+
+  const draftValues = {
+    title: event.title,
+    hosts: event.hosts,
+    celebrants: event.celebrants,
+    date: event.date,
+    time: event.time,
+    venue: event.venue,
+    city: event.city,
+    heroImage: event.heroImage,
+    galleryImages: event.galleryImages,
+    story: event.story,
+  };
+
+  const configs = [
+    ['template preview', buildTemplatePreviewInvitationConfig(template)],
+    ['draft preview', buildDraftPreviewInvitationConfig(template, draftValues, {})],
+    ['published route', buildPublishedInvitationConfig(event, template)],
+    ['private review', buildPrivateReviewInvitationConfig(event, template)],
+  ];
+
+  for (const [label, config] of configs) {
+    const elements = config.design?.canvasElements || [];
+    assert.ok(
+      elements.some((element) => element.id === 'photo-hero' && element.type === 'photo'),
+      `${label} should render its real photo as invitation artwork`
+    );
+    assert.ok(
+      elements.some((element) => element.id === 'text-title' && element.type === 'text'),
+      `${label} should render the art-directed invitation title`
+    );
+  }
+});
+
+test('Renderer integration - a saved custom canvas is never replaced by generated defaults', () => {
+  const template = getTemplateById('savannah-twilight');
+  const event = mockDb.events.find((candidate) => candidate.id === 'event-wedding-1');
+  assert.ok(template && event);
+
+  const customCanvas = [
+    {
+      id: 'host-authored-title',
+      type: 'text',
+      name: 'Custom title artwork',
+      content: 'Wanjiku & Otieno',
+      x: 36,
+      y: 280,
+      width: 408,
+      height: 70,
+      rotation: 0,
+      zIndex: 5,
+      opacity: 1,
+      styleProps: {
+        fontFamily: 'Cormorant Garamond',
+        fontSize: 38,
+        fontWeight: 500,
+        color: '#272620',
+        textAlign: 'center',
+      },
+    },
+  ];
+
+  const config = buildPublishedInvitationConfig(event, template, {
+    design: { canvasElements: customCanvas },
+  });
+
+  assert.equal(config.design?.canvasElements, customCanvas);
+  assert.deepEqual(config.design?.canvasElements?.map((element) => element.id), ['host-authored-title']);
+});

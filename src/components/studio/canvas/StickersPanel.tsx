@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Search, X, Sparkles, Plus } from 'lucide-react';
+import { Search, X, Plus, Flower2, PartyPopper, Heart, Stamp, Sparkles, PenTool } from 'lucide-react';
 import { STICKER_ASSETS, type StickerAsset } from '@/lib/assets/stickers';
 
 interface StickersPanelProps {
@@ -10,108 +10,159 @@ interface StickersPanelProps {
 }
 
 const CATEGORIES = [
-  { id: 'all', label: 'All Stickers' },
-  { id: 'planner', label: '🎨 Doodles & Planner' },
-  { id: 'stationery', label: '💌 Washi & Wax Seals' },
-  { id: 'botanical', label: '🌿 Florals & Botanicals' },
-  { id: 'party', label: '🥂 Toast & Celebration' },
-  { id: 'badges', label: '✨ Slogans & Badges' },
-  { id: 'cultural', label: '🦁 Heritage & Harusi' },
-  { id: 'romance', label: '💍 Romance & Love' },
-];
+  { id: 'all', label: 'Everything', icon: Sparkles },
+  { id: 'stationery', label: 'Stationery', icon: Stamp },
+  { id: 'botanical', label: 'Botanical', icon: Flower2 },
+  { id: 'romance', label: 'Romance', icon: Heart },
+  { id: 'party', label: 'Celebration', icon: PartyPopper },
+  { id: 'cultural', label: 'Heritage', icon: Sparkles },
+  { id: 'planner', label: 'Illustrations', icon: PenTool },
+  { id: 'badges', label: 'Lettering', icon: Plus },
+] as const;
 
 export function StickersPanel({ onInsertSticker, onClose }: StickersPanelProps) {
-  const [selectedCat, setSelectedCat] = useState('all');
+  const [selectedCat, setSelectedCat] = useState<string>('all');
   const [search, setSearch] = useState('');
 
   const filteredStickers = useMemo(() => {
-    return STICKER_ASSETS.filter((s) => {
-      const matchCat = selectedCat === 'all' || s.category === selectedCat;
-      const matchSearch =
-        !search ||
-        s.name.toLowerCase().includes(search.toLowerCase()) ||
-        s.tags.some((t) => t.toLowerCase().includes(search.toLowerCase()));
-      return matchCat && matchSearch;
+    const query = search.trim().toLowerCase();
+    return STICKER_ASSETS.filter((asset) => {
+      const matchesCategory = selectedCat === 'all' || asset.category === selectedCat;
+      const matchesSearch =
+        !query ||
+        asset.name.toLowerCase().includes(query) ||
+        asset.tags.some((tag) => tag.toLowerCase().includes(query));
+      return matchesCategory && matchesSearch;
     });
   }, [selectedCat, search]);
 
   return (
-    <div className="flex flex-col h-full bg-[#1F1F1F] text-white">
-      {/* Search Input */}
-      <div className="p-3 border-b border-white/10">
-        <div className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-lg px-2.5 py-1.5 focus-within:border-[#B99A62]">
-          <Search size={13} className="text-white/40 shrink-0" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search stickers (washi, seal, rose, champagne, harusi)..."
-            className="w-full bg-transparent text-xs text-white placeholder-white/40 focus:outline-none"
-          />
-          {search && (
-            <button onClick={() => setSearch('')} className="text-white/40 hover:text-white">
-              <X size={12} />
+    <section className="flex h-full min-h-0 flex-col bg-[#20201E] text-[#F6F2EA]" aria-label="Sticker library">
+      <header className="shrink-0 border-b border-white/10 px-4 pb-3 pt-4">
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#C6AD82]">
+              The embellishment drawer
+            </p>
+            <h2 className="mt-1 font-serif text-lg leading-tight text-[#FBF8F1]">Stickers & artwork</h2>
+            <p className="mt-1 text-[11px] leading-relaxed text-white/50">
+              Small details, chosen with care.
+            </p>
+          </div>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close artwork library"
+              className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center border border-white/10 text-white/60 transition-colors hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#C6AD82]"
+            >
+              <X size={15} />
             </button>
           )}
         </div>
 
-        {/* Category Pills */}
-        <div className="flex items-center gap-1 mt-2.5 overflow-x-auto pb-1 scrollbar-none">
-          {CATEGORIES.map((cat) => (
+        <label className="flex h-10 items-center gap-2 border border-white/15 bg-white/[0.045] px-3 transition-colors focus-within:border-[#C6AD82]/80">
+          <Search size={14} className="shrink-0 text-white/40" aria-hidden="true" />
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Find a flower, seal, ribbon…"
+            aria-label="Search artwork"
+            className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-white/35"
+          />
+          {search && (
             <button
-              key={cat.id}
-              onClick={() => setSelectedCat(cat.id)}
-              className={`px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
-                selectedCat === cat.id
-                  ? 'bg-[#B99A62] text-[#112327] font-semibold'
-                  : 'bg-white/5 hover:bg-white/10 text-white/70'
-              }`}
+              type="button"
+              onClick={() => setSearch('')}
+              aria-label="Clear artwork search"
+              className="inline-flex h-6 w-6 items-center justify-center text-white/45 hover:text-white"
             >
-              {cat.label}
+              <X size={12} />
             </button>
-          ))}
+          )}
+        </label>
+
+        <nav className="mt-3 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" aria-label="Artwork categories">
+          {CATEGORIES.map((category) => {
+            const Icon = category.icon;
+            const selected = selectedCat === category.id;
+            return (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => setSelectedCat(category.id)}
+                aria-pressed={selected}
+                className={`inline-flex shrink-0 items-center gap-1.5 border px-2.5 py-1.5 text-[10px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#C6AD82] ${
+                  selected
+                    ? 'border-[#C6AD82]/70 bg-[#C6AD82]/12 text-[#F0DDB8]'
+                    : 'border-white/10 bg-transparent text-white/55 hover:border-white/25 hover:text-white/85'
+                }`}
+              >
+                <Icon size={11} strokeWidth={1.7} aria-hidden="true" />
+                {category.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="mt-2 flex items-center justify-between text-[10px] text-white/40">
+          <span>{filteredStickers.length} {filteredStickers.length === 1 ? 'piece' : 'pieces'}</span>
+          <span>Transparent artwork</span>
         </div>
-      </div>
+      </header>
 
-      {/* Stickers Grid */}
-      <div className="flex-1 overflow-y-auto p-3">
-        <div className="grid grid-cols-2 gap-3">
-          {filteredStickers.map((sticker) => (
-            <div
-              key={sticker.id}
-              onClick={() => onInsertSticker(sticker)}
-              className="group relative aspect-square rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#B99A62]/60 p-3 flex flex-col items-center justify-between cursor-pointer transition-all duration-200 hover:scale-[1.03] select-none"
-              title={`Click to add ${sticker.name}`}
-            >
-              {/* Real 3D Sticker Preview with genuine transparent background */}
-              <div className="w-full h-24 flex items-center justify-center pointer-events-none p-1.5">
-                <img
-                  src={sticker.imageUrl}
-                  alt={sticker.name}
-                  className="max-w-full max-h-full object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,0.45)] transition-transform duration-200 group-hover:scale-110 select-none"
-                  loading="lazy"
-                />
-              </div>
-
-              {/* Name & Quick Add pill on hover */}
-              <div className="w-full flex items-center justify-between mt-2 pt-1 border-t border-white/5">
-                <span className="text-[10px] text-white/70 group-hover:text-white truncate">
-                  {sticker.name}
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-3">
+        {filteredStickers.length > 0 ? (
+          <div className="grid grid-cols-2 gap-2.5">
+            {filteredStickers.map((asset) => (
+              <button
+                key={asset.id}
+                type="button"
+                onClick={() => onInsertSticker(asset)}
+                aria-label={`Add ${asset.name} to the invitation`}
+                title={`Add ${asset.name}`}
+                className="group min-w-0 border border-white/10 bg-white/[0.025] p-2 text-left transition-colors hover:border-[#C6AD82]/65 hover:bg-white/[0.055] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#C6AD82]"
+              >
+                <span className="relative flex aspect-[1.12/1] items-center justify-center overflow-hidden border border-black/[0.04] bg-[#F4EFE6] p-3">
+                  <img
+                    src={asset.imageUrl}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
+                    className="max-h-full max-w-full select-none object-contain transition-transform duration-200 group-hover:scale-[1.035]"
+                  />
+                  <span className="absolute bottom-1.5 right-1.5 inline-flex h-5 w-5 items-center justify-center border border-black/10 bg-[#FBF8F1] text-[#5A5145] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <Plus size={11} strokeWidth={1.8} aria-hidden="true" />
+                  </span>
                 </span>
-                <div className="w-5 h-5 rounded-full bg-[#B99A62]/20 group-hover:bg-[#B99A62] text-white/70 group-hover:text-[#112327] flex items-center justify-center shrink-0 transition-colors">
-                  <Plus size={11} strokeWidth={2.5} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredStickers.length === 0 && (
-          <div className="text-center py-10 text-xs text-white/40">
-            No stickers found matching "{search}"
+                <span className="mt-2 block truncate text-[10px] leading-snug text-white/70 transition-colors group-hover:text-white">
+                  {asset.name}
+                </span>
+                <span className="mt-0.5 block truncate text-[9px] capitalize text-white/35">
+                  {asset.category}
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex min-h-40 flex-col items-center justify-center px-5 text-center">
+            <Search size={20} strokeWidth={1.4} className="text-white/25" aria-hidden="true" />
+            <p className="mt-3 font-serif text-sm text-white/70">No artwork found</p>
+            <p className="mt-1 max-w-[220px] text-[11px] leading-relaxed text-white/40">
+              Try another term or choose a different category.
+            </p>
+            <button
+              type="button"
+              onClick={() => { setSearch(''); setSelectedCat('all'); }}
+              className="mt-3 border-b border-[#C6AD82]/50 pb-0.5 text-[10px] text-[#E1CCA3] hover:text-white"
+            >
+              Show all artwork
+            </button>
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

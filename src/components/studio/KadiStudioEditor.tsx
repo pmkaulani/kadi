@@ -70,7 +70,7 @@ import { TypographyPaletteControls } from '@/components/studio/TypographyPalette
 import { migrateEventToBlocks } from '@/lib/blocks/registry';
 import type { InvitationBlockConfig } from '@/lib/blocks/types';
 import type { CanvasElement, MaskShape } from '@/types/canvas';
-import { getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
+import { getCanvasHeadingFontOverride, getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
 import { InvitationCanvas } from './canvas/InvitationCanvas';
 import { StickersPanel } from './canvas/StickersPanel';
 import { TextPanel } from './canvas/TextPanel';
@@ -220,7 +220,10 @@ function buildInitialDraft(
 
   const rawCanvasElements =
     design?.canvasElements ||
-    getTemplateCanvasElements(activeTemplate, initialValues);
+    getTemplateCanvasElements(activeTemplate, initialValues, {
+      palette: design?.palette,
+      headingFont: getCanvasHeadingFontOverride(activeTemplate, design),
+    });
 
   const isBabyEvent =
     category === 'baby-shower' ||
@@ -395,9 +398,19 @@ export function KadiStudioEditor({
   const canvasElements = useMemo(() => {
     return (
       draft.design.canvasElements ||
-      getTemplateCanvasElements(activeTemplate, draft.values)
+      getTemplateCanvasElements(activeTemplate, draft.values, {
+        palette: draft.design.palette,
+        headingFont: getCanvasHeadingFontOverride(activeTemplate, { fontFamily: draft.design.fontFamily, typography: draft.design.typography }),
+      })
     );
-  }, [draft.design.canvasElements, activeTemplate, draft.values]);
+  }, [
+    draft.design.canvasElements,
+    draft.design.palette,
+    draft.design.typography,
+    draft.design.fontFamily,
+    activeTemplate,
+    draft.values,
+  ]);
 
   const [history, setHistory] = useState<CanvasElement[][]>([canvasElements]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -783,7 +796,11 @@ export function KadiStudioEditor({
   const applyTemplateSwitch = (nextTemplate: TemplateDefinition, preserveDetails = true) => {
     const nextCanvasElements = getTemplateCanvasElements(
       nextTemplate,
-      preserveDetails ? draft.values : (nextTemplate.sampleData as any)
+      preserveDetails ? draft.values : (nextTemplate.sampleData as any),
+      {
+        palette: nextTemplate.palette,
+        headingFont: preserveDetails ? getCanvasHeadingFontOverride(activeTemplate, draft.design) : undefined,
+      }
     );
 
     setDraftDirect({
@@ -1610,7 +1627,7 @@ export function KadiStudioEditor({
               Switching Invitation Style
             </h3>
             <p className="text-xs text-white/70 leading-relaxed">
-              Would you like to keep your personalized event details (title, hosts, date, venue) or load the new template's sample contents?
+              Would you like to keep your personalized event details (title, hosts, date, venue) or load the new template&apos;s sample contents?
             </p>
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
