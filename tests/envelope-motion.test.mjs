@@ -164,10 +164,10 @@ test('Envelope Motion - timeline state machine transitions and cancellation safe
 test('Envelope Motion - the portrait paper composition is stable and CSS does not override Motion transforms', () => {
   const css = readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8');
 
-  assert.match(css, /\.iv-world \.iv-card-preview:not\(\.iv-card-preview--canvas\) \{[\s\S]*?aspect-ratio: 480 \/ 680;/);
-  assert.match(css, /\.iv-world \.iv-card-preview--canvas \{[\s\S]*?aspect-ratio: 480 \/ 680;/);
-  assert.match(css, /\.iv-world \.iv-insert-paper--back \{[\s\S]*?aspect-ratio: 480 \/ 680;/);
-  assert.match(css, /\.iv-world \.iv-insert-paper--front \{[\s\S]*?aspect-ratio: 480 \/ 680;/);
+  assert.match(css, /\.iv-world \.iv-card-preview:not\(\.iv-card-preview--canvas\) \{[^}]*aspect-ratio: 480 \/ 680;/);
+  assert.match(css, /\.iv-world \.iv-card-preview--canvas \{[^}]*aspect-ratio: 480 \/ 680;/);
+  assert.match(css, /\.iv-world \.iv-insert-paper--back \{[^}]*aspect-ratio: 480 \/ 680;/);
+  assert.match(css, /\.iv-world \.iv-insert-paper--front \{[^}]*aspect-ratio: 480 \/ 680;/);
 
   assert.ok(
     !css.includes('transform: translateY(-145px) translateZ(22px)'),
