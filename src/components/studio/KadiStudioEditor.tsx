@@ -400,7 +400,7 @@ export function KadiStudioEditor({
       draft.design.canvasElements ||
       getTemplateCanvasElements(activeTemplate, draft.values, {
         palette: draft.design.palette,
-        headingFont: getCanvasHeadingFontOverride(activeTemplate, draft.design),
+        headingFont: getCanvasHeadingFontOverride(activeTemplate, { fontFamily: draft.design.fontFamily, typography: draft.design.typography }),
       })
     );
   }, [
