@@ -2962,3 +2962,300 @@ body:has(.kadi-stationery-sheet),
     animation: none !important;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   Kadi stationery craft pass
+   Physical object first: restrained paper, clean folds, liner patterns,
+   portrait card geometry, and one coherent timing language.
+   -------------------------------------------------------------------------- */
+.iv-world .iv-envelope-hitarea {
+  perspective: 1500px;
+  -webkit-perspective: 1500px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.iv-world .iv-shadow-paper {
+  width: 72%;
+  height: 78%;
+  top: 13%;
+  left: 14%;
+  background: #f1e7d4;
+  border: 1px solid rgba(97, 75, 53, .18);
+  border-radius: 1px;
+  box-shadow: 0 12px 25px rgba(24, 14, 11, .14);
+  transform: rotate(2.2deg) translateZ(-18px);
+}
+
+.iv-world .iv-envelope-shadow {
+  bottom: -15px;
+  height: 19px;
+  background: rgba(22, 14, 12, .2);
+  filter: blur(15px);
+}
+
+.iv-world .iv-envelope-contact-shadow {
+  bottom: -1px;
+  height: 4px;
+  background: rgba(18, 10, 8, .22);
+  filter: blur(4px);
+}
+
+.iv-world .iv-envelope-back {
+  background-color: var(--iv-envelope-color, #4a111b);
+  background-image:
+    linear-gradient(140deg, rgba(255,255,255,.12), transparent 42%),
+    var(--iv-paper-grain);
+  background-size: auto, 180px 180px;
+  border: 1px solid color-mix(in srgb, var(--iv-envelope-color, #4a111b) 72%, white);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -2px 5px rgba(14,7,6,.12),
+    0 2px 5px rgba(20,12,10,.08);
+}
+
+.iv-world .iv-envelope-back-border {
+  inset: 8px;
+  border-color: color-mix(in srgb, var(--iv-gold, #c7a56a) 48%, transparent);
+  box-shadow: none;
+}
+
+.iv-world .iv-envelope-liner {
+  background-color: var(--iv-liner-base, #f4f1e8);
+  background-image:
+    var(--iv-liner-pattern, none),
+    linear-gradient(145deg, rgba(255,255,255,.5), rgba(85,55,35,.04)),
+    var(--iv-paper-grain);
+  background-size: auto, auto, 180px 180px;
+  background-position: center, center, center;
+  clip-path: polygon(0 0, 100% 0, 50% 64%);
+  color: var(--iv-ink, #5f5142);
+}
+
+.iv-world .iv-envelope-throat-shadow {
+  background: linear-gradient(180deg, rgba(19,10,9,.25), rgba(19,10,9,.08) 28%, transparent 62%);
+}
+
+.iv-world .iv-insert-paper {
+  left: auto;
+  right: auto;
+  width: 54%;
+  height: auto;
+  aspect-ratio: 480 / 680;
+  border-radius: 1px;
+  border: 1px solid rgba(150, 125, 89, .36);
+  padding: 0;
+  background-color: #fbf7ef;
+  background-image:
+    linear-gradient(145deg, rgba(255,255,255,.8), rgba(240,230,214,.42)),
+    var(--iv-paper-grain);
+  background-size: auto, 180px 180px;
+  box-shadow: 0 8px 18px rgba(31,20,15,.12), 0 2px 4px rgba(31,20,15,.08);
+}
+
+.iv-world .iv-insert-paper--back {
+  left: 24%;
+  top: -2%;
+}
+
+.iv-world .iv-insert-paper--front {
+  left: 22%;
+  top: -1%;
+}
+
+.iv-world .iv-insert-emboss {
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(185,154,98,.25);
+  pointer-events: none;
+}
+
+.iv-world .iv-card-preview {
+  left: 24%;
+  top: -4%;
+  width: 52%;
+  height: auto;
+  aspect-ratio: 480 / 680;
+  padding: 5px;
+  border-radius: 1px;
+  border-color: rgba(145,120,84,.46);
+  background-color: var(--iv-paper, #FAF6ED);
+  background-image:
+    linear-gradient(145deg, rgba(255,255,255,.86), rgba(247,239,225,.58)),
+    var(--iv-paper-grain);
+  background-size: auto, 180px 180px;
+  box-shadow:
+    0 17px 30px rgba(18,8,6,.19),
+    0 4px 10px rgba(18,8,6,.1),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  overflow: hidden;
+  transform-origin: 50% 88%;
+}
+
+.iv-world .iv-card-preview.iv-card-preview--canvas {
+  left: 24% !important;
+  top: -4% !important;
+  width: 52% !important;
+  height: auto !important;
+  aspect-ratio: 480 / 680;
+  padding: 0 !important;
+  overflow: visible;
+}
+
+.iv-world .iv-envelope-pocket {
+  border-color: color-mix(in srgb, var(--iv-envelope-color, #4a111b) 72%, white);
+  box-shadow:
+    inset 0 2px 7px rgba(0,0,0,.12),
+    0 4px 12px rgba(20,12,10,.1);
+}
+
+.iv-world .iv-pocket-fold--left {
+  background-image:
+    linear-gradient(120deg, rgba(255,255,255,.09), rgba(0,0,0,.03)),
+    var(--iv-paper-grain);
+  background-size: auto, 180px 180px;
+  filter: drop-shadow(1px 1px 2px rgba(0,0,0,.1));
+}
+
+.iv-world .iv-pocket-fold--right {
+  background-image:
+    linear-gradient(240deg, rgba(255,255,255,.08), rgba(0,0,0,.04)),
+    var(--iv-paper-grain);
+  background-size: auto, 180px 180px;
+  filter: drop-shadow(-1px 1px 2px rgba(0,0,0,.1));
+}
+
+.iv-world .iv-pocket-fold--bottom {
+  background-image:
+    linear-gradient(0deg, rgba(0,0,0,.13), rgba(255,255,255,.04)),
+    var(--iv-paper-grain);
+  background-size: auto, 180px 180px;
+  filter: drop-shadow(0 -2px 4px rgba(0,0,0,.13));
+}
+
+.iv-world .iv-pocket-gold-rule {
+  height: 1px;
+  opacity: .48;
+}
+
+.iv-world .iv-envelope-flap-hinge {
+  transform-origin: 50% 0%;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}
+
+.iv-world .iv-flap-outer-polygon {
+  background-color: var(--iv-flap-color, #55141d);
+  background-image:
+    linear-gradient(145deg, rgba(255,255,255,.14), transparent 56%),
+    var(--iv-paper-grain);
+  background-size: auto, 180px 180px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2);
+  border-top-color: rgba(255,255,255,.25);
+}
+
+.iv-world .iv-flap-gold-frame {
+  inset: 7px 7px 38%;
+  border-color: color-mix(in srgb, var(--iv-gold, #dab46f) 45%, transparent);
+  opacity: .66;
+}
+
+.iv-world .iv-flap-detail-rule {
+  position: absolute;
+  left: 17%;
+  right: 17%;
+  top: 43%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--iv-gold, #dab46f) 58%, transparent), transparent);
+  opacity: .5;
+}
+
+.iv-world .iv-seal-anchor {
+  top: 57%;
+  filter: drop-shadow(0 5px 7px rgba(15,8,6,.2));
+  transition: opacity .24s ease, transform .24s ease, visibility .24s ease;
+}
+
+.iv-world .kadi-envelope-wax-seal {
+  transform-origin: center;
+}
+
+.iv-world .kadi-envelope-wax-seal--minimal {
+  opacity: .82;
+}
+
+/* Phase visibility is state-driven; transform animation remains owned by Motion. */
+.iv-world .iv-opening-stage--flap-open .iv-seal-anchor,
+.iv-world .iv-opening-stage--card-rising .iv-seal-anchor,
+.iv-world .iv-opening-stage--settling .iv-seal-anchor {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.iv-world .iv-opening-stage--closed .iv-card-preview,
+.iv-world .iv-opening-stage--seal-press .iv-card-preview,
+.iv-world .iv-opening-stage--seal-release .iv-card-preview {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.iv-world .iv-opening-stage--flap-open .iv-card-preview,
+.iv-world .iv-opening-stage--card-rising .iv-card-preview,
+.iv-world .iv-opening-stage--settling .iv-card-preview {
+  visibility: visible;
+}
+
+.iv-world .iv-opening-stage--closed .iv-insert-paper,
+.iv-world .iv-opening-stage--seal-press .iv-insert-paper,
+.iv-world .iv-opening-stage--seal-release .iv-insert-paper {
+  visibility: hidden;
+}
+
+.iv-world .iv-opening-stage--flap-open .iv-insert-paper,
+.iv-world .iv-opening-stage--card-rising .iv-insert-paper,
+.iv-world .iv-opening-stage--settling .iv-insert-paper {
+  visibility: visible;
+}
+
+.iv-world .iv-open-rule {
+  display: block;
+  width: 19px;
+  height: 1px;
+  background: currentColor;
+  opacity: .58;
+  transform-origin: right center;
+  animation: iv-open-rule-draw 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes iv-open-rule-draw {
+  from { transform: scaleX(.55); opacity: .3; }
+  to { transform: scaleX(1); opacity: .68; }
+}
+
+.iv-world .iv-opening-subtitle {
+  margin: 10px auto 0;
+  max-width: 320px;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(12px, 2.4vw, 15px);
+  line-height: 1.35;
+  font-style: italic;
+  color: var(--iv-muted, #84776e);
+  opacity: .92;
+}
+
+.iv-world--ruby-disco .iv-envelope-pocket {
+  border-color: rgba(255,240,222,.5);
+}
+
+.iv-world--memorial .iv-open-rule,
+.iv-world--memorial .iv-envelope-shadow {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iv-world .iv-open-rule { animation: none; transform: none; opacity: .58; }
+  .iv-world .iv-seal-anchor { transition: none; }
+}

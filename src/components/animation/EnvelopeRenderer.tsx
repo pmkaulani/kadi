@@ -143,6 +143,18 @@ const LINER_BACKGROUNDS: Record<string, string> = {
   none: '#f4f1e8',
 };
 
+const LINER_BASE_COLORS: Record<string, string> = {
+  floral: '#EED4D5',
+  botanical: '#DDE4D5',
+  geometric: '#E9E0CC',
+  'gold-foil': '#E4D3A7',
+  minimal: '#F4F1E8',
+  terracotta: '#E2AE94',
+  'african-print': '#E6C15C',
+  'blush-floral': '#F2D9DE',
+  none: '#F4F1E8',
+};
+
 function getRenderStyle(template: TemplateDefinition, design?: Partial<EventDesignEntity>): CSSProperties {
   const palette = { ...template.palette, ...(design?.palette || {}) };
   const linerId = design?.linerId || template.liner.id;
@@ -169,6 +181,7 @@ function getRenderStyle(template: TemplateDefinition, design?: Partial<EventDesi
     '--iv-accent': palette.primary || template.palette.primary,
     '--iv-gold': secondary,
     '--iv-liner': LINER_BACKGROUNDS[linerId] || LINER_BACKGROUNDS.minimal,
+    '--iv-liner-base': LINER_BASE_COLORS[linerId] || '#F4F1E8',
     '--iv-liner-pattern': linerPattern,
     '--iv-envelope-color': envelopeColor,
     '--iv-flap-color': flapColor,
@@ -387,35 +400,35 @@ export function EnvelopeRenderer({
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('seal-release');
-      }, 320)
+      }, 260)
     );
 
     // Beat C — Hinged flap opens backwards 180deg
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('flap-open');
-      }, 570)
+      }, 520)
     );
 
     // Beat D & E — Inserts move and tall hero card rises
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('card-rising');
-      }, 1120)
+      }, 1140)
     );
 
     // Beat F — Settling expansion
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('settling');
-      }, 1920)
+      }, 1860)
     );
 
     // Settled — Full invitation page active
     timerRefs.current.push(
       window.setTimeout(() => {
         changePhase('settled');
-      }, 2650)
+      }, 2340)
     );
   }, [phase, reducedMotion, changePhase]);
 
@@ -573,43 +586,28 @@ export function EnvelopeRenderer({
 
       {phase !== 'settled' ? (
         <section
-          className={`iv-opening-stage ${phase !== 'closed' ? 'is-opening' : ''} ${
+          className={`iv-opening-stage iv-opening-stage--${phase} ${phase !== 'closed' ? 'is-opening' : ''} ${
             phase === 'card-rising' || phase === 'settling' ? 'card-rising' : ''
           }`}
           aria-label="Open your sealed invitation"
         >
-          {/* Eyebrow & Title: Compact and responsive on short phones */}
+          {/* Personalised opening: let the event and celebrants lead. */}
           <div className="iv-opening-copy">
             <p className="iv-eyebrow">
-              {motionStyle === 'dignified-memorial'
-                ? 'A gathering in remembrance'
-                : motionStyle === 'confetti-burst'
-                ? 'A celebration awaits'
-                : motionStyle === 'floral-bloom'
-                ? 'A celebration of love'
-                : motionStyle === 'minimal-fade'
-                ? 'You are cordially invited'
-                : motionStyle === 'gold-foil'
-                ? 'A regal occasion'
+              {template.category === 'memorial' || template.category === 'funeral'
+                ? 'In loving memory'
                 : isBirthday
-                ? 'Something special for you'
-                : 'A note from the heart'}
+                ? 'A celebration awaits'
+                : template.category === 'wedding' || template.category === 'engagement'
+                ? 'A day made for two'
+                : 'You are invited'}
             </p>
             <h1 className="iv-opening-title">
-              {motionStyle === 'dignified-memorial'
-                ? 'Remembering, together.'
-                : motionStyle === 'confetti-burst'
-                ? 'Tonight has your name on it.'
-                : motionStyle === 'floral-bloom'
-                ? 'A moment, beautifully told.'
-                : motionStyle === 'minimal-fade'
-                ? 'An occasion worth gathering for.'
-                : motionStyle === 'gold-foil'
-                ? 'For you, with honour.'
-                : theme === 'gift-box'
-                ? 'These are for you.'
-                : 'A moment, sealed with love.'}
+              {data.celebrants || data.title}
             </h1>
+            {data.subtitle && data.subtitle !== (data.celebrants || data.title) && (
+              <p className="iv-opening-subtitle">{data.subtitle}</p>
+            )}
           </div>
 
           {/* 3D Physical Stationery Assembly */}
@@ -630,7 +628,12 @@ export function EnvelopeRenderer({
                 ? { y: -1, scale: 1 }
                 : { y: 0, scale: 1 }
             }
-            transition={{ duration: 0.28, ease: 'easeOut' }}
+            transition={{
+              duration: phase === 'seal-press' ? 0.12 : 0.28,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            whileHover={phase === 'closed' ? { y: -1 } : undefined}
+            whileTap={phase === 'closed' ? { scale: 0.988 } : undefined}
           >
             {/* Layer 0: Victorian Shadow Paper Underlay */}
             <span className="iv-shadow-paper" aria-hidden="true" />
@@ -648,11 +651,7 @@ export function EnvelopeRenderer({
 
               {/* Layer 3: Inside Throat Liner Pattern with Fleurons & Gold Rule */}
               <span className="iv-envelope-liner" style={renderStyle}>
-                <span className="iv-liner-ornament">
-                  <span>❦</span>
-                  <i className="iv-liner-rule" />
-                  <span>❦</span>
-                </span>
+                
               </span>
 
               {/* Layer 3.5: Deep Pocket Cavity Throat Shadow behind card */}
@@ -661,34 +660,32 @@ export function EnvelopeRenderer({
               {/* Layer 4: Staggered Stationery Inserts (Beat D) */}
               <motion.span
                 className="iv-insert-paper iv-insert-paper--back"
+                aria-hidden="true"
                 animate={
                   phase === 'card-rising' || phase === 'settling'
-                    ? { y: -48, x: 26, rotate: 5.5, opacity: 1 }
+                    ? { y: '-12%', x: 12, rotate: 2.8, opacity: 1 }
                     : phase === 'flap-open'
-                    ? { y: -16, x: 10, rotate: 2, opacity: 0.85 }
-                    : { y: 0, x: 0, rotate: 0, opacity: 0 }
+                    ? { y: '2%', x: 4, rotate: 1.2, opacity: 0.55 }
+                    : { y: '24%', x: 0, rotate: 0, opacity: 0 }
                 }
-                transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span className="iv-insert-header">✦ R . S . V . P . ✦</span>
-                <span className="iv-insert-rule" />
-                <span className="iv-insert-sub">Kindly respond</span>
+                <span className="iv-insert-emboss" />
               </motion.span>
 
               <motion.span
                 className="iv-insert-paper iv-insert-paper--front"
+                aria-hidden="true"
                 animate={
                   phase === 'card-rising' || phase === 'settling'
-                    ? { y: -42, x: -26, rotate: -4.5, opacity: 1 }
+                    ? { y: '-17%', x: -9, rotate: -2.2, opacity: 1 }
                     : phase === 'flap-open'
-                    ? { y: -14, x: -10, rotate: -1.5, opacity: 0.85 }
-                    : { y: 0, x: 0, rotate: 0, opacity: 0 }
+                    ? { y: '1%', x: -3, rotate: -0.8, opacity: 0.5 }
+                    : { y: '22%', x: 0, rotate: 0, opacity: 0 }
                 }
-                transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.68, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span className="iv-insert-header">✦ D E T A I L S ✦</span>
-                <span className="iv-insert-rule" />
-                <span className="iv-insert-sub">Information for guests</span>
+                <span className="iv-insert-emboss" />
               </motion.span>
 
               {/* Layer 5: Hero Formal Stationery Letter ("THE LETTER" in Reference Target) */}
@@ -697,16 +694,19 @@ export function EnvelopeRenderer({
                 style={renderStyle}
                 animate={
                   phase === 'closed' || phase === 'seal-press'
-                    ? { y: 0, z: 10, rotate: 0, scale: 0.96, opacity: 0 }
+                    ? { y: '38%', z: 10, rotate: 0, scale: 0.985, opacity: 0 }
+                    : phase === 'seal-release'
+                    ? { y: '30%', z: 12, rotate: -0.25, scale: 0.99, opacity: 0 }
                     : phase === 'flap-open'
-                    ? { y: 0, z: 14, rotate: 0, scale: 0.98, opacity: 1 }
+                    ? { y: '8%', z: 14, rotate: -0.2, scale: 0.995, opacity: 1 }
                     : phase === 'card-rising'
-                    ? { y: -136, z: 22, rotate: -0.5, scale: 1.03, opacity: 1 }
-                    : phase === 'settling'
-                    ? { y: -140, z: 26, rotate: 0, scale: 1.04, opacity: 1 }
-                    : { y: 0, z: 16, rotate: 0, scale: 1, opacity: 1 }
+                    ? { y: '-40%', z: 22, rotate: -0.55, scale: 1.005, opacity: 1 }
+                    : { y: '-43%', z: 24, rotate: 0, scale: 1.012, opacity: 1 }
                 }
-                transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration: phase === 'card-rising' ? 0.72 : phase === 'settling' ? 0.42 : 0.3,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
                 {hasCanvasElements ? (
                   <CanvasCardView
@@ -837,20 +837,9 @@ export function EnvelopeRenderer({
                 <span className="iv-pocket-fold iv-pocket-fold--right" />
                 <span className="iv-pocket-fold iv-pocket-fold--bottom" />
                 {motionStyle !== 'minimal-fade' && (
-                  <svg className="iv-pocket-filigree-corners" viewBox="0 0 500 340" fill="none" preserveAspectRatio="none">
-                    {/* Bottom-left corner baroque scroll */}
-                    <path d="M 8 332 C 16 312 28 300 48 296 C 36 304 32 316 36 328 C 42 320 54 318 64 324" stroke="#dab76f" strokeWidth="1.4" strokeLinecap="round" />
-                    <path d="M 12 328 C 24 320 38 322 46 332" stroke="#f3e5c8" strokeWidth="0.8" strokeDasharray="2 2" />
-                    {/* Bottom-right corner baroque scroll */}
-                    <path d="M 492 332 C 484 312 472 300 452 296 C 464 304 468 316 464 328 C 458 320 446 318 436 324" stroke="#dab76f" strokeWidth="1.4" strokeLinecap="round" />
-                    <path d="M 488 328 C 476 320 462 322 454 332" stroke="#f3e5c8" strokeWidth="0.8" strokeDasharray="2 2" />
-                    {/* Mitred throat gold accent line with decorative center */}
-                    <path d="M 10 10 L 250 186 L 490 10" stroke="#dab76f" strokeWidth="1.4" strokeOpacity="0.85" />
-                    <path d="M 18 16 L 250 178 L 482 16" stroke="#f3e5c8" strokeWidth="0.8" strokeOpacity="0.5" strokeDasharray="3 2" />
-                  </svg>
+                  {/* Clean fold geometry; let paper, liner and seal carry the detail. */}
                 )}
                 <span className="iv-pocket-gold-rule" />
-                <span className="iv-pocket-fleuron">❦</span>
                 <span className="iv-pocket-crease-shadow" />
               </span>
 
@@ -868,29 +857,7 @@ export function EnvelopeRenderer({
                 <span className="iv-envelope-flap-face iv-envelope-flap-face--outer">
                   <span className="iv-flap-outer-polygon">
                     <span className="iv-flap-gold-frame" />
-                    {motionStyle !== 'minimal-fade' && (
-                      <svg className="iv-flap-filigree-border" viewBox="0 0 500 320" fill="none" preserveAspectRatio="none">
-                        {/* Outer border track */}
-                        <path d="M 14 10 L 250 274 L 486 10" stroke="#dab76f" strokeWidth="1.8" strokeOpacity="0.95" />
-                        <path d="M 24 16 L 250 260 L 476 16" stroke="#f3e5c8" strokeWidth="0.9" strokeOpacity="0.6" strokeDasharray="3 2" />
-                        {/* Top corner baroque scrolls */}
-                        <path d="M 16 26 C 28 16 42 20 52 32 C 45 38 36 36 30 29 C 24 40 38 50 54 46" stroke="#dab76f" strokeWidth="1.4" strokeLinecap="round" />
-                        <path d="M 484 26 C 472 16 458 20 448 32 C 455 38 464 36 470 29 C 476 40 462 50 446 46" stroke="#dab76f" strokeWidth="1.4" strokeLinecap="round" />
-                        {/* Left edge running botanical filigree vine */}
-                        <path d="M 52 50 Q 80 82 108 114 Q 136 146 164 178 Q 192 210 220 242" stroke="#dab76f" strokeWidth="1" strokeOpacity="0.8" />
-                        <circle cx="80" cy="82" r="2.5" fill="#dab76f" />
-                        <circle cx="136" cy="146" r="2.5" fill="#dab76f" />
-                        <circle cx="192" cy="210" r="2.5" fill="#dab76f" />
-                        {/* Right edge running botanical filigree vine */}
-                        <path d="M 448 50 Q 420 82 392 114 Q 364 146 336 178 Q 308 210 280 242" stroke="#dab76f" strokeWidth="1" strokeOpacity="0.8" />
-                        <circle cx="420" cy="82" r="2.5" fill="#dab76f" />
-                        <circle cx="364" cy="146" r="2.5" fill="#dab76f" />
-                        <circle cx="308" cy="210" r="2.5" fill="#dab76f" />
-                        {/* Flap Tip Gold Royal Fleur-de-lis above seal */}
-                        <path d="M 238 238 C 244 222 250 212 250 202 C 250 212 256 222 262 238 C 256 242 252 248 250 258 C 248 248 244 242 238 238 Z" fill="#dab76f" />
-                        <circle cx="250" cy="196" r="3.5" fill="#f3e5c8" />
-                      </svg>
-                    )}
+                    {motionStyle !== 'minimal-fade' && <span className="iv-flap-detail-rule" aria-hidden="true" />}
                   </span>
                 </span>
 
@@ -898,77 +865,22 @@ export function EnvelopeRenderer({
                 <span className="iv-envelope-flap-face iv-envelope-flap-face--inner">
                   <span className="iv-flap-inner-rim" />
                   <span className="iv-flap-inner-liner">
-                    <span className="iv-liner-ornament">
-                      <span>❦</span>
-                      <i className="iv-liner-rule" />
-                      <span>❦</span>
-                    </span>
+                    
                   </span>
                 </span>
               </motion.span>
 
-              {/* Layer 9: Victorian Physical Wax Seal with Dangling Antique Gold Charm & Dried Flower Sprig */}
+              {/* One reusable wax-seal component. No duplicated charm or cord artwork. */}
               <span className="iv-seal-anchor" aria-hidden="true">
-                <motion.span
-                  className={`iv-victorian-seal ${motionStyle === 'minimal-fade' ? 'iv-victorian-seal--minimal' : ''}`}
-                  style={renderStyle}
-                  initial={phase === 'closed' ? { scale: 1, opacity: 1 } : { scale: 0.5, opacity: 0 }}
-                  animate={
-                    phase === 'closed'
-                      ? { scale: 1, y: 0, rotate: 0, opacity: 1 }
-                      : phase === 'seal-press'
-                      ? { scale: 0.86, y: 3, rotate: 0, opacity: 1 }
-                      : phase === 'seal-release'
-                      ? { scale: 1.14, y: -4, rotate: -6, opacity: 0.88 }
-                      : { scale: 0.4, y: -16, rotate: 16, opacity: 0 }
-                  }
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                >
-                  {/* Dried Botanical Flower Sprig tucked behind the wax seal (matching hero-envelope.webp) */}
-                  {motionStyle !== 'minimal-fade' && (
-                    <span className="iv-seal-floral-sprig" aria-hidden="true">
-                      <svg viewBox="0 0 50 60" fill="none" className="iv-floral-sprig-svg">
-                        <path d="M 25 58 Q 23 38 25 20" stroke="#4A3B2A" strokeWidth="1.8" strokeLinecap="round" />
-                        <path d="M 24 38 Q 32 26 36 14" stroke="#4A3B2A" strokeWidth="1.2" strokeLinecap="round" />
-                        <path d="M 24 42 Q 16 30 12 18" stroke="#4A3B2A" strokeWidth="1.2" strokeLinecap="round" />
-                        {/* Pink / lavender heather florets */}
-                        <circle cx="36" cy="13" r="2.4" fill="#D38C9C" />
-                        <circle cx="33" cy="18" r="2.2" fill="#BA6E7F" />
-                        <circle cx="38" cy="21" r="2.0" fill="#E2A6B4" />
-                        <circle cx="12" cy="17" r="2.4" fill="#D38C9C" />
-                        <circle cx="15" cy="23" r="2.2" fill="#BA6E7F" />
-                        <circle cx="9" cy="25" r="2.0" fill="#E2A6B4" />
-                        {/* Dried chamomile blossom */}
-                        <g transform="translate(25, 14)">
-                          <circle cx="0" cy="0" r="3.5" fill="#E5AA38" />
-                          <circle cx="0" cy="-6.5" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
-                          <circle cx="5.6" cy="-3.2" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
-                          <circle cx="5.6" cy="3.2" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
-                          <circle cx="0" cy="6.5" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
-                          <circle cx="-5.6" cy="3.2" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
-                          <circle cx="-5.6" cy="-3.2" r="2.5" fill="#FFFDF8" stroke="#D8CEBD" strokeWidth="0.6" />
-                          <circle cx="0" cy="0" r="2.2" fill="#C4871B" />
-                        </g>
-                      </svg>
-                    </span>
-                  )}
-
-                  <span className="iv-wax-rim" aria-hidden="true" />
-                  <span className="iv-wax-monogram">
-                    {computedMonogram}
-                  </span>
-                  <span className="iv-wax-imprint" aria-hidden="true">❦</span>
-
-                  {/* Silk Ribbon / Cord & Dangling Antique Gold Coin Medallion Charm (hidden for minimal) */}
-                  {motionStyle !== 'minimal-fade' && (
-                    <>
-                      <span className="iv-seal-cord" aria-hidden="true" />
-                      <span className="iv-seal-charm" aria-hidden="true">
-                        <span className="iv-seal-charm-inner">❦</span>
-                      </span>
-                    </>
-                  )}
-                </motion.span>
+                <WaxSeal
+                  monogram={computedMonogram}
+                  color={design?.sealColor || template.seal.color}
+                  shape={sealShape as 'circle' | 'diamond' | 'shield' | 'oval'}
+                  isPressed={phase === 'seal-press'}
+                  isBreaking={phase === 'seal-release'}
+                  size={82}
+                  className={`kadi-envelope-wax-seal ${motionStyle === 'minimal-fade' ? 'kadi-envelope-wax-seal--minimal' : ''}`}
+                />
               </span>
             </span>
           </motion.button>
@@ -977,15 +889,14 @@ export function EnvelopeRenderer({
           {phase === 'closed' ? (
             <>
               <div className="iv-open-instruction">
-                <span className="iv-pulse-dot" />
-                <span>Tap the seal to open</span>
+                <span className="iv-open-rule" aria-hidden="true" />
+                <span>Open your invitation</span>
               </div>
               {guestName && (
                 <p className="iv-personalized">
                   Prepared especially for <strong>{guestName}</strong>
                 </p>
               )}
-              <p className="iv-tap-caption">An invitation is waiting inside.</p>
             </>
           ) : (
             <div className="iv-opening-status" aria-live="polite">

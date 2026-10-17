@@ -94,11 +94,11 @@ test('Envelope Motion - timeline state machine transitions and cancellation safe
   // Simulate the timeline state machine and cancellation guarantees
   const timelineBeats = [
     { phase: 'seal-press', delayMs: 0 },
-    { phase: 'seal-release', delayMs: 320 },
-    { phase: 'flap-open', delayMs: 570 },
-    { phase: 'card-rising', delayMs: 1120 },
-    { phase: 'settling', delayMs: 1920 },
-    { phase: 'settled', delayMs: 2650 },
+    { phase: 'seal-release', delayMs: 260 },
+    { phase: 'flap-open', delayMs: 520 },
+    { phase: 'card-rising', delayMs: 1140 },
+    { phase: 'settling', delayMs: 1860 },
+    { phase: 'settled', delayMs: 2340 },
   ];
 
   let currentPhase = 'closed';
