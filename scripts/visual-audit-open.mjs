@@ -35,6 +35,9 @@ try {
         const image = element.querySelector('img');
         const title = element.querySelector('h3')?.innerText?.trim() || '';
         const src = image?.currentSrc || image?.getAttribute('src') || '';
+        const canvas = element.querySelector('.kadi-canvas-artboard');
+        const canvasRect = canvas?.getBoundingClientRect();
+        const canvasRendered = Boolean(canvas && canvasRect && canvasRect.width > 100 && canvasRect.height > 150);
         return {
           index: cardIndex,
           title,
@@ -42,6 +45,8 @@ try {
           sourceKey: src ? src.split('?')[0] : '',
           loaded: Boolean(image && image.complete && image.naturalWidth > 0),
           naturalWidth: image?.naturalWidth || 0,
+          canvasRendered,
+          canvasSize: canvasRect ? { width: Math.round(canvasRect.width), height: Math.round(canvasRect.height) } : null,
         };
       }, index));
     }
@@ -60,7 +65,7 @@ try {
     const galleryDetails = {
       device: device.name,
       cardCount,
-      failedImages: galleryReport.filter((item) => !item.loaded).map(({ title, src }) => ({ title, src })),
+      failedImages: galleryReport.filter((item) => !item.loaded || !item.canvasRendered).map(({ title, src, loaded, canvasRendered }) => ({ title, src, loaded, canvasRendered })),
       duplicateImageSources: Object.entries(sourceCounts)
         .filter(([, count]) => count > 1)
         .map(([source, count]) => ({ source, count })),
