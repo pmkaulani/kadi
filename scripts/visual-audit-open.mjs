@@ -32,19 +32,29 @@ try {
       await card.scrollIntoViewIfNeeded();
       await page.waitForTimeout(160);
       galleryReport.push(await card.evaluate((element, cardIndex) => {
-        const image = element.querySelector('img');
         const title = element.querySelector('h3')?.innerText?.trim() || '';
-        const src = image?.currentSrc || image?.getAttribute('src') || '';
         const canvas = element.querySelector('.kadi-canvas-artboard');
         const canvasRect = canvas?.getBoundingClientRect();
         const canvasRendered = Boolean(canvas && canvasRect && canvasRect.width > 100 && canvasRect.height > 150);
+        const heroPhoto = canvas?.querySelector('[data-canvas-element-id="photo-hero"]');
+        const htmlImage = heroPhoto?.querySelector('img');
+        const svgImage = heroPhoto?.querySelector('image');
+        const src = htmlImage?.currentSrc || htmlImage?.getAttribute('src')
+          || svgImage?.getAttribute('href')
+          || svgImage?.getAttribute('xlink:href')
+          || '';
+        const photoBox = heroPhoto?.getBoundingClientRect();
+        const photoElementVisible = Boolean(heroPhoto && photoBox && photoBox.width > 0 && photoBox.height > 0);
+        const photoSourcePresent = Boolean(src.trim());
+        const htmlPhotoLoaded = htmlImage ? Boolean(htmlImage.complete && htmlImage.naturalWidth > 0) : null;
         return {
           index: cardIndex,
           title,
-          src,
-          sourceKey: src ? src.split('?')[0] : '',
-          loaded: Boolean(image && image.complete && image.naturalWidth > 0),
-          naturalWidth: image?.naturalWidth || 0,
+          heroPhotoSrc: src,
+          heroPhotoSourceKey: src ? src.split('?')[0] : '',
+          photoSourcePresent,
+          photoElementVisible,
+          htmlPhotoLoaded,
           canvasRendered,
           canvasSize: canvasRect ? { width: Math.round(canvasRect.width), height: Math.round(canvasRect.height) } : null,
         };
@@ -60,12 +70,16 @@ try {
 
     const sourceCounts = {};
     for (const item of galleryReport) {
-      if (item.sourceKey) sourceCounts[item.sourceKey] = (sourceCounts[item.sourceKey] || 0) + 1;
+      if (item.heroPhotoSourceKey) sourceCounts[item.heroPhotoSourceKey] = (sourceCounts[item.heroPhotoSourceKey] || 0) + 1;
     }
     const galleryDetails = {
       device: device.name,
       cardCount,
-      failedImages: galleryReport.filter((item) => !item.loaded || !item.canvasRendered).map(({ title, src, loaded, canvasRendered }) => ({ title, src, loaded, canvasRendered })),
+      failedImages: galleryReport
+        .filter((item) => !item.canvasRendered || !item.photoSourcePresent || !item.photoElementVisible || item.htmlPhotoLoaded === false)
+        .map(({ title, heroPhotoSrc, canvasRendered, photoSourcePresent, photoElementVisible, htmlPhotoLoaded }) => ({
+          title, heroPhotoSrc, canvasRendered, photoSourcePresent, photoElementVisible, htmlPhotoLoaded,
+        })),
       duplicateImageSources: Object.entries(sourceCounts)
         .filter(([, count]) => count > 1)
         .map(([source, count]) => ({ source, count })),

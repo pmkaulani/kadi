@@ -37,11 +37,17 @@ test('Shared template cards render the real canvas rather than a single hero-ima
     readFile(new URL('../src/app/globals.css', import.meta.url), 'utf8'),
     readFile(new URL('../scripts/visual-audit-open.mjs', import.meta.url), 'utf8'),
   ]);
+  const canvasRenderer = await readFile(new URL('../src/components/studio/canvas/CanvasCardView.tsx', import.meta.url), 'utf8');
   assert.match(component, /CanvasCardView/);
   assert.match(component, /getTemplateCanvasElements/);
+  assert.match(canvasRenderer, /data-canvas-element-id=\{elem\.id\}/);
+  assert.match(canvasRenderer, /data-canvas-element-type=\{elem\.type\}/);
   assert.match(component, /kadi-template-card__image--canvas/);
   assert.doesNotMatch(component, /from ['"]next\/image['"]/);
   assert.match(stylesheet, /\.kadi-template-card__image--canvas\s*\{[\s\S]*?background-image:/);
   assert.match(stylesheet, /\.kadi-template-card__image--canvas::after\s*\{\s*content:\s*none;/);
   assert.match(visualAudit, /canvasRendered/);
+  assert.match(visualAudit, /photoSourcePresent/);
+  assert.match(visualAudit, /data-canvas-element-id="photo-hero"/);
+  assert.match(visualAudit, /heroPhotoSourceKey/);
 });
