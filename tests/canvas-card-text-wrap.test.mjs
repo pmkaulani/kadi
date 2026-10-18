@@ -7,9 +7,9 @@ test('canvas invitation text is constrained to its authored box and can wrap', a
     new URL('../src/components/studio/canvas/CanvasCardView.tsx', import.meta.url),
     'utf8'
   );
-  const match = source.match(/<span className="([^"]+)"[^>]*>\\{elem\\.content\\}<\\/span>/);
+  const match = source.match(/<span className="([^"]+)"[^>]*>\{elem\.content\}<\/span>/);
   assert.ok(match, 'CanvasCardView should render invitation text in a dedicated span');
-  const classes = match[1].split(/\\s+/);
+  const classes = match[1].split(/\s+/);
   assert.ok(classes.includes('block'), 'The text span must have a layout box for width constraints to apply');
   assert.ok(classes.includes('w-full'), 'The text span should use the authored text box width');
   assert.ok(classes.includes('min-w-0'), 'The flex child must be allowed to shrink below its max-content width');
