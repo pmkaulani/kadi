@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useMemo, useState, type CSSProperties } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Check, MoveUpRight } from 'lucide-react';
 import { EnvelopeRenderer } from '@/components/animation/EnvelopeRenderer';
+import { CanvasCardView } from '@/components/studio/canvas/CanvasCardView';
 import { TEMPLATES } from '@/lib/templates/catalogue';
 import { getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
+import type { TemplateDefinition } from '@/lib/templates/types';
 import type { DraftInvitationValues } from '@/lib/invitations/config';
 import type { EventDesignEntity } from '@/lib/db/types';
 
@@ -17,20 +19,34 @@ const ENVELOPE_OPTIONS = [
   { templateId: 'everlasting-peace', index: '05', mood: 'THE REMEMBRANCE', material: 'Olive paper · quiet detail' },
 ] as const;
 
+function getTemplatePreviewValues(template: TemplateDefinition): DraftInvitationValues {
+  return {
+    title: template.sampleData.title,
+    hosts: template.sampleData.hosts,
+    celebrants: template.sampleData.celebrants,
+    date: template.sampleData.date,
+    time: template.sampleData.time,
+    timezone: 'Africa/Nairobi',
+    venue: template.sampleData.venue,
+    city: template.sampleData.city,
+    heroImage: template.sampleData.heroImage,
+    galleryImages: template.sampleData.galleryImages || [],
+    story: template.sampleData.story || '',
+  };
+}
+
 const FEATURED_ENVELOPES = ENVELOPE_OPTIONS.flatMap((option) => {
   const template = TEMPLATES.find((item) => item.id === option.templateId);
-  return template ? [{ ...option, template }] : [];
+  if (!template) return [];
+  const previewValues = getTemplatePreviewValues(template);
+  return [{
+    ...option,
+    template,
+    canvasElements: getTemplateCanvasElements(template, previewValues),
+  }];
 });
 
 type FeaturedEnvelope = (typeof FEATURED_ENVELOPES)[number];
-
-function suiteStyle(template: FeaturedEnvelope['template']): CSSProperties {
-  return {
-    '--suite-envelope': template.palette.envelope,
-    '--suite-liner': template.palette.secondary,
-    '--suite-seal': template.seal.color,
-  } as CSSProperties;
-}
 
 function SuiteOption({
   specimen,
@@ -48,10 +64,21 @@ function SuiteOption({
       onClick={onSelect}
       aria-pressed={selected}
       aria-label={'Preview ' + specimen.template.name + ' stationery'}
-      style={suiteStyle(specimen.template)}
     >
       <span className="ka-suite-option__index">{specimen.index}</span>
-      <span className="ka-suite-option__palette" aria-hidden="true"><i /><i /><i /></span>
+      <span className="ka-suite-option__thumb" aria-hidden="true">
+        <CanvasCardView
+          elements={specimen.canvasElements}
+          cardBackground={specimen.template.palette.cardBackground}
+          palette={{
+            primary: specimen.template.palette.primary,
+            secondary: specimen.template.palette.secondary,
+            text: specimen.template.palette.text,
+          }}
+          fit="contain"
+          className="ka-suite-option__canvas"
+        />
+      </span>
       <span className="ka-suite-option__copy">
         <span className="ka-suite-option__mood">{specimen.mood}</span>
         <span className="ka-suite-option__name">{specimen.template.name}</span>
@@ -64,11 +91,7 @@ function SuiteOption({
   );
 }
 
-/**
- * Editorial envelope showcase.
- * The actual guest-facing renderer remains the hero; suite choices are typography and
- * material swatches, not simplified CSS drawings pretending to be invitation artwork.
- */
+/** The real guest renderer remains the hero; suite options use Kadi's actual portrait canvases. */
 export function EnvelopeAtelier() {
   const [activeTemplateId, setActiveTemplateId] = useState<string>(
     FEATURED_ENVELOPES[0]?.template.id || TEMPLATES[0].id
@@ -77,19 +100,10 @@ export function EnvelopeAtelier() {
     FEATURED_ENVELOPES.find((item) => item.template.id === activeTemplateId) || FEATURED_ENVELOPES[0];
   const template = activeSpecimen?.template || TEMPLATES[0];
 
-  const values = useMemo<DraftInvitationValues>(() => ({
-    title: template.sampleData.title,
-    hosts: template.sampleData.hosts,
-    celebrants: template.sampleData.celebrants,
-    date: template.sampleData.date,
-    time: template.sampleData.time,
-    timezone: 'Africa/Nairobi',
-    venue: template.sampleData.venue,
-    city: template.sampleData.city,
-    heroImage: template.sampleData.heroImage,
-    galleryImages: template.sampleData.galleryImages || [],
-    story: template.sampleData.story || '',
-  }), [template]);
+  const values = useMemo<DraftInvitationValues>(
+    () => getTemplatePreviewValues(template),
+    [template]
+  );
 
   const design = useMemo<Partial<EventDesignEntity>>(() => ({
     motionPreset: template.motionPreset,
@@ -107,10 +121,10 @@ export function EnvelopeAtelier() {
     sealMonogram: template.seal.monogram || 'K',
     sealColor: template.seal.color,
     visibleSections: template.supportedSections,
-    canvasElements: getTemplateCanvasElements(template, values),
+    canvasElements: activeSpecimen?.canvasElements || getTemplateCanvasElements(template, values),
     envelopeStyle: 'classic-fold',
     letterStyle: 'printed-letter',
-  }), [template, values]);
+  }), [template, values, activeSpecimen]);
 
   if (!activeSpecimen) return null;
 
