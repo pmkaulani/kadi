@@ -406,27 +406,36 @@ export function MovingInvitationGallery() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  // Filter cards based on category and search query
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const hasActiveFilters = selectedCategory !== 'all' || normalizedQuery.length > 0;
+
+  // Match the full invitation metadata so venue, date, and celebrant searches work too.
   const filteredCards = useMemo(() => {
     return GALLERY_CARDS.filter((card) => {
       const matchesCategory =
         selectedCategory === 'all' ||
         card.category === selectedCategory ||
-        (selectedCategory === 'heritage' && (card.category === 'heritage' || card.categoryLabel.includes('Heritage'))) ||
-        (selectedCategory === 'wedding' && (card.category === 'anniversary' || card.category === 'heritage')) ||
-        (selectedCategory === 'graduation' && (card.category === 'milestone' || card.category === 'corporate'));
-      const matchesSearch =
-        !searchQuery ||
-        card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.categoryLabel.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.subtitle.toLowerCase().includes(searchQuery.toLowerCase());
+        (selectedCategory === 'wedding' && card.category === 'heritage') ||
+        (selectedCategory === 'graduation' && card.category === 'milestone');
+
+      const searchableText = [
+        card.title,
+        card.subtitle,
+        card.categoryLabel,
+        card.dateText,
+        card.venueText,
+        card.celebrants ?? '',
+      ].join(' ').toLowerCase();
+      const matchesSearch = !normalizedQuery || searchableText.includes(normalizedQuery);
+
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [normalizedQuery, selectedCategory]);
 
   // Distribute cards into 7 columns matching kadi-gallery-reference.png with deep scroll coverage
   const columns = useMemo(() => {
-    if (selectedCategory === 'all' && !searchQuery) {
+    if (hasActiveFilters) return [];
+    if (selectedCategory === 'all') {
       // 7 distinct columns partitioned into 3 disjoint sets so NO adjacent columns ever share cards
       return [
         // Column 0
@@ -488,27 +497,8 @@ export function MovingInvitationGallery() {
       ];
     }
 
-    // Dynamic distribution when filtered by category or search:
-    const cols: GalleryCardItem[][] = [[], [], [], [], [], [], []];
-    const sourceCards = filteredCards.length > 0 ? filteredCards : GALLERY_CARDS;
-    sourceCards.forEach((card, i) => {
-      cols[i % 7].push(card);
-    });
-    return cols.map((colCards, idx) => {
-      let padded = [...colCards];
-      if (padded.length === 0) {
-        padded = [
-          sourceCards[idx % sourceCards.length],
-          sourceCards[(idx + 2) % sourceCards.length],
-          sourceCards[(idx + 4) % sourceCards.length],
-        ];
-      }
-      while (padded.length < 5) {
-        padded = [...padded, ...padded];
-      }
-      return padded.slice(0, 5);
-    });
-  }, [filteredCards, selectedCategory, searchQuery]);
+    return [];
+  }, [hasActiveFilters]);
 
   const handleSelectCard = (templateId: string) => {
     // Open editor directly with template selected — no registration wall
@@ -517,7 +507,7 @@ export function MovingInvitationGallery() {
 
   return (
     <section
-      className="relative w-full h-[190vh] sm:h-[220vh] text-white select-none overflow-hidden"
+      className={`relative w-full text-white select-none overflow-hidden ${hasActiveFilters ? "min-h-screen" : "h-[190vh] sm:h-[220vh]"}`}
       style={{
         background: 'radial-gradient(circle at 50% 35%, #466F7F 0%, #365B6A 50%, #284753 100%)',
       }}
