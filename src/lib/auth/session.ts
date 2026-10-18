@@ -8,7 +8,7 @@ const DEVELOPMENT_SECRET = 'kadi_dev_session_secret_key_minimum_32_characters_lo
 
 function getAuthSecret(): string {
   const secret = process.env.AUTH_SECRET;
-  if (secret && secret.length >= 32 && secret !== DEVELOPMENT_SECRET) return secret;
+  if (secret && secret.length >= 32 && secret !== DEVELOPMENT_SECRET && !/placeholder|change[-_ ]?me|your[-_ ]?secret/i.test(secret)) return secret;
 
   // Never silently sign production sessions with a public, hard-coded key.
   if (process.env.NODE_ENV === 'production') {
