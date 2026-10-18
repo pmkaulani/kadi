@@ -537,6 +537,41 @@ export function MovingInvitationGallery() {
 
           {/* Soft edge vignette keeps the moving invitation tapestry calm and cinematic. */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_70%,_rgba(40,71,83,0.45)_100%)] pointer-events-none z-20" />
+
+          {/* Editorial hero adds a clear product message without placing the invitation art inside another card. */}
+          <div
+            className="pointer-events-none absolute inset-x-0 top-[10vh] z-20 flex h-[72vh] items-center justify-center px-4 sm:px-8"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(40,71,83,0.92) 0%, rgba(40,71,83,0.72) 38%, rgba(40,71,83,0) 76%)',
+            }}
+          >
+            <div className="mx-auto max-w-4xl text-center">
+              <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#F3E5C8] sm:text-xs">
+                DIGITAL INVITATIONS, THOUGHTFULLY MADE
+              </p>
+              <h1 className="font-serif text-4xl font-medium leading-[0.98] tracking-[-0.045em] text-white sm:text-6xl lg:text-7xl">
+                Invitations, <span className="italic text-[#F3E5C8]">with feeling.</span>
+              </h1>
+              <p className="mx-auto mt-5 max-w-2xl text-sm leading-6 text-white/85 sm:mt-6 sm:text-base sm:leading-7">
+                A little paper-like magic for life’s big moments: considered design, a memorable opening, and an invitation your guests can actually use.
+              </p>
+              <div className="pointer-events-auto mt-7 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row">
+                <Link
+                  href="/templates"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#F6F2EA] px-6 text-sm font-semibold text-[#284753] shadow-[0_12px_28px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  Explore invitations
+                  <ArrowUpRight size={17} aria-hidden="true" />
+                </Link>
+                <Link
+                  href="/app/events/new?blank=true"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/35 bg-white/5 px-6 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  Create an invitation
+                </Link>
+              </div>
+            </div>
+          </div>
         </>
       ) : (
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pt-40 pb-16 sm:px-8 sm:pt-44 2xl:pt-28">
