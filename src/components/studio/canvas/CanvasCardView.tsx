@@ -148,7 +148,7 @@ export function CanvasCardView({
                       lineHeight: style.lineHeight || 1.25,
                     }}
                   >
-                    <span className="whitespace-pre-wrap break-words max-w-full px-1">{elem.content}</span>
+                    <span className="block w-full min-w-0 max-w-full whitespace-pre-wrap break-words px-1">{elem.content}</span>
                   </div>
                 )}
 
