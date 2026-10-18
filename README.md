@@ -2,6 +2,8 @@
 
 [![Kadi quality checks](https://github.com/pmkaulani/kadi/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/pmkaulani/kadi/actions/workflows/quality.yml)
 
+![Kadi invitation stationery preview](public/kadi/hero-envelope.webp)
+
 Kadi is a design-led digital invitation experience for weddings, birthdays, family celebrations, graduations, cultural events, and memorials. It brings the care of physical stationery—paper, imagery, typography, envelope reveals, and thoughtful motion—into invitations guests can open and explore on their phones.
 
 The goal is not to make every invitation look like the same template. Each design should have its own art direction, while event details, guest responses, and host workflows remain useful and easy to understand.
