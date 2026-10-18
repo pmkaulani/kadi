@@ -10,6 +10,7 @@ import {
   Heart,
   X,
 } from 'lucide-react';
+import { filterInvitationGallery } from '@/lib/templates/gallery-search';
 
 interface GalleryCardItem {
   id: string;
@@ -409,28 +410,10 @@ export function MovingInvitationGallery() {
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const hasActiveFilters = selectedCategory !== 'all' || normalizedQuery.length > 0;
 
-  // Match the full invitation metadata so venue, date, and celebrant searches work too.
-  const filteredCards = useMemo(() => {
-    return GALLERY_CARDS.filter((card) => {
-      const matchesCategory =
-        selectedCategory === 'all' ||
-        card.category === selectedCategory ||
-        (selectedCategory === 'wedding' && card.category === 'heritage') ||
-        (selectedCategory === 'graduation' && card.category === 'milestone');
-
-      const searchableText = [
-        card.title,
-        card.subtitle,
-        card.categoryLabel,
-        card.dateText,
-        card.venueText,
-        card.celebrants ?? '',
-      ].join(' ').toLowerCase();
-      const matchesSearch = !normalizedQuery || searchableText.includes(normalizedQuery);
-
-      return matchesCategory && matchesSearch;
-    });
-  }, [normalizedQuery, selectedCategory]);
+  const filteredCards = useMemo(
+    () => filterInvitationGallery(GALLERY_CARDS, selectedCategory, normalizedQuery),
+    [normalizedQuery, selectedCategory]
+  );
 
   // Distribute cards into 7 columns matching kadi-gallery-reference.png with deep scroll coverage
   const columns = useMemo(() => {
