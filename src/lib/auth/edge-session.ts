@@ -1,45 +1,83 @@
 export const SESSION_COOKIE_NAME = 'kadi_session';
 
+type EdgeSessionPayload = {
+  id: string;
+  role: 'host' | 'planner' | 'admin';
+  email: string;
+  exp: number;
+};
+
+const DEVELOPMENT_SECRET = 'kadi_dev_session_secret_key_minimum_32_characters_long';
+
+function getEdgeAuthSecret(): string | null {
+  const secret = process.env.AUTH_SECRET;
+  if (secret && secret.length >= 32 && secret !== DEVELOPMENT_SECRET) return secret;
+
+  // The built-in fallback is intentionally limited to non-production local work.
+  if (process.env.NODE_ENV !== 'production') return secret || DEVELOPMENT_SECRET;
+  return null;
+}
+
+function decodeBase64Url(value: string): Uint8Array {
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
+  const binary = atob(padded);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+
+function isSessionPayload(value: unknown): value is EdgeSessionPayload {
+  if (!value || typeof value !== 'object') return false;
+  const payload = value as Partial<EdgeSessionPayload>;
+  return (
+    typeof payload.id === 'string' &&
+    payload.id.length > 0 &&
+    typeof payload.email === 'string' &&
+    typeof payload.exp === 'number' &&
+    Number.isFinite(payload.exp) &&
+    Date.now() < payload.exp &&
+    (payload.role === 'host' || payload.role === 'planner' || payload.role === 'admin')
+  );
+}
+
 /**
- * Edge-compatible session structure and expiry validation for Next.js Middleware.
- * Does not import Node.js specific modules, ensuring zero warnings in Edge Runtime.
+ * Verifies the HMAC signature in Edge-compatible Web Crypto before trusting a
+ * session payload. A decodable payload alone is never proof of authentication.
  */
-export function isEdgeSessionPresent(token?: string): boolean {
-  if (!token || typeof token !== 'string') return false;
+async function verifyEdgeSession(token?: string): Promise<EdgeSessionPayload | null> {
+  if (!token || typeof token !== 'string' || token.length > 4096) return null;
   const parts = token.split('.');
-  if (parts.length !== 2) return false;
+  if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+
+  const secret = getEdgeAuthSecret();
+  if (!secret) return null;
 
   try {
-    let base64 = parts[0].replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) {
-      base64 += '=';
-    }
-    const jsonStr = atob(base64);
-    const payload = JSON.parse(jsonStr);
-    return Boolean(payload?.id && payload?.exp && Date.now() < payload.exp);
-  } catch {
-    return false;
-  }
-}
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify']
+    );
+    const isSignatureValid = await crypto.subtle.verify(
+      'HMAC',
+      key,
+      decodeBase64Url(parts[1]),
+      new TextEncoder().encode(parts[0])
+    );
+    if (!isSignatureValid) return null;
 
-export function getEdgeSessionPayload(token?: string): { id: string; role?: string; email?: string; exp: number } | null {
-  if (!token || typeof token !== 'string') return null;
-  const parts = token.split('.');
-  if (parts.length !== 2) return null;
-
-  try {
-    let base64 = parts[0].replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4) {
-      base64 += '=';
-    }
-    const jsonStr = atob(base64);
-    const payload = JSON.parse(jsonStr);
-    if (payload?.id && payload?.exp && Date.now() < payload.exp) {
-      return payload;
-    }
-    return null;
+    const payload = JSON.parse(new TextDecoder().decode(decodeBase64Url(parts[0])));
+    return isSessionPayload(payload) ? payload : null;
   } catch {
     return null;
   }
 }
 
+export async function isEdgeSessionPresent(token?: string): Promise<boolean> {
+  return Boolean(await verifyEdgeSession(token));
+}
+
+export async function getEdgeSessionPayload(token?: string): Promise<EdgeSessionPayload | null> {
+  return verifyEdgeSession(token);
+}
