@@ -43,3 +43,7 @@ test('atelier keeps the closed envelope as the focus without duplicate floating 
   assert.match(stylesheet, /\.ka-atelier__preview \.iv-tabletop-scene,\s*\.ka-atelier__preview \.iv-botanical,\s*\.ka-atelier__preview \.iv-star-field,\s*\.ka-atelier__preview \.iv-confetti-stage\s*\{\s*display:none !important;/);
   assert.match(stylesheet, /\.ka-atelier__preview \.iv-opening-stage\s*\{\s*justify-content:center;/);
 });
+
+test('atelier preview descriptor sits below the brand rail instead of colliding with the Kadi wordmark', () => {
+  assert.match(stylesheet, /\.ka-atelier__preview-topline \{[^}]*top:\s*52px;/);
+});
