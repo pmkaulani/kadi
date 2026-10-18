@@ -539,7 +539,7 @@ export function MovingInvitationGallery() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_70%,_rgba(40,71,83,0.45)_100%)] pointer-events-none z-20" />
         </>
       ) : (
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pt-32 pb-16 sm:px-8 sm:pt-36">
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pt-40 pb-16 sm:px-8 sm:pt-44 2xl:pt-28">
           <div className="mb-7 flex flex-col gap-3 border-b border-white/20 pb-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">Kadi design library</p>
