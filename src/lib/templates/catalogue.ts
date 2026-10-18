@@ -127,9 +127,9 @@ export const TEMPLATES: TemplateDefinition[] = [
       time: '3:30 PM EAT',
       venue: 'Vipingo Ridge Beach Club',
       city: 'Kilifi, Kenya',
-      heroImage: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=1200&q=80',
+      heroImage: 'https://images.unsplash.com/photo-1783818412545-44e0aee96b21?auto=format&fit=crop&w=1200&q=82',
       galleryImages: [
-        'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=1000&q=80',
+        'https://images.unsplash.com/photo-1783818412545-44e0aee96b21?auto=format&fit=crop&w=1000&q=80',
         'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1000&q=80',
         'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1000&q=80',
       ],

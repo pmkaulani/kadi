@@ -79,6 +79,12 @@ function addText(
   });
 }
 
+function imageSourceIdentity(src: string | undefined): string {
+  // Image transformations (e.g. Unsplash w/q parameters) must not make one photograph
+  // look like two separate assets when choosing collage images.
+  return (src || '').split(/[?#]/, 1)[0].trim();
+}
+
 function addPhoto(
   elements: CanvasElement[],
   src: string | undefined,
@@ -693,7 +699,8 @@ export function getTemplateCanvasElements(
     const gallery = values.galleryImages?.length
       ? values.galleryImages
       : template.sampleData.galleryImages || [];
-    const secondImage = gallery.find((image) => image && image !== heroImage);
+    const heroIdentity = imageSourceIdentity(heroImage);
+    const secondImage = gallery.find((image) => image && imageSourceIdentity(image) !== heroIdentity);
     const { mask: secondaryMask, ...secondaryBox } = direction.secondaryPhoto;
     addPhoto(
       elements,

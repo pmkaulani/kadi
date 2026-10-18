@@ -72,6 +72,29 @@ test('Canvas art direction - occasion layouts use different compositions', () =>
   assert.notEqual(byId(wedding, 'text-title').styleProps?.fontFamily, byId(birthday, 'text-title').styleProps?.fontFamily);
 });
 
+
+test('Canvas art direction - multi-photo suites never repeat the hero because sizing query strings differ', () => {
+  const tpl = template('coastal-romance');
+  const values = valuesFor(tpl, {
+    heroImage: 'https://images.unsplash.com/photo-hero-image?auto=format&fit=crop&w=1200&q=82',
+    galleryImages: [
+      'https://images.unsplash.com/photo-hero-image?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-secondary-image?auto=format&fit=crop&w=1000&q=80',
+    ],
+  });
+  const elements = getTemplateCanvasElements(tpl, values);
+  const hero = byId(elements, 'photo-hero');
+  const secondary = byId(elements, 'photo-secondary');
+
+  assert.equal(hero.content, values.heroImage);
+  assert.equal(secondary.content, values.galleryImages[1]);
+  assert.notEqual(
+    hero.content.split('?')[0],
+    secondary.content.split('?')[0],
+    'A collage should show two genuinely different photographs, not resized copies of the hero'
+  );
+});
+
 test('Canvas art direction - default layout avoids mirrored corner decoration', () => {
   const samples = ['savannah-twilight', 'milestone-gold', 'everlasting-peace', 'sweet-beginnings'];
   for (const id of samples) {
