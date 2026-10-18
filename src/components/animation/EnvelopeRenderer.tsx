@@ -179,16 +179,18 @@ function getRenderStyle(template: TemplateDefinition, design?: Partial<EventDesi
   const linerId = design?.linerId || template.liner.id;
   const font = design?.fontFamily || (template.fonts.heading === 'sans' ? 'Inter' : template.fonts.heading === 'display' ? 'Cormorant Garamond' : 'Playfair Display');
   const linerPattern = linerId === 'floral' || linerId === 'blush-floral'
-    ? 'radial-gradient(circle at 20% 25%, rgba(255,255,255,.7) 0 2px, transparent 3px), radial-gradient(circle at 70% 68%, rgba(165,75,88,.18) 0 4px, transparent 5px)'
+    ? 'radial-gradient(ellipse at 17% 22%, rgba(255,255,255,.78) 0 2px, transparent 3px), radial-gradient(ellipse at 22% 27%, rgba(159,74,88,.18) 0 7px, transparent 8px), radial-gradient(ellipse at 25% 19%, rgba(159,74,88,.14) 0 6px, transparent 7px), radial-gradient(ellipse at 77% 68%, rgba(255,255,255,.62) 0 2px, transparent 3px), radial-gradient(ellipse at 73% 72%, rgba(159,74,88,.16) 0 8px, transparent 9px), radial-gradient(ellipse at 69% 65%, rgba(159,74,88,.13) 0 6px, transparent 7px)'
     : linerId === 'geometric'
-    ? 'repeating-linear-gradient(45deg, rgba(50,50,42,.16) 0 1px, transparent 1px 10px)'
+    ? 'repeating-linear-gradient(45deg, rgba(71,56,41,.13) 0 1px, transparent 1px 9px), repeating-linear-gradient(135deg, rgba(255,255,255,.46) 0 1px, transparent 1px 9px), radial-gradient(circle, rgba(163,132,83,.18) 0 1px, transparent 1.7px)'
     : linerId === 'gold-foil'
-    ? 'linear-gradient(135deg, rgba(255,255,255,.35), transparent 55%)'
+    ? 'radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.78), transparent 44%), repeating-linear-gradient(45deg, rgba(170,130,66,.14) 0 1px, transparent 1px 8px), radial-gradient(circle, rgba(255,255,255,.38) 0 1px, transparent 1.8px)'
     : linerId === 'african-print'
-    ? 'repeating-linear-gradient(45deg, #e6c15c 0 7px, #254b42 7px 14px, #a64b37 14px 21px, #f2e7cc 21px 28px)'
+    ? 'repeating-linear-gradient(45deg, #e6c15c 0 7px, #254b42 7px 14px, #a64b37 14px 21px, #f2e7cc 21px 28px), repeating-linear-gradient(135deg, rgba(20,40,32,.45) 0 1px, transparent 1px 8px)'
     : linerId === 'botanical'
-    ? 'radial-gradient(ellipse at 20% 25%, rgba(62,91,67,.16), transparent 34%), radial-gradient(ellipse at 75% 75%, rgba(62,91,67,.12), transparent 30%)'
-    : 'none';
+    ? 'radial-gradient(ellipse at 14% 28%, rgba(62,91,67,.2) 0 3px, transparent 4px), radial-gradient(ellipse at 20% 22%, rgba(62,91,67,.16) 0 9px, transparent 10px), radial-gradient(ellipse at 77% 70%, rgba(62,91,67,.16) 0 12px, transparent 13px), radial-gradient(ellipse at 84% 63%, rgba(62,91,67,.14) 0 7px, transparent 8px), repeating-linear-gradient(125deg, rgba(62,91,67,.045) 0 1px, transparent 1px 11px)'
+    : linerId === 'terracotta'
+    ? 'radial-gradient(ellipse at 16% 20%, rgba(255,248,231,.62), transparent 35%), radial-gradient(ellipse at 82% 75%, rgba(143,70,48,.17), transparent 42%), repeating-linear-gradient(0deg, rgba(143,70,48,.05) 0 1px, transparent 1px 7px)'
+    : 'repeating-linear-gradient(0deg, rgba(90,72,55,.035) 0 1px, transparent 1px 5px), repeating-linear-gradient(90deg, rgba(90,72,55,.025) 0 1px, transparent 1px 7px)';
 
   const envelopeColor = palette.envelope || template.palette.envelope;
   const flapColor = palette.flap || template.palette.flap;
@@ -688,7 +690,12 @@ export function EnvelopeRenderer({
                     : { y: '-50%', z: 24, rotate: 0, scale: 1.006, opacity: 1 }
                 }
                 transition={{
-                  duration: phase === 'card-rising' ? 0.72 : phase === 'settling' ? 0.42 : 0.3,
+                  duration: phase === 'card-rising'
+                    ? motionStyle === 'floral-bloom' ? 0.84
+                      : motionStyle === 'confetti-burst' ? 0.58
+                      : motionStyle === 'dignified-memorial' ? 0.94
+                      : 0.72
+                    : phase === 'settling' ? 0.42 : 0.3,
                   ease: [0.22, 1, 0.36, 1],
                 }}
               >
@@ -825,7 +832,14 @@ export function EnvelopeRenderer({
                     ? { rotateX: -178 }
                     : { rotateX: 0 }
                 }
-                transition={{ duration: 0.62, ease: [0.25, 1, 0.5, 1] }}
+                transition={{
+                  duration: motionStyle === 'floral-bloom' ? 0.76
+                    : motionStyle === 'confetti-burst' ? 0.5
+                    : motionStyle === 'dignified-memorial' ? 0.82
+                    : motionStyle === 'minimal-fade' ? 0.44
+                    : 0.62,
+                  ease: [0.25, 1, 0.5, 1],
+                }}
               >
                 {/* Outer Flap Face (Visible when closed with Antique Gold Filigree Lace Border) */}
                 <span className="iv-envelope-flap-face iv-envelope-flap-face--outer">

@@ -158,13 +158,15 @@ function addRule(
   });
 }
 
+type CanvasBox = { x: number; y: number; width: number; height: number };
+
 type ArtDirection = {
   eyebrow: string;
   request: string;
-  photo: { x: number; y: number; width: number; height: number };
+  photo: CanvasBox;
   mask: MaskShape;
   requestY?: number;
-  secondaryPhoto?: { x: number; y: number; width: number; height: number; mask: MaskShape };
+  secondaryPhoto?: CanvasBox & { mask: MaskShape };
   titleY: number;
   titleHeight: number;
   titleMax: number;
@@ -173,6 +175,21 @@ type ArtDirection = {
   venueHeight: number;
   detailSize: number;
   headingFont: string;
+  textAlign?: 'left' | 'center' | 'right';
+  hostsBox?: CanvasBox;
+  requestBox?: CanvasBox;
+  titleBox?: CanvasBox;
+  detailsBox?: CanvasBox;
+  venueBox?: CanvasBox;
+  rsvpBox?: CanvasBox;
+  decorations?: Array<{
+    id: string;
+    assetIds: string[];
+    box: CanvasBox;
+    rotation?: number;
+    opacity?: number;
+    zIndex?: number;
+  }>;
 };
 
 function resolveArtDirection(template: TemplateDefinition): ArtDirection {
@@ -187,6 +204,86 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   const isCorporate = ['corporate', 'product-launch', 'fundraiser'].includes(category);
   const isHeritage = category === 'cultural-celebration' || id.includes('cultural') || id.includes('harambee') || id.includes('safari');
 
+  // The heirloom wedding: one large arch portrait, deliberate whitespace, fine print details.
+  if (id === 'savannah-twilight') {
+    return {
+      eyebrow: 'TOGETHER WITH THEIR FAMILIES',
+      request: 'joyfully invite you to the wedding of',
+      photo: { x: 105, y: 40, width: 270, height: 252 }, mask: 'arch',
+      titleY: 323, titleHeight: 84, titleMax: 41, detailsY: 431, venueY: 471, venueHeight: 61,
+      detailSize: 11, headingFont: 'Cormorant Garamond',
+      decorations: [{
+        id: 'motif-heirloom-bloom',
+        assetIds: ['botanical-white-rose', 'botanical-olive-branch'],
+        box: { x: 367, y: 552, width: 69, height: 78 },
+        rotation: 10, opacity: 0.94, zIndex: 8,
+      }],
+    };
+  }
+
+  // The milestone suite gets an assertive landscape crop and a single celebratory accent.
+  if (id === 'milestone-gold') {
+    return {
+      eyebrow: 'AN OCCASION TO REMEMBER',
+      request: 'A golden evening for a remarkable milestone',
+      photo: { x: 38, y: 39, width: 404, height: 230 }, mask: 'none',
+      titleY: 309, titleHeight: 91, titleMax: 43, detailsY: 415, venueY: 455, venueHeight: 59,
+      detailSize: 12, headingFont: 'Playfair Display',
+      decorations: [{
+        id: 'motif-golden-toast',
+        assetIds: ['party-crystal-flutes', 'party-disco-ball'],
+        box: { x: 369, y: 548, width: 68, height: 70 },
+        rotation: 5, opacity: 0.96, zIndex: 8,
+      }],
+    };
+  }
+
+  // Corporate, launch and gala suites use an asymmetric editorial column, not a wedding-card stack.
+  if (['summit-executive', 'modern-keynote', 'nexus-product-unveil', 'beacon-of-hope-gala'].includes(id)) {
+    const isLaunch = id === 'nexus-product-unveil';
+    const isKeynote = id === 'modern-keynote';
+    const isGala = id === 'beacon-of-hope-gala';
+    return {
+      eyebrow: isLaunch ? 'A FIRST LOOK' : isKeynote ? 'IDEAS IN MOTION' : isGala ? 'AN EVENING WITH PURPOSE' : 'LEADERSHIP · IDEAS · CONNECTION',
+      request: isLaunch ? 'An idea becomes something real' : isKeynote ? 'Join the conversation' : isGala ? 'Together, we can make a difference' : 'An evening of perspective and progress',
+      photo: { x: 238, y: 57, width: 208, height: 232 }, mask: 'none',
+      requestY: 292, titleY: 336, titleHeight: 91, titleMax: isGala ? 34 : 31,
+      detailsY: 441, venueY: 480, venueHeight: 66, detailSize: 11,
+      headingFont: isGala ? 'Cormorant Garamond' : 'Inter',
+      textAlign: 'left',
+      hostsBox: { x: 34, y: 53, width: 184, height: 30 },
+      requestBox: { x: 34, y: 292, width: 186, height: 38 },
+      titleBox: { x: 31, y: 337, width: 194, height: 91 },
+      detailsBox: { x: 35, y: 441, width: 186, height: 32 },
+      venueBox: { x: 35, y: 480, width: 188, height: 66 },
+      rsvpBox: { x: 35, y: 571, width: 238, height: 22 },
+      decorations: [{
+        id: 'motif-edition-clip',
+        assetIds: ['stationery-brass-clip'],
+        box: { x: 418, y: 43, width: 32, height: 52 },
+        rotation: 5, opacity: 0.92, zIndex: 8,
+      }],
+    };
+  }
+
+  // A quiet two-photo botanical composition for a letter that feels collected, not templated.
+  if (id === 'sweet-beginnings') {
+    return {
+      eyebrow: 'A LITTLE LOVE IS ON THE WAY',
+      request: 'Please join us to celebrate',
+      photo: { x: 135, y: 43, width: 210, height: 207 }, mask: 'arch',
+      secondaryPhoto: { x: 24, y: 165, width: 135, height: 145, mask: 'polaroid' },
+      requestY: 316, titleY: 350, titleHeight: 84, titleMax: 35, detailsY: 446, venueY: 487, venueHeight: 54,
+      detailSize: 11, headingFont: 'Cormorant Garamond',
+      decorations: [{
+        id: 'motif-first-bloom',
+        assetIds: ['botanical-pink-peony', 'botanical-white-rose'],
+        box: { x: 370, y: 548, width: 62, height: 70 },
+        rotation: 8, opacity: 0.92, zIndex: 8,
+      }],
+    };
+  }
+
   // Named art directions keep sibling templates visually distinct instead of recolouring one layout.
   if (id === 'these-are-for-you') {
     return {
@@ -200,9 +297,16 @@ function resolveArtDirection(template: TemplateDefinition): ArtDirection {
   if (id === 'coastal-romance') {
     return {
       eyebrow: 'A GATHERING BY THE INDIAN OCEAN', request: 'Two hearts, one beautiful horizon',
-      photo: { x: 40, y: 48, width: 400, height: 216 }, mask: 'none',
-      titleY: 300, titleHeight: 83, titleMax: 39, detailsY: 411, venueY: 451, venueHeight: 56,
-      detailSize: 12, headingFont: 'Cormorant Garamond',
+      photo: { x: 42, y: 40, width: 332, height: 218 }, mask: 'none',
+      secondaryPhoto: { x: 247, y: 143, width: 180, height: 160, mask: 'polaroid' },
+      titleY: 344, titleHeight: 82, titleMax: 39, detailsY: 446, venueY: 486, venueHeight: 55,
+      detailSize: 11, headingFont: 'Cormorant Garamond',
+      decorations: [{
+        id: 'motif-coastal-postmark',
+        assetIds: ['stationery-postage-stamp-vintage'],
+        box: { x: 367, y: 548, width: 63, height: 72 },
+        rotation: 5, opacity: 0.9, zIndex: 8,
+      }],
     };
   }
   if (id === 'sage-love-letter') {
@@ -625,10 +729,11 @@ export function getTemplateCanvasElements(
     });
   }
 
+  const textAlign = direction.textAlign || 'center';
   addText(elements, 'text-hosts', 'Hosts / eyebrow',
     values.hosts?.trim() || direction.eyebrow,
-    { x: 40, y: 18, width: 400, height: 20 },
-    { fontFamily: 'Inter', fontSize: isMemorial ? 10 : 9, fontWeight: 600, color: accent, textAlign: 'center', letterSpacing: isMemorial ? 1.8 : 2.0 }, 4);
+    direction.hostsBox || { x: 40, y: 18, width: 400, height: 20 },
+    { fontFamily: 'Inter', fontSize: isMemorial ? 10 : 9, fontWeight: 600, color: accent, textAlign, letterSpacing: isMemorial ? 1.8 : 2.0 }, 4);
 
   const secondaryPhotoBottom = direction.secondaryPhoto
     ? direction.secondaryPhoto.y + direction.secondaryPhoto.height
@@ -637,10 +742,10 @@ export function getTemplateCanvasElements(
     direction.photo.y + direction.photo.height,
     secondaryPhotoBottom
   );
-  const requestY = direction.requestY ?? Math.max(isMemorial ? 220 : 0, photoBottom + 6);
+  const requestY = direction.requestBox?.y ?? Math.max(direction.requestY ?? 0, isMemorial ? 220 : 0, photoBottom + 6);
   addText(elements, 'text-request', 'Invitation request', direction.request,
-    { x: 40, y: requestY, width: 400, height: 24 },
-    { fontFamily: headingFont, fontSize: 15, fontStyle: isCorporate ? 'normal' : 'italic', fontWeight: 400, color: muted, textAlign: 'center', letterSpacing: 0.2 }, 5);
+    direction.requestBox || { x: 40, y: requestY, width: 400, height: 24 },
+    { fontFamily: headingFont, fontSize: 15, fontStyle: isCorporate ? 'normal' : 'italic', fontWeight: 400, color: muted, textAlign, letterSpacing: 0.2 }, 5);
 
   let titleFontSize = direction.titleMax;
   if (headingText.length > 30) titleFontSize -= 8;
@@ -650,27 +755,27 @@ export function getTemplateCanvasElements(
   if (isCorporate) titleFontSize = Math.min(titleFontSize, 29);
 
   addText(elements, 'text-title', 'Celebrants / event title', headingText,
-    { x: 30, y: direction.titleY, width: 420, height: direction.titleHeight },
-    { fontFamily: headingFont, fontSize: Math.max(22, titleFontSize), fontWeight: isCorporate ? 600 : 500, color: heading, textAlign: 'center', lineHeight: 1.12, letterSpacing: isCorporate ? -0.6 : -0.25 }, 6,
+    direction.titleBox || { x: 30, y: direction.titleY, width: 420, height: direction.titleHeight },
+    { fontFamily: headingFont, fontSize: Math.max(22, titleFontSize), fontWeight: isCorporate ? 600 : 500, color: heading, textAlign, lineHeight: 1.12, letterSpacing: isCorporate ? -0.6 : -0.25 }, 6,
     isMemorial ? { effect: 'fadeIn', duration: 0.7, delay: 0.12 } : undefined);
 
   const date = values.date?.trim() || template.sampleData.date;
   const time = values.time?.trim() || template.sampleData.time;
   addText(elements, 'text-date', 'Date and time', [date, time].filter(Boolean).join('  ·  '),
-    { x: 40, y: direction.detailsY, width: 400, height: 26 },
-    { fontFamily: 'Inter', fontSize: direction.detailSize, fontWeight: 500, color: ink, textAlign: 'center', letterSpacing: 0.15 }, 7);
+    direction.detailsBox || { x: 40, y: direction.detailsY, width: 400, height: 26 },
+    { fontFamily: 'Inter', fontSize: direction.detailSize, fontWeight: 500, color: ink, textAlign, letterSpacing: 0.15 }, 7);
 
   const venue = values.venue?.trim() || template.sampleData.venue;
   const city = values.city?.trim() || template.sampleData.city;
   addText(elements, 'text-venue', 'Venue and city', [venue, city].filter(Boolean).join('\n'),
-    { x: 46, y: direction.venueY, width: 388, height: direction.venueHeight },
-    { fontFamily: 'Inter', fontSize: isMemorial ? 11 : 10.5, fontWeight: 400, color: muted, textAlign: 'center', lineHeight: 1.45 }, 7);
+    direction.venueBox || { x: 46, y: direction.venueY, width: 388, height: direction.venueHeight },
+    { fontFamily: 'Inter', fontSize: isMemorial ? 11 : 10.5, fontWeight: 400, color: muted, textAlign, lineHeight: 1.45 }, 7);
 
   const rsvp = values.rsvpDeadline?.trim();
   if (rsvp) {
     addRule(elements, 'rule-rsvp', 48, 548, 58, accent);
     addText(elements, 'text-rsvp', 'Kindly reply by', 'PLEASE REPLY BY ' + rsvp.toUpperCase(),
-      { x: 48, y: 561, width: 286, height: 23 },
+      direction.rsvpBox || { x: 48, y: 561, width: 286, height: 23 },
       { fontFamily: 'Inter', fontSize: 8.5, fontWeight: 500, color: muted, textAlign: 'left', letterSpacing: 0.8 }, 7);
   } else if (isMemorial) {
     addRule(elements, 'rule-remembrance', 210, 535, 60, accent);
@@ -679,8 +784,16 @@ export function getTemplateCanvasElements(
       { fontFamily: 'Inter', fontSize: 9, fontWeight: 500, color: muted, textAlign: 'center', letterSpacing: 1.25 }, 7);
   }
 
-  // One occasion-specific motif is enough. Avoid duplicated corner stickers.
-  if (isWedding && id !== 'silver-memories') {
+  // A single art-directed PNG embellishment; named suites replace the generic category motif.
+  if (direction.decorations?.length) {
+    direction.decorations.forEach((decoration) => {
+      addSticker(elements, sticker(...decoration.assetIds), decoration.id, decoration.box, {
+        rotation: decoration.rotation,
+        opacity: decoration.opacity,
+        zIndex: decoration.zIndex ?? 8,
+      });
+    });
+  } else if (isWedding && id !== 'silver-memories') {
     addSticker(elements, sticker('botanical-olive-branch', 'botanical-eucalyptus-garland', 'botanical-white-rose'), 'sticker-motif', { x: 367, y: 560, width: 64, height: 72 }, { rotation: 12, opacity: 0.92, zIndex: 3 });
   } else if (isBirthday && id !== 'these-are-for-you') {
     addSticker(elements, sticker('party-disco-ball', 'party-gold-balloon-star', 'party-wedding-cake'), 'sticker-motif', { x: 371, y: 552, width: 70, height: 70 }, { rotation: 7, opacity: 0.96, zIndex: 3 });

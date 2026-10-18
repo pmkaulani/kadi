@@ -147,15 +147,19 @@ test('Canvas art direction - every template keeps image, invitation request, and
     const title = byId(elements, 'text-title');
     const photos = elements.filter((element) => element.type === 'photo');
 
-    const lowerEdgeOfPhotography = Math.max(
-      0,
-      ...photos.map((photo) => photo.y + photo.height)
-    );
+    const intersects = (a, b) =>
+      a.x < b.x + b.width &&
+      a.x + a.width > b.x &&
+      a.y < b.y + b.height &&
+      a.y + a.height > b.y;
 
-    assert.ok(
-      request.y >= lowerEdgeOfPhotography,
-      `${tpl.id}: invitation request should sit below the photography (photo bottom ${lowerEdgeOfPhotography}, request y ${request.y})`
-    );
+    for (const photo of photos) {
+      assert.equal(
+        intersects(request, photo),
+        false,
+        `${tpl.id}: invitation request must not overlap photo ${photo.id}`
+      );
+    }
     assert.ok(
       request.y + request.height <= title.y,
       `${tpl.id}: invitation request must end before the headline begins (request bottom ${request.y + request.height}, title y ${title.y})`
@@ -211,4 +215,60 @@ test('Canvas art direction - a stored template-default font does not erase occas
     'Cormorant Garamond',
     'An actual host-selected font remains an override'
   );
+});
+
+
+test('Canvas art direction - editorial business invitations use a true asymmetric split', () => {
+  for (const id of ['summit-executive', 'modern-keynote', 'nexus-product-unveil', 'beacon-of-hope-gala']) {
+    const tpl = template(id);
+    const elements = getTemplateCanvasElements(tpl, valuesFor(tpl));
+    const photo = byId(elements, 'photo-hero');
+    const title = byId(elements, 'text-title');
+    const request = byId(elements, 'text-request');
+    assert.ok(photo.x > title.x + title.width, `${id} should place its photo to the right of the text column`);
+    assert.equal(title.styleProps?.textAlign, 'left');
+    assert.equal(request.styleProps?.textAlign, 'left');
+    assert.ok(elements.some((element) => element.type === 'sticker' && element.content.includes('stationery-brass-clip')));
+  }
+});
+
+test('Canvas art direction - named suites use custom PNG motifs rather than duplicated generic decorations', () => {
+  for (const [id, motif] of [
+    ['savannah-twilight', 'motif-heirloom-bloom'],
+    ['milestone-gold', 'motif-golden-toast'],
+    ['sweet-beginnings', 'motif-first-bloom'],
+    ['coastal-romance', 'motif-coastal-postmark'],
+  ]) {
+    const tpl = template(id);
+    const elements = getTemplateCanvasElements(tpl, valuesFor(tpl));
+    const stickers = elements.filter((element) => element.type === 'sticker');
+    assert.equal(stickers.length, 1, `${id} should have one deliberate embellishment, not a default + custom pair`);
+    assert.equal(stickers[0].id, motif);
+    assert.match(stickers[0].content, /^\\/stickers\\/.+\\.png$/);
+  }
+});
+
+test('Canvas art direction - coastal and baby stationery use considered two-photo compositions', () => {
+  for (const id of ['coastal-romance', 'sweet-beginnings']) {
+    const tpl = template(id);
+    const elements = getTemplateCanvasElements(tpl, valuesFor(tpl));
+    const photos = elements.filter((element) => element.type === 'photo');
+    assert.equal(photos.length, 2);
+    assert.notDeepEqual(
+      { x: photos[0].x, y: photos[0].y, width: photos[0].width, height: photos[0].height },
+      { x: photos[1].x, y: photos[1].y, width: photos[1].width, height: photos[1].height }
+    );
+  }
+});
+
+test('Envelope art direction - paper liners use textured print layers and tailored opening cadence', async () => {
+  const { readFile: read } = await import('node:fs/promises');
+  const [renderer, css] = await Promise.all([
+    read(new URL('../src/components/animation/EnvelopeRenderer.tsx', import.meta.url), 'utf8'),
+    read(new URL('../src/app/globals.css', import.meta.url), 'utf8'),
+  ]);
+  assert.match(renderer, /radial-gradient\(ellipse at 17% 22%/);
+  assert.match(renderer, /motionStyle === 'floral-bloom' \? 0\.76/);
+  assert.match(renderer, /motionStyle === 'dignified-memorial' \? 0\.82/);
+  assert.ok(css.includes('.iv-world .iv-flap-inner-liner'));
 });
