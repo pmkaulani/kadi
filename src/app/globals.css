@@ -3463,9 +3463,10 @@ body:has(.kadi-stationery-sheet),
 .iv-world .iv-postage-stamp {
   position: absolute;
   z-index: 3;
-  top: 7%;
-  right: 8%;
-  width: clamp(30px, 7.4vw, 45px);
+  /* Keep the entire postage mark inside the narrowing triangular flap. */
+  top: 4%;
+  right: 12%;
+  width: clamp(20px, 5vw, 30px);
   aspect-ratio: .78;
   padding: 3px;
   overflow: hidden;
