@@ -1,0 +1,105 @@
+name: Kadi rendered UI audit
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kadi-visual-audit-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: Render desktop and mobile screens
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_PUBLIC_APP_URL: http://localhost:3005
+      NEXT_PUBLIC_APP_NAME: Kadi
+      NEXT_PUBLIC_AUTH_PROVIDER: cookie_hmac_local
+      DATABASE_ADAPTER: memory
+      AUTH_SECRET: KADI_CI_AUTH_SECRET_NOT_FOR_PRODUCTION_0123456789
+      SESSION_COOKIE_NAME: kadi_session
+      STORAGE_PROVIDER: mock_local
+      EMAIL_PROVIDER: mock_console
+      WHATSAPP_AUTOMATED_ENABLED: 'false'
+      MPESA_ENVIRONMENT: sandbox
+      MPESA_DIRECT_COLLECTION_ENABLED: 'false'
+      NEXT_PUBLIC_ANALYTICS_ENABLED: 'false'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Build production app
+        run: npm run build
+
+      - name: Install Chromium for screenshot review
+        run: npx --yes playwright@1.55.0 install --with-deps chromium
+
+      - name: Install Playwright module for interactive captures
+        run: npm install --no-save --package-lock=false playwright@1.55.0
+
+      - name: Start app and capture views
+        continue-on-error: true
+        run: |
+          npm run start > /tmp/kadi-server.log 2>&1 &
+          echo $! > /tmp/kadi-server.pid
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:3005/ > /dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          mkdir -p visual-audit
+          {
+            echo "Kadi rendered UI audit"
+            echo "Commit: $GITHUB_SHA"
+            echo "Captured at: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "Routes: /, /templates, /e/kevin-and-wanjiku"
+          } > visual-audit/report.txt
+
+          for route in / /templates /e/kevin-and-wanjiku; do
+            slug=$(printf '%s' "$route" | sed 's#^/##;s#/#-#g')
+            [ -n "$slug" ] || slug="home"
+            for device in desktop mobile; do
+              if [ "$device" = desktop ]; then
+                viewport="1440,1100"
+              else
+                viewport="390,844"
+              fi
+              echo "Capturing $route ($device)"
+              npx --yes playwright@1.55.0 screenshot \
+                --browser chromium \
+                --viewport-size "$viewport" \
+                --full-page \
+                --wait-for-timeout 1500 \
+                "http://127.0.0.1:3005$route" \
+                "visual-audit/${slug}-${device}.png" \
+                >> visual-audit/report.txt 2>&1 || echo "FAILED: $route ($device)" >> visual-audit/report.txt
+            done
+          done
+          node scripts/visual-audit-open.mjs >> visual-audit/report.txt 2>&1 || echo "FAILED: interactive opening capture" >> visual-audit/report.txt
+          cat /tmp/kadi-server.log >> visual-audit/report.txt 2>/dev/null || true
+
+      - name: Upload rendered screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kadi-rendered-ui-audit
+          path: visual-audit/
+          if-no-files-found: warn
+          retention-days: 7

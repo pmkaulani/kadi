@@ -3106,6 +3106,18 @@ body:has(.kadi-stationery-sheet),
   -webkit-backface-visibility: visible;
 }
 
+/*
+ * Both faces share the top fold as their hinge. The inner face must flip around
+ * the vertical axis: rotateX(180deg) mirrors its vertical position and detaches
+ * the liner when the parent rotates upward.
+ */
+.iv-world .iv-envelope-flap-face {
+  transform-origin: 50% 0%;
+}
+.iv-world .iv-envelope-flap-face--inner {
+  transform: rotateY(180deg);
+}
+
 .iv-world .iv-flap-outer-polygon {
   background-color: var(--iv-flap-color, #55141d);
   background-image:
@@ -3632,6 +3644,24 @@ body:has(.kadi-stationery-sheet),
 .ka-atelier__preview .iv-opening-stage { min-height:min(900px,100svh)!important; padding-top:82px; padding-bottom:44px; }
 .ka-atelier__preview .iv-opening-copy { margin-bottom:clamp(10px,2vh,24px); }
 .ka-atelier__preview .iv-opening-title { font-size:clamp(24px,2.6vw,40px); }
+
+/* The atelier is a light-paper specimen table, so its live guest renderer must use ink text
+   even when the selected template's full-screen guest world uses pale text on dark paper. */
+.ka-atelier__preview .iv-world .iv-opening-title {
+  color: var(--atelier-ink);
+  text-shadow: none;
+}
+.ka-atelier__preview .iv-world .iv-eyebrow,
+.ka-atelier__preview .iv-world .iv-open-instruction,
+.ka-atelier__preview .iv-world .iv-opening-status,
+.ka-atelier__preview .iv-world .iv-opening-subtitle,
+.ka-atelier__preview .iv-world .iv-tap-caption,
+.ka-atelier__preview .iv-world .iv-brand-stamp,
+.ka-atelier__preview .iv-world .iv-control-rail,
+.ka-atelier__preview .iv-world .iv-text-control,
+.ka-atelier__preview .iv-world .iv-opening-footer {
+  color: var(--atelier-muted);
+}
 .ka-atelier__preview .iv-envelope-hitarea { width:min(500px,88%); }
 .ka-atelier__preview .iv-opening-footer { padding-inline:24px; }
 .ka-atelier__preview .iv-world--revealed .iv-control-rail { position:sticky; top:0; }
