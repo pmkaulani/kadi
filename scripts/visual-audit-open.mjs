@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
-import { mkdir, appendFile, writeFile } from 'node:fs/promises';
+import { mkdir, appendFile } from 'node:fs/promises';
 
-const baseUrl = 'http://127.0.0.1:3005/e/kevin-and-wanjiku';
+const baseUrl = 'http://127.0.0.1:3005';
 const devices = [
   { name: 'desktop', viewport: { width: 1440, height: 1000 } },
   { name: 'mobile', viewport: { width: 390, height: 844 } },
@@ -11,6 +11,70 @@ await mkdir('visual-audit', { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
 try {
+  // Scan and scroll through every gallery card before taking its verified capture.
+  for (const device of devices) {
+    const context = await browser.newContext({
+      viewport: device.viewport,
+      deviceScaleFactor: 1,
+      reducedMotion: 'no-preference',
+    });
+    const page = await context.newPage();
+    const pageErrors = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+    await page.goto(`${baseUrl}/templates`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForTimeout(800);
+
+    const cards = page.locator('.kadi-template-card');
+    const cardCount = await cards.count();
+    const galleryReport = [];
+    for (let index = 0; index < cardCount; index += 1) {
+      const card = cards.nth(index);
+      await card.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(160);
+      galleryReport.push(await card.evaluate((element, cardIndex) => {
+        const image = element.querySelector('img');
+        const title = element.querySelector('h3')?.innerText?.trim() || '';
+        const src = image?.currentSrc || image?.getAttribute('src') || '';
+        return {
+          index: cardIndex,
+          title,
+          src,
+          sourceKey: src ? src.split('?')[0] : '',
+          loaded: Boolean(image && image.complete && image.naturalWidth > 0),
+          naturalWidth: image?.naturalWidth || 0,
+        };
+      }, index));
+    }
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.waitForTimeout(500);
+    await page.screenshot({
+      path: `visual-audit/templates-verified-${device.name}.png`,
+      fullPage: true,
+      animations: 'disabled',
+    });
+
+    const sourceCounts = {};
+    for (const item of galleryReport) {
+      if (item.sourceKey) sourceCounts[item.sourceKey] = (sourceCounts[item.sourceKey] || 0) + 1;
+    }
+    const galleryDetails = {
+      device: device.name,
+      cardCount,
+      failedImages: galleryReport.filter((item) => !item.loaded).map(({ title, src }) => ({ title, src })),
+      duplicateImageSources: Object.entries(sourceCounts)
+        .filter(([, count]) => count > 1)
+        .map(([source, count]) => ({ source, count })),
+      cards: galleryReport,
+      pageErrors,
+    };
+    await appendFile(
+      'visual-audit/report.txt',
+      `\nTemplate gallery scroll audit (${device.name}):\n${JSON.stringify(galleryDetails, null, 2)}\n`,
+    );
+    await context.close();
+  }
+
+  // Guest experience: capture flap, then scroll each content block into view before the full-page shot.
   for (const device of devices) {
     const context = await browser.newContext({
       viewport: device.viewport,
@@ -21,25 +85,21 @@ try {
     const pageErrors = [];
     page.on('pageerror', (error) => pageErrors.push(error.message));
 
-    await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.goto(`${baseUrl}/e/kevin-and-wanjiku`, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForTimeout(900);
 
     const openButton = page.getByRole('button', { name: 'Open your invitation envelope' });
     await openButton.waitFor({ state: 'visible', timeout: 15000 });
     await openButton.click();
 
-    // Save the physical flap-open phase before scrolling changes the scene.
     await page.waitForTimeout(850);
     await page.screenshot({
       path: `visual-audit/opening-flap-${device.name}.png`,
       fullPage: false,
       animations: 'allow',
     });
-
-    // Wait through card rise + settle.
     await page.waitForTimeout(2300);
 
-    // Reveal every scroll-animated content block the way a real guest would.
     const blocks = page.locator('.iv-content-sections .iv-stationery-page');
     const blockCount = await blocks.count();
     const blockReport = [];
@@ -52,12 +112,10 @@ try {
         id: element.id || null,
         height: Math.round(element.getBoundingClientRect().height),
         opacity: getComputedStyle(element).opacity,
-        text: (element.innerText || '').replace(/\\s+/g, ' ').trim().slice(0, 180),
+        text: (element.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 180),
       }), index));
     }
 
-    // Force lazy-loaded media to enter view once, then capture the entire invitation
-    // from the top with all scroll-triggered content already revealed.
     const images = page.locator('img');
     const imageReport = [];
     const imageCount = await images.count();
@@ -77,6 +135,15 @@ try {
         imageReport.push({ index, error: String(error) });
       }
     }
+
+    // Record embedded-map status separately; browser screenshot success doesn't guarantee third-party tiles loaded.
+    const iframeReport = await page.locator('iframe').evaluateAll((elements) => elements.map((element) => ({
+      title: element.title || '',
+      src: element.getAttribute('src') || '',
+      width: Math.round(element.getBoundingClientRect().width),
+      height: Math.round(element.getBoundingClientRect().height),
+    })));
+
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await page.waitForTimeout(700);
     await page.screenshot({
@@ -92,11 +159,12 @@ try {
       blocks: blockReport,
       imageCount: imageReport.length,
       brokenImages: imageReport.filter((entry) => 'loaded' in entry && !entry.loaded),
+      iframes: iframeReport,
       pageErrors,
     };
     await appendFile(
       'visual-audit/report.txt',
-      `\\nInteractive opening and scroll audit (${device.name}):\\n${JSON.stringify(details, null, 2)}\\n`,
+      `\nInteractive opening and scroll audit (${device.name}):\n${JSON.stringify(details, null, 2)}\n`,
     );
     await context.close();
   }
