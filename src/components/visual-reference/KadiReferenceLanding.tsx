@@ -7,7 +7,7 @@ import { PublicFooter } from '@/components/layout/PublicFooter';
 
 export default function KadiReferenceLanding() {
   return (
-    <main className="w-full min-h-screen bg-[#F7F2EA]">
+    <main className="w-full min-h-screen bg-[#284753]">
       {/* ── 1  THE MOVING INVITATION GALLERY CANVAS (SCROLLABLE CANVAS, MOVING UP AND DOWN) ── */}
       <MovingInvitationGallery />
 

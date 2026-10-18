@@ -5,11 +5,11 @@ import { ArrowUpRight } from 'lucide-react';
 
 export function PublicFooter() {
   return (
-    <footer className="bg-[#281F23] text-[#F7F2EA] pt-16 pb-8 border-t border-white/[0.08]">
+    <footer className="bg-[#16272F] text-[#F8FAFC] pt-16 pb-8 border-t border-white/[0.08]">
       <div className="kadi-container max-w-7xl mx-auto px-4 sm:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 pb-14">
           <div className="md:col-span-5">
-            <Logo size="lg" variant="monochrome" className="text-[#F7F2EA]" />
+            <Logo size="lg" variant="monochrome" className="text-[#F8FAFC]" />
             <p className="font-serif text-2xl md:text-3xl leading-tight tracking-[-.035em] max-w-sm mt-7 text-white">
               A good invitation makes people feel expected.
             </p>
@@ -18,7 +18,7 @@ export function PublicFooter() {
             </p>
           </div>
           <div className="md:col-span-2 md:col-start-7">
-            <p className="kadi-eyebrow text-[#B99A62] font-semibold tracking-widest uppercase text-xs mb-5">Explore</p>
+            <p className="kadi-eyebrow text-[#D4AF37] font-semibold tracking-widest uppercase text-xs mb-5">Explore</p>
             <div className="flex flex-col gap-3 text-sm text-slate-300">
               <Link href="/templates" className="hover:text-white transition-colors">Invitation designs</Link>
               <Link href="/how-it-works" className="hover:text-white transition-colors">How it works</Link>
@@ -40,7 +40,7 @@ export function PublicFooter() {
         </div>
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between text-xs text-slate-400">
           <span>© {new Date().getFullYear()} Kadi. Made with care in Nairobi, Kenya.</span>
-          <Link href="/templates" className="inline-flex items-center gap-1.5 text-[#D7B5BE] hover:text-[#F7F2EA] transition-colors">
+          <Link href="/templates" className="inline-flex items-center gap-1.5 text-teal-400 hover:text-teal-300 transition-colors">
             Make something personal <ArrowUpRight size={13} />
           </Link>
         </div>
