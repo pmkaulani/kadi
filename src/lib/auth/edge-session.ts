@@ -62,8 +62,8 @@ async function verifyEdgeSession(token?: string): Promise<EdgeSessionPayload | n
     const isSignatureValid = await crypto.subtle.verify(
       'HMAC',
       key,
-      decodeBase64Url(parts[1]),
-      new TextEncoder().encode(parts[0])
+      decodeBase64Url(parts[1]).buffer as ArrayBuffer,
+      new TextEncoder().encode(parts[0]).buffer as ArrayBuffer
     );
     if (!isSignatureValid) return null;
 
