@@ -11,7 +11,7 @@ const DEVELOPMENT_SECRET = 'kadi_dev_session_secret_key_minimum_32_characters_lo
 
 function getEdgeAuthSecret(): string | null {
   const secret = process.env.AUTH_SECRET;
-  if (secret && secret.length >= 32 && secret !== DEVELOPMENT_SECRET) return secret;
+  if (secret && secret.length >= 32 && secret !== DEVELOPMENT_SECRET && !/placeholder|change[-_ ]?me|your[-_ ]?secret/i.test(secret)) return secret;
 
   // The built-in fallback is intentionally limited to non-production local work.
   if (process.env.NODE_ENV !== 'production') return secret || DEVELOPMENT_SECRET;
