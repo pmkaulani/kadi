@@ -7,7 +7,7 @@ const originalSecret = process.env.AUTH_SECRET;
 const originalNodeEnv = process.env.NODE_ENV;
 const testSecret = 'kadi-test-only-secret-with-more-than-32-characters';
 
-function encodeBase64Url(value: string): string {
+function encodeBase64Url(value) {
   return Buffer.from(value).toString('base64url');
 }
 
