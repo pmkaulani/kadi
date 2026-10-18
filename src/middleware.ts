@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SESSION_COOKIE_NAME, isEdgeSessionPresent, getEdgeSessionPayload } from '@/lib/auth/edge-session';
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Allow public access to creating/customizing invitations and browsing templates
+  // Allow public access to creating/customizing invitations and browsing templates.
   const isPublicAppRoute =
     pathname.startsWith('/app/events/new') ||
     pathname.startsWith('/app/templates');
@@ -13,10 +13,10 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protect private host dashboard & event management routes server-side
+  // Verify the HMAC signature before granting access to private host routes.
   if (pathname.startsWith('/app')) {
     const token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
-    const isValid = isEdgeSessionPresent(token);
+    const isValid = await isEdgeSessionPresent(token);
 
     if (!isValid) {
       const loginUrl = new URL('/login', req.url);
@@ -25,10 +25,10 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // Protect /admin routes server-side (Fail Closed: requires admin role)
+  // Admin routes require both a valid signed session and an admin role.
   if (pathname.startsWith('/admin')) {
     const token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
-    const session = getEdgeSessionPayload(token);
+    const session = await getEdgeSessionPayload(token);
 
     if (!session) {
       const loginUrl = new URL('/login', req.url);
@@ -49,4 +49,3 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: ['/app/:path*', '/admin/:path*'],
 };
-
