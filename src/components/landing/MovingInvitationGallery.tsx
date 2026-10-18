@@ -512,52 +512,97 @@ export function MovingInvitationGallery() {
         background: 'radial-gradient(circle at 50% 35%, #466F7F 0%, #365B6A 50%, #284753 100%)',
       }}
     >
-      {/* ── THE DIAGONAL MOVING INVITATION GALLERY TAPESTRY (CENTERED IN DEEP SCROLL CONTAINER) ──── */}
-      <div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[360vw] sm:w-[230vw] h-[360vh] flex flex-row items-center justify-center gap-3.5 sm:gap-6 lg:gap-8 rotate-[11.5deg] pointer-events-auto transform-gpu select-none"
-        style={{ willChange: 'transform' }}
-      >
-        {columns.map((colCards, colIdx) => {
-          // Alternating UP and DOWN motion along the tilted columns
-          const animClass =
-            colIdx % 2 === 0
-              ? colIdx % 4 === 0
-                ? 'kadi-stream-up'
-                : 'kadi-stream-up-fast'
-              : colIdx % 4 === 1
-              ? 'kadi-stream-down'
-              : 'kadi-stream-down-slow';
+      {!hasActiveFilters ? (
+        <>
+          {/* Diagonal invitation tapestry: the unfiltered home remains an immersive, slow-moving gallery. */}
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[360vw] sm:w-[230vw] h-[360vh] flex flex-row items-center justify-center gap-3.5 sm:gap-6 lg:gap-8 rotate-[11.5deg] pointer-events-auto transform-gpu select-none"
+            style={{ willChange: 'transform' }}
+          >
+            {columns.map((colCards, colIdx) => {
+              const animClass =
+                colIdx % 2 === 0
+                  ? colIdx % 4 === 0
+                    ? 'kadi-stream-up'
+                    : 'kadi-stream-up-fast'
+                  : colIdx % 4 === 1
+                  ? 'kadi-stream-down'
+                  : 'kadi-stream-down-slow';
 
-          // Repeat 4x (20 items) for seamless infinite marquee loop
-          const streamItems = [...colCards, ...colCards, ...colCards, ...colCards];
+              // Repeat each column to preserve the seamless marquee on the home view.
+              const streamItems = [...colCards, ...colCards, ...colCards, ...colCards];
 
-          return (
-            <div
-              key={`col-${colIdx}`}
-              className="kadi-stream-column relative h-full flex flex-col gap-3.5 sm:gap-6 lg:gap-8 shrink-0 w-[145px] sm:w-[220px] md:w-[260px] lg:w-[290px] touch-pan-y"
-            >
-              <div
-                className={`kadi-stream-track ${animClass} flex flex-col gap-3.5 sm:gap-6 lg:gap-8 w-full`}
-              >
-                {streamItems.map((card, itemIdx) => (
-                  <div
-                    key={`${card.id}-${colIdx}-${itemIdx}`}
-                    className="w-full shrink-0"
-                  >
-                    <InvitationGalleryCard
-                      card={card}
-                      onSelect={() => handleSelectCard(card.templateId)}
-                    />
+              return (
+                <div
+                  key={'col-' + colIdx}
+                  className="kadi-stream-column relative h-full flex flex-col gap-3.5 sm:gap-6 lg:gap-8 shrink-0 w-[145px] sm:w-[220px] md:w-[260px] lg:w-[290px] touch-pan-y"
+                >
+                  <div className={'kadi-stream-track ' + animClass + ' flex flex-col gap-3.5 sm:gap-6 lg:gap-8 w-full'}>
+                    {streamItems.map((card, itemIdx) => (
+                      <div key={card.id + '-' + colIdx + '-' + itemIdx} className="w-full shrink-0">
+                        <InvitationGalleryCard
+                          card={card}
+                          onSelect={() => handleSelectCard(card.templateId)}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+                </div>
+              );
+            })}
+          </div>
 
-      {/* Very soft edge-vignette gradient masks so cards seamlessly fade into background edges */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_70%,_rgba(40,71,83,0.45)_100%)] pointer-events-none z-20" />
+          {/* Soft edge vignette keeps the moving invitation tapestry calm and cinematic. */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_70%,_rgba(40,71,83,0.45)_100%)] pointer-events-none z-20" />
+        </>
+      ) : (
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pt-32 pb-16 sm:px-8 sm:pt-36">
+          <div className="mb-7 flex flex-col gap-3 border-b border-white/20 pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">Kadi design library</p>
+              <h1 className="font-serif text-3xl tracking-tight text-white sm:text-4xl">Find your invitation</h1>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-white/75">
+                Explore a specific occasion or search by name, style, date, or venue.
+              </p>
+            </div>
+            <p className="text-sm text-white/75" aria-live="polite">
+              {filteredCards.length} {filteredCards.length === 1 ? 'design' : 'designs'} found
+            </p>
+          </div>
+
+          {filteredCards.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
+              {filteredCards.map((card) => (
+                <InvitationGalleryCard
+                  key={card.id}
+                  card={card}
+                  onSelect={() => handleSelectCard(card.templateId)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="mx-auto flex max-w-xl flex-col items-center py-16 text-center" role="status">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/10">
+                <Search size={22} aria-hidden="true" />
+              </div>
+              <h2 className="font-serif text-2xl text-white sm:text-3xl">No invitations match that search</h2>
+              <p className="mt-3 max-w-md text-sm leading-6 text-white/75">
+                Try a shorter keyword or clear the filters to return to the full invitation gallery.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCategory('all');
+                  setSearchQuery('');
+                }}
+                className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-white/60 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-[#284753] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── TOP BAR: FIXED WITH DYNAMIC BACKGROUND-ADAPTIVE TEXT CONTRAST ── */}
       <header className="fixed top-0 left-0 right-0 z-30 w-full px-3.5 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between border-b border-white/[0.08] bg-transparent pointer-events-auto">
