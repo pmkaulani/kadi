@@ -35,14 +35,18 @@ test('the inner flap opens upward from the shared envelope hinge without vertica
   assert.match(stylesheet, /\.iv-world \.iv-envelope-flap-face--inner\s*\{\s*transform:\s*rotateY\(180deg\);/);
 });
 
-test('atelier live preview uses readable ink on its light paper surface', () => {
-  assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-opening-title\s*\{[^}]*color:\s*var\(--atelier-ink\)/s);
-  assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-eyebrow,\s*\.ka-atelier__preview \.iv-world \.iv-open-instruction,[\s\S]*?\.ka-atelier__preview \.iv-world \.iv-opening-footer\s*\{\s*color:\s*var\(--atelier-muted\)/);
+test('atelier live preview sits inside the same deep-teal visual world as the moving gallery', () => {
+  assert.match(stylesheet, /\.ka-atelier\s*\{[^}]*background:radial-gradient\(circle at 72% 18%,#466F7F 0%,#365B6A 48%,#284753 100%\)/s);
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-opening-title\s*\{\s*color:#F6F2EA;text-shadow:none;/);
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-world\s*\{[^}]*background:transparent!important;/s);
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-opening-stage\s*\{[^}]*background:transparent!important;/s);
 });
 
 
-test('atelier keeps the closed envelope as the focus without duplicate floating text and atmosphere', () => {
+test('atelier hides only duplicate intro text while preserving the envelope theme choreography', () => {
   assert.match(stylesheet, /\.ka-atelier__preview \.iv-opening-copy\s*\{\s*display:none !important;/);
-  assert.match(stylesheet, /\.ka-atelier__preview \.iv-tabletop-scene,\s*\.ka-atelier__preview \.iv-botanical,\s*\.ka-atelier__preview \.iv-star-field,\s*\.ka-atelier__preview \.iv-confetti-stage\s*\{\s*display:none !important;/);
-  assert.match(stylesheet, /\.ka-atelier__preview \.iv-opening-stage\s*\{\s*justify-content:center;/);
+  assert.doesNotMatch(stylesheet, /\.ka-atelier__preview \.iv-tabletop-scene[\s\S]{0,220}display:none/);
+  assert.doesNotMatch(stylesheet, /\.ka-atelier__preview \.iv-confetti-stage\s*\{\s*display:none/);
+  assert.match(atelierSource, /initialPhase="closed"/);
+  assert.match(atelierSource, /<EnvelopeRenderer/);
 });
