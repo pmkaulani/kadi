@@ -244,7 +244,7 @@ test('Canvas art direction - named suites use custom PNG motifs rather than dupl
     const stickers = elements.filter((element) => element.type === 'sticker');
     assert.equal(stickers.length, 1, `${id} should have one deliberate embellishment, not a default + custom pair`);
     assert.equal(stickers[0].id, motif);
-    assert.match(stickers[0].content, /^\\/stickers\\/.+\\.png$/);
+    assert.match(stickers[0].content, /^\/stickers\/.+\.png$/);
   }
 });
 
