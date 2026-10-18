@@ -159,9 +159,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] relative">
+    <div className="min-h-screen bg-[#F7F2EA] text-[#292320] relative">
       {/* Dark Sidebar matching app-workspace-target.png - Fixed and persistent */}
-      <aside className="kadi-workspace-sidebar hidden md:flex flex-col fixed inset-y-0 left-0 w-[250px] z-30 overflow-hidden bg-[#0F1E22] text-[#F1F5F9] border-r border-white/[0.09]">
+      <aside className="kadi-workspace-sidebar hidden md:flex flex-col fixed inset-y-0 left-0 w-[250px] z-30 overflow-hidden bg-[#281F23] text-[#F5EFE5] border-r border-white/[0.09]">
         {/* Brand Header with Botanical Logo */}
         <div className="px-6 pt-7 pb-6 border-b border-white/[0.07] shrink-0">
           <Link href="/app/events" className="flex items-center gap-2 group">
@@ -178,11 +178,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Workspace Main Surface offset by sidebar width on desktop */}
       <div className="md:pl-[250px] min-w-0 flex flex-col min-h-screen pb-16 md:pb-0">
         {/* Top Control Bar matching app-workspace-target.png */}
-        <header className="h-[72px] px-4 sm:px-8 flex items-center justify-between gap-4 border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30">
+        <header className="h-[72px] px-4 sm:px-8 flex items-center justify-between gap-4 border-b border-[#D8CDC1]/80 bg-[#FBF8F2]/90 backdrop-blur-md sticky top-0 z-30">
           {/* Mobile Brand matching Phone 1 */}
           <div className="md:hidden">
             <Link href="/app/events" className="flex items-center gap-1.5">
-              <Logo size="sm" color="#0F172A" />
+              <Logo size="sm" color="#292320" />
             </Link>
           </div>
 
@@ -195,7 +195,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search your events, templates or guests..."
-                className="w-full pl-9 pr-4 py-2 bg-slate-50/80 border border-slate-200 rounded-full text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#0D9488] focus:bg-white transition-colors"
+                className="w-full pl-9 pr-4 py-2 bg-slate-50/80 border border-slate-200 rounded-full text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#7B3547] focus:bg-[#FFFCF7] transition-colors"
               />
             </div>
           </form>
@@ -206,7 +206,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={() => setProfileOpen(!profileOpen)}
-              className="sm:hidden relative w-8 h-8 rounded-full bg-[#0F766E] text-white flex items-center justify-center font-serif text-xs font-semibold tracking-wider border border-teal-600/30 shadow-xs transition-transform active:scale-95 shrink-0 select-none"
+              className="sm:hidden relative w-8 h-8 rounded-full bg-[#7B3547] text-white flex items-center justify-center font-serif text-xs font-semibold tracking-wider border border-[#B99A62]/35 shadow-xs transition-transform active:scale-95 shrink-0 select-none"
               aria-label="User profile settings and sign out"
               aria-expanded={profileOpen}
             >
@@ -226,7 +226,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 aria-expanded={notificationsOpen}
               >
                 <Bell size={17} />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#0D9488] rounded-full" />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#7B3547] rounded-full" />
               </button>
 
               {notificationsOpen && (
@@ -267,7 +267,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 className="flex items-center gap-2 pl-2 pr-3 py-1 bg-white/80 hover:bg-white border border-slate-200 rounded-full text-xs text-slate-800 transition-colors"
                 aria-expanded={profileOpen}
               >
-                <div className="w-6 h-6 rounded-full bg-[#0F766E] text-white flex items-center justify-center font-serif text-[10px] font-semibold select-none">
+                <div className="w-6 h-6 rounded-full bg-[#7B3547] text-white flex items-center justify-center font-serif text-[10px] font-semibold select-none">
                   PK
                 </div>
                 <span className="font-medium">Peter Kaulani</span>
@@ -311,7 +311,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <Link
                       href="/admin"
                       onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-1.5 hover:bg-slate-50 text-[#0F766E] font-medium"
+                      className="flex items-center gap-2 px-4 py-1.5 hover:bg-slate-50 text-[#7B3547] font-medium"
                     >
                       <Shield size={13} />
                       <span>Operations Desk</span>
@@ -342,7 +342,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="relative bg-white border-t border-slate-200 rounded-t-2xl p-5 shadow-2xl z-10 space-y-4 animate-in slide-in-from-bottom duration-200">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#0F766E] text-white flex items-center justify-center font-serif text-sm font-semibold tracking-wider">
+                      <div className="w-10 h-10 rounded-full bg-[#7B3547] text-white flex items-center justify-center font-serif text-sm font-semibold tracking-wider">
                         PK
                       </div>
                       <div>
@@ -366,7 +366,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       onClick={() => setProfileOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
                     >
-                      <User size={15} className="text-[#0F766E]" />
+                      <User size={15} className="text-[#7B3547]" />
                       <span>My Invitations & Events</span>
                     </Link>
                     <Link
@@ -374,7 +374,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       onClick={() => setProfileOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
                     >
-                      <Compass size={15} className="text-[#0F766E]" />
+                      <Compass size={15} className="text-[#7B3547]" />
                       <span>Explore Templates</span>
                     </Link>
                     <Link
@@ -382,7 +382,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       onClick={() => setProfileOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
                     >
-                      <Settings size={15} className="text-[#0F766E]" />
+                      <Settings size={15} className="text-[#7B3547]" />
                       <span>Account Settings</span>
                     </Link>
                     <button
@@ -393,15 +393,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       }}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50 text-left"
                     >
-                      <LifeBuoy size={15} className="text-[#0F766E]" />
+                      <LifeBuoy size={15} className="text-[#7B3547]" />
                       <span>Support &amp; Help Desk</span>
                     </button>
                     <Link
                       href="/admin"
                       onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-[#0F766E] hover:bg-slate-50"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-[#7B3547] hover:bg-slate-50"
                     >
-                      <Shield size={15} className="text-[#0F766E]" />
+                      <Shield size={15} className="text-[#7B3547]" />
                       <span>Operations Desk</span>
                     </Link>
                   </div>
@@ -424,7 +424,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="hidden sm:inline-flex">
               <Link
                 href="/app/events/new"
-                className="inline-flex items-center gap-2 min-h-[42px] px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D5F58] rounded-xl shadow-sm transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E] focus-visible:ring-offset-2 whitespace-nowrap"
+                className="inline-flex items-center gap-2 min-h-[42px] px-4 py-2 text-xs font-semibold text-white bg-[#7B3547] hover:bg-[#622838] rounded-xl shadow-sm transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7B3547] focus-visible:ring-offset-2 whitespace-nowrap"
               >
                 <Plus size={15} />
                 <span>Create Invitation</span>
@@ -437,7 +437,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <OfflineBanner />
 
         {/* Content Body */}
-        <main className="flex-1 w-full px-4 sm:px-8 lg:px-10 py-5 sm:py-8 pb-28 sm:pb-8 bg-[#F8FAFC]">
+        <main className="flex-1 w-full px-4 sm:px-8 lg:px-10 py-5 sm:py-8 pb-28 sm:pb-8 bg-[#F7F2EA]">
           {children}
         </main>
 

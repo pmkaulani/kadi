@@ -882,14 +882,14 @@ export function KadiStudioEditor({
 
   return (
     <div
-      className={`flex flex-col w-full bg-[#18181A] text-white overflow-hidden transition-all duration-200 select-none ${
+      className={`flex flex-col w-full bg-[#21191D] text-[#F7F0E8] overflow-hidden transition-all duration-200 select-none ${
         isExpanded
           ? 'fixed inset-0 z-50 h-screen w-screen rounded-none border-0'
           : 'h-[calc(100vh-140px)] min-h-[660px] border border-white/10 rounded-2xl shadow-2xl'
       }`}
     >
       {/* ── 1. TOP STUDIO HEADER & TOOLBAR (§5.1) ────────────────────── */}
-      <header className="flex items-center justify-between px-3 sm:px-6 py-2.5 bg-[#1F1F1F] border-b border-white/10 shrink-0 z-30 gap-3">
+      <header className="flex items-center justify-between px-3 sm:px-6 py-2.5 bg-[#2A2024] border-b border-white/10 shrink-0 z-30 gap-3">
         {/* Left: Back to Gallery + Project Name */}
         <div className="flex items-center gap-3 min-w-0 shrink">
           <Link
@@ -1035,7 +1035,7 @@ export function KadiStudioEditor({
             <button
               onClick={handlePublishClick}
               disabled={isPublishing}
-              className="px-4 py-1.5 rounded-lg bg-[#0F766E] hover:bg-[#0D5F58] text-white font-semibold text-xs transition-all shadow-md active:scale-95 flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-lg bg-[#7B3547] hover:bg-[#622838] text-white font-semibold text-xs transition-all shadow-md active:scale-95 flex items-center gap-1.5"
             >
               <Send size={13} />
               <span>{isPublishing ? 'Publishing…' : 'Publish & Share'}</span>
@@ -1059,7 +1059,7 @@ export function KadiStudioEditor({
         {/* Left Tool Rail (§5.1) */}
         <aside
           aria-label="Creative tools"
-          className="w-16 bg-[#161618] border-r border-white/10 flex flex-col items-center py-3 gap-2 shrink-0 z-30"
+          className="w-16 bg-[#241A1E] border-r border-white/10 flex flex-col items-center py-3 gap-2 shrink-0 z-30"
         >
           <RailButton
             icon={Sparkles}
@@ -1144,10 +1144,10 @@ export function KadiStudioEditor({
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.18 }}
-              className="h-full bg-[#1F1F1F] border-r border-white/10 overflow-hidden flex flex-col shrink-0 z-20"
+              className="h-full bg-[#2A2024] border-r border-white/10 overflow-hidden flex flex-col shrink-0 z-20"
             >
               {/* Drawer Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#252525]">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#34262B]">
                 <span className="text-xs font-semibold tracking-wide uppercase text-white/80">
                   {activeRailTool === 'stickers' && 'Transparent Stickers'}
                   {activeRailTool === 'text' && 'Typography & Text'}
@@ -1224,13 +1224,13 @@ export function KadiStudioEditor({
                         onClick={() =>
                           handleInsertButton({
                             label: 'VIEW VENUE & MAP',
-                            fill: '#0F766E',
+                            fill: '#7B3547',
                             color: '#FFFFFF',
                             borderRadius: 9999,
                             linkUrl: '#canvas-section-venue',
                           })
                         }
-                        className="w-full py-3 px-4 rounded-full bg-[#0F766E] text-white font-sans font-semibold text-xs tracking-wider shadow-md hover:brightness-110 transition-all flex items-center justify-between"
+                        className="w-full py-3 px-4 rounded-full bg-[#7B3547] text-white font-sans font-semibold text-xs tracking-wider shadow-md hover:brightness-110 transition-all flex items-center justify-between"
                       >
                         <span>View Venue &amp; Map</span>
                         <span className="text-[10px] uppercase font-mono opacity-60">Forest Teal</span>
@@ -1337,7 +1337,7 @@ export function KadiStudioEditor({
                         onChange={(e) => patchDesign({ envelopeStyle: e.target.value as any })}
                       >
                         {ENVELOPE_STYLES.map((s) => (
-                          <option key={s.value} value={s.value} className="bg-[#1F1F1F]">
+                          <option key={s.value} value={s.value} className="bg-[#2A2024]">
                             {s.label}
                           </option>
                         ))}
@@ -1354,7 +1354,7 @@ export function KadiStudioEditor({
                         onChange={(e) => patchDesign({ linerId: e.target.value })}
                       >
                         {LINER_OPTIONS.map((l) => (
-                          <option key={l.id} value={l.id} className="bg-[#1F1F1F]">
+                          <option key={l.id} value={l.id} className="bg-[#2A2024]">
                             {l.label}
                           </option>
                         ))}
@@ -1386,7 +1386,7 @@ export function KadiStudioEditor({
                         onChange={(e) => patchDesign({ scrollAnimation: e.target.value as any })}
                       >
                         {OPENING_MOTION_PRESETS.map((m) => (
-                          <option key={m.value} value={m.value} className="bg-[#1F1F1F]">
+                          <option key={m.value} value={m.value} className="bg-[#2A2024]">
                             {m.label}
                           </option>
                         ))}
@@ -1403,7 +1403,7 @@ export function KadiStudioEditor({
                         onChange={(e) => patchValues('audioUrl', e.target.value)}
                       >
                         {MUSIC_PRESETS.map((m) => (
-                          <option key={m.url} value={m.url} className="bg-[#1F1F1F]">
+                          <option key={m.url} value={m.url} className="bg-[#2A2024]">
                             {m.label}
                           </option>
                         ))}
@@ -1426,7 +1426,7 @@ export function KadiStudioEditor({
         </AnimatePresence>
 
         {/* ── 3. CENTRAL WORKSPACE ───────────────────────────────────── */}
-        <main className="flex-1 flex flex-col relative overflow-hidden bg-[#141416]">
+        <main className="flex-1 flex flex-col relative overflow-hidden bg-[#302428]">
           {studioMode === 'canvas' ? (
             /* Canva-like Freeform Studio Canvas Mode */
             <InvitationCanvas
@@ -1480,16 +1480,16 @@ export function KadiStudioEditor({
             />
           ) : (
             /* True Guest Preview Mode (with phone mockup & envelope) */
-            <div className="flex-1 flex flex-col overflow-hidden bg-slate-100/60">
+            <div className="flex-1 flex flex-col overflow-hidden bg-[#E9E0D5]">
               {/* Preview Toolbar */}
-              <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-slate-200 text-slate-800 text-xs">
+              <div className="flex items-center justify-between px-4 py-2 bg-[#FBF8F2] border-b border-[#D8CDC1] text-[#292320] text-xs">
                 {/* Guest Salutation */}
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-slate-500">Preview as:</span>
                   <select
                     value={guestId}
                     onChange={(e) => setGuestId(e.target.value)}
-                    className="p-1 rounded border border-slate-200 bg-slate-50 text-slate-800 text-xs font-medium"
+                    className="p-1 rounded border border-slate-200 bg-slate-50 text-[#292320] text-xs font-medium"
                   >
                     {guests.map((g) => (
                       <option key={g.id} value={g.id}>
@@ -1500,11 +1500,11 @@ export function KadiStudioEditor({
                 </div>
 
                 {/* Device Selector */}
-                <div className="flex items-center bg-slate-100 rounded-lg border border-slate-200 p-0.5">
+                <div className="flex items-center bg-[#EEE5DA] rounded-lg border border-[#D8CDC1] p-0.5">
                   <button
                     onClick={() => setDevice('iphone')}
                     className={`px-2.5 py-1 rounded text-xs flex items-center gap-1 ${
-                      device === 'iphone' ? 'bg-white text-[#0F766E] font-bold shadow-xs' : 'text-slate-500'
+                      device === 'iphone' ? 'bg-white text-[#7B3547] font-bold shadow-xs' : 'text-slate-500'
                     }`}
                   >
                     <Smartphone size={13} />
@@ -1513,7 +1513,7 @@ export function KadiStudioEditor({
                   <button
                     onClick={() => setDevice('android')}
                     className={`px-2.5 py-1 rounded text-xs flex items-center gap-1 ${
-                      device === 'android' ? 'bg-white text-[#0F766E] font-bold shadow-xs' : 'text-slate-500'
+                      device === 'android' ? 'bg-white text-[#7B3547] font-bold shadow-xs' : 'text-slate-500'
                     }`}
                   >
                     <Smartphone size={13} />
@@ -1522,7 +1522,7 @@ export function KadiStudioEditor({
                   <button
                     onClick={() => setDevice('desktop')}
                     className={`px-2.5 py-1 rounded text-xs flex items-center gap-1 ${
-                      device === 'desktop' ? 'bg-white text-[#0F766E] font-bold shadow-xs' : 'text-slate-500'
+                      device === 'desktop' ? 'bg-white text-[#7B3547] font-bold shadow-xs' : 'text-slate-500'
                     }`}
                   >
                     <Monitor size={13} />
@@ -1535,7 +1535,7 @@ export function KadiStudioEditor({
                   {replayKey > 0 && (
                     <button
                       onClick={() => setReplayKey(0)}
-                      className="px-2.5 py-1 rounded border border-[#0F766E]/30 bg-[#0F766E]/10 hover:bg-[#0F766E]/20 text-[#0F766E] flex items-center gap-1 font-medium"
+                      className="px-2.5 py-1 rounded border border-[#7B3547]/30 bg-[#7B3547]/10 hover:bg-[#7B3547]/20 text-[#7B3547] flex items-center gap-1 font-medium"
                       title="Skip animation and view full invitation directly"
                     >
                       <Eye size={12} />
@@ -1611,7 +1611,7 @@ export function KadiStudioEditor({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#1F1F1F] text-white text-xs px-4 py-2.5 rounded-full shadow-2xl border border-white/15 z-50 flex items-center gap-2"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#2A2024] text-white text-xs px-4 py-2.5 rounded-full shadow-2xl border border-white/15 z-50 flex items-center gap-2"
           >
             <Check size={13} className="text-emerald-400" />
             <span>{notice}</span>

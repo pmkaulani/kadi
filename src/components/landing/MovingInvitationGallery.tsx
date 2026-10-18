@@ -605,7 +605,7 @@ export function MovingInvitationGallery() {
       ref={experienceRef}
       className={`relative w-full text-white select-none overflow-hidden ${hasActiveFilters ? "min-h-screen" : "h-[190vh] sm:h-[220vh]"}`}
       style={{
-        background: 'radial-gradient(circle at 50% 35%, #466F7F 0%, #365B6A 50%, #284753 100%)',
+        background: 'radial-gradient(circle at 50% 35%, #6C4450 0%, #3B2930 50%, #2B2025 100%)',
       }}
     >
       {!hasActiveFilters ? (
@@ -650,13 +650,13 @@ export function MovingInvitationGallery() {
           </div>
 
           {/* Soft edge vignette keeps the moving invitation tapestry calm and cinematic. */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_70%,_rgba(40,71,83,0.45)_100%)] pointer-events-none z-20" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_70%,_rgba(39,29,34,0.45)_100%)] pointer-events-none z-20" />
 
           {/* Editorial hero adds a clear product message without placing the invitation art inside another card. */}
           <div
             className="pointer-events-none absolute inset-x-0 top-[10vh] z-20 flex h-[72vh] items-center justify-center px-4 sm:px-8"
             style={{
-              background: 'radial-gradient(ellipse at center, rgba(40,71,83,0.92) 0%, rgba(40,71,83,0.72) 38%, rgba(40,71,83,0) 76%)',
+              background: 'radial-gradient(ellipse at center, rgba(39,29,34,0.92) 0%, rgba(39,29,34,0.72) 38%, rgba(39,29,34,0) 76%)',
             }}
           >
             <div ref={heroCopyRef} className="mx-auto max-w-4xl text-center">
@@ -672,7 +672,7 @@ export function MovingInvitationGallery() {
               <div data-kadi-reveal className="pointer-events-auto mt-7 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row">
                 <Link
                   href="/templates"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#F6F2EA] px-6 text-sm font-semibold text-[#284753] shadow-[0_12px_28px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#F6F2EA] px-6 text-sm font-semibold text-[#2B2025] shadow-[0_12px_28px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   Explore invitations
                   <ArrowUpRight size={17} aria-hidden="true" />
@@ -727,7 +727,7 @@ export function MovingInvitationGallery() {
                   setSelectedCategory('all');
                   setSearchQuery('');
                 }}
-                className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-white/60 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-[#284753] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-white/60 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-[#2B2025] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 Clear filters
               </button>
@@ -739,7 +739,7 @@ export function MovingInvitationGallery() {
       {/* Responsive navigation and invitation discovery controls. */}
       <header
         aria-label="Main navigation"
-        className="fixed top-0 left-0 right-0 z-30 flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-white/10 bg-[#284753]/85 px-3.5 py-3 backdrop-blur-md sm:px-8 sm:py-3.5"
+        className="fixed top-0 left-0 right-0 z-30 flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-white/10 bg-[#2B2025]/85 px-3.5 py-3 backdrop-blur-md sm:px-8 sm:py-3.5"
       >
         <div className="flex shrink-0 items-center">
           <Link href="/" className="group flex items-center" aria-label="Kadi home">
@@ -759,7 +759,7 @@ export function MovingInvitationGallery() {
                 aria-pressed={isActive}
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                  isActive ? 'bg-white text-[#284753]' : 'text-white hover:bg-white/15'
+                  isActive ? 'bg-white text-[#2B2025]' : 'text-white hover:bg-white/15'
                 }`}
               >
                 {cat.label}
@@ -828,7 +828,7 @@ export function MovingInvitationGallery() {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
                     isActive
-                      ? 'border-white bg-white text-[#284753]'
+                      ? 'border-white bg-white text-[#2B2025]'
                       : 'border-white/30 bg-white/5 text-white hover:bg-white/15'
                   }`}
                 >
