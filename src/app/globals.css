@@ -3107,12 +3107,15 @@ body:has(.kadi-stationery-sheet),
 }
 
 /*
- * Keep both flap faces hinged from the same fold line.
- * A centered 180deg transform on the inner face offsets it by its own height
- * when the parent flap opens, making the liner look detached from the envelope.
+ * Both faces share the top fold as their hinge. The inner face must flip around
+ * the vertical axis: rotateX(180deg) mirrors its vertical position and detaches
+ * the liner when the parent rotates upward.
  */
 .iv-world .iv-envelope-flap-face {
   transform-origin: 50% 0%;
+}
+.iv-world .iv-envelope-flap-face--inner {
+  transform: rotateY(180deg);
 }
 
 .iv-world .iv-flap-outer-polygon {

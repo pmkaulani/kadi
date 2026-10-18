@@ -27,8 +27,9 @@ test('shared Kadi theme uses warm paper and oxblood accents', () => {
 });
 
 
-test('the inner flap stays attached to the envelope fold during its 3D opening', () => {
+test('the inner flap opens upward from the shared envelope hinge without vertical offset', () => {
   assert.match(stylesheet, /\.iv-world \.iv-envelope-flap-face\s*\{\s*transform-origin:\s*50%\s+0%;/);
+  assert.match(stylesheet, /\.iv-world \.iv-envelope-flap-face--inner\s*\{\s*transform:\s*rotateY\(180deg\);/);
 });
 
 test('atelier live preview uses readable ink on its light paper surface', () => {
