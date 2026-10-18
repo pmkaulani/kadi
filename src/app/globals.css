@@ -3877,11 +3877,11 @@ body:has(.kadi-stationery-sheet),
 .ka-atelier__preview .iv-opening-footer { padding-inline:24px; }
 .ka-atelier__preview .iv-world--revealed .iv-control-rail { position:sticky;top:0; }
 .ka-atelier__preview .iv-control-rail { padding:14px 20px; }
-.ka-atelier__preview .iv-opening-copy { display:none!important; }
+.ka-atelier__preview .iv-opening-copy { display:none !important; }
 .ka-atelier__preview .iv-tabletop-scene,
 .ka-atelier__preview .iv-botanical,
 .ka-atelier__preview .iv-star-field,
-.ka-atelier__preview .iv-confetti-stage { display:none!important; }
+.ka-atelier__preview .iv-confetti-stage { display:none !important; }
 .ka-atelier__preview .iv-opening-stage { justify-content:center; }
 @media(max-width:1050px) {
   .ka-atelier__masthead { grid-template-columns:1fr;gap:16px; }

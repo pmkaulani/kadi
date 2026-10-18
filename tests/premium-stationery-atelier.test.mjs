@@ -14,10 +14,13 @@ test('landing page includes an envelope collection and the real envelope opening
   assert.match(atelierSource, /ENVELOPE_OPTIONS/);
 });
 
-test('stationery specimens include paper, liner, folds, flap, and wax seal layers', () => {
-  for (const selector of ['.ka-specimen__letter','.ka-specimen__liner','.ka-specimen__fold--left','.ka-specimen__fold--right','.ka-specimen__fold--bottom','.ka-specimen__flap','.ka-specimen__seal']) {
-    assert.ok(stylesheet.includes(selector), 'Missing stationery layer: ' + selector);
-  }
+test('suite selector uses editorial typography and material swatches rather than faux envelope drawings', () => {
+  assert.match(atelierSource, /ka-suite-option__palette/);
+  assert.match(atelierSource, /ka-suite-option__name/);
+  assert.match(stylesheet, /\.ka-suite-option\s*\{/);
+  assert.match(stylesheet, /\.ka-suite-option__palette i:nth-child\(1\)/);
+  assert.ok(!atelierSource.includes('ka-specimen__'), 'The landing page should not render simplified CSS envelope mockups');
+  assert.ok(!stylesheet.includes('.ka-specimen__'), 'The stylesheet should not retain faux envelope illustration rules');
 });
 
 test('shared Kadi theme uses warm paper and oxblood accents', () => {
