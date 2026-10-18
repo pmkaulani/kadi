@@ -2392,6 +2392,10 @@
 .kadi-template-card__canvas-view {
   width: 100%;
   height: 100%;
+  /* Keep the grid item tied to its thumbnail stage, not the 480x680 artboard's intrinsic size. */
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;

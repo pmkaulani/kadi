@@ -33,9 +33,18 @@ try {
       await page.waitForTimeout(160);
       galleryReport.push(await card.evaluate((element, cardIndex) => {
         const title = element.querySelector('h3')?.innerText?.trim() || '';
+        const stage = element.querySelector('.kadi-template-card__canvas-stage');
+        const stageRect = stage?.getBoundingClientRect();
         const canvas = element.querySelector('.kadi-canvas-artboard');
         const canvasRect = canvas?.getBoundingClientRect();
         const canvasRendered = Boolean(canvas && canvasRect && canvasRect.width > 100 && canvasRect.height > 150);
+        const canvasFitsStage = Boolean(
+          canvasRect && stageRect
+          && canvasRect.left >= stageRect.left - 1
+          && canvasRect.top >= stageRect.top - 1
+          && canvasRect.right <= stageRect.right + 1
+          && canvasRect.bottom <= stageRect.bottom + 1
+        );
         const heroPhoto = canvas?.querySelector('[data-canvas-element-id="photo-hero"]');
         const htmlImage = heroPhoto?.querySelector('img');
         const svgImage = heroPhoto?.querySelector('image');
@@ -56,6 +65,8 @@ try {
           photoElementVisible,
           htmlPhotoLoaded,
           canvasRendered,
+          canvasFitsStage,
+          stageSize: stageRect ? { width: Math.round(stageRect.width), height: Math.round(stageRect.height) } : null,
           canvasSize: canvasRect ? { width: Math.round(canvasRect.width), height: Math.round(canvasRect.height) } : null,
         };
       }, index));
@@ -80,6 +91,9 @@ try {
         .map(({ title, heroPhotoSrc, canvasRendered, photoSourcePresent, photoElementVisible, htmlPhotoLoaded }) => ({
           title, heroPhotoSrc, canvasRendered, photoSourcePresent, photoElementVisible, htmlPhotoLoaded,
         })),
+      canvasOverflows: galleryReport
+        .filter((item) => !item.canvasFitsStage)
+        .map(({ title, stageSize, canvasSize }) => ({ title, stageSize, canvasSize })),
       duplicateImageSources: Object.entries(sourceCounts)
         .filter(([, count]) => count > 1)
         .map(([source, count]) => ({ source, count })),
