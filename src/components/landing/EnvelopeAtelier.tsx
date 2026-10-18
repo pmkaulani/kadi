@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Check, MoveUpRight } from 'lucide-react';
 import { EnvelopeRenderer } from '@/components/animation/EnvelopeRenderer';
 import { TEMPLATES } from '@/lib/templates/catalogue';
 import { getTemplateCanvasElements } from '@/lib/templates/canvas-defaults';
-import type { TemplateDefinition } from '@/lib/templates/types';
 import type { DraftInvitationValues } from '@/lib/invitations/config';
 import type { EventDesignEntity } from '@/lib/db/types';
 
@@ -25,71 +24,57 @@ const FEATURED_ENVELOPES = ENVELOPE_OPTIONS.flatMap((option) => {
 
 type FeaturedEnvelope = (typeof FEATURED_ENVELOPES)[number];
 
-function specimenStyle(template: TemplateDefinition): React.CSSProperties {
+function suiteStyle(template: FeaturedEnvelope['template']): CSSProperties {
   return {
-    '--specimen-envelope': template.palette.envelope,
-    '--specimen-flap': template.palette.flap,
-    '--specimen-paper': template.palette.cardBackground,
-    '--specimen-ink': template.palette.text,
-    '--specimen-accent': template.palette.secondary,
-    '--specimen-seal': template.seal.color,
-  } as React.CSSProperties;
+    '--suite-envelope': template.palette.envelope,
+    '--suite-liner': template.palette.secondary,
+    '--suite-seal': template.seal.color,
+  } as CSSProperties;
 }
 
-function EnvelopeSpecimen({ specimen, selected, onSelect }: {
+function SuiteOption({
+  specimen,
+  selected,
+  onSelect,
+}: {
   specimen: FeaturedEnvelope;
   selected: boolean;
   onSelect: () => void;
 }) {
-  const monogram = specimen.template.seal.monogram || 'K';
-
   return (
     <button
       type="button"
-      className={`ka-specimen ${selected ? 'is-selected' : ''}`}
+      className={'ka-suite-option' + (selected ? ' is-selected' : '')}
       onClick={onSelect}
       aria-pressed={selected}
-      aria-label={`Preview ${specimen.template.name} envelope, liner and letter`}
-      style={specimenStyle(specimen.template)}
+      aria-label={'Preview ' + specimen.template.name + ' stationery'}
+      style={suiteStyle(specimen.template)}
     >
-      <span className="ka-specimen__visual" aria-hidden="true">
-        <span className="ka-specimen__letter">
-          <span className="ka-specimen__letter-mark">{monogram}</span>
-          <span className="ka-specimen__letter-rule" />
-          <span className="ka-specimen__letter-title">{specimen.template.sampleData.celebrants}</span>
-          <span className="ka-specimen__letter-lines"><i /><i /><i /></span>
-        </span>
-        <span className="ka-specimen__envelope">
-          <span className="ka-specimen__shell" />
-          <span className="ka-specimen__liner" />
-          <span className="ka-specimen__fold ka-specimen__fold--left" />
-          <span className="ka-specimen__fold ka-specimen__fold--right" />
-          <span className="ka-specimen__fold ka-specimen__fold--bottom" />
-          <span className="ka-specimen__flap"><span className="ka-specimen__flap-rule" /></span>
-          <span className={`ka-specimen__seal ka-specimen__seal--${specimen.template.seal.shape}`}><span>{monogram}</span></span>
-        </span>
-        <span className="ka-specimen__ground-shadow" />
+      <span className="ka-suite-option__index">{specimen.index}</span>
+      <span className="ka-suite-option__palette" aria-hidden="true"><i /><i /><i /></span>
+      <span className="ka-suite-option__copy">
+        <span className="ka-suite-option__mood">{specimen.mood}</span>
+        <span className="ka-suite-option__name">{specimen.template.name}</span>
+        <span className="ka-suite-option__material">{specimen.material}</span>
       </span>
-      <span className="ka-specimen__meta">
-        <span className="ka-specimen__index">{specimen.index}</span>
-        <span className="ka-specimen__copy">
-          <span className="ka-specimen__mood">{specimen.mood}</span>
-          <span className="ka-specimen__material">{specimen.material}</span>
-        </span>
-        <span className="ka-specimen__state" aria-hidden="true">
-          {selected ? <Check size={14} strokeWidth={1.6} /> : <MoveUpRight size={14} strokeWidth={1.5} />}
-        </span>
+      <span className="ka-suite-option__state" aria-hidden="true">
+        {selected ? <Check size={15} strokeWidth={1.6} /> : <MoveUpRight size={14} strokeWidth={1.4} />}
       </span>
     </button>
   );
 }
 
-/** Landing-page collection built from Kadi's real envelope renderer and portrait-canvas defaults. */
+/**
+ * Editorial envelope showcase.
+ * The actual guest-facing renderer remains the hero; suite choices are typography and
+ * material swatches, not simplified CSS drawings pretending to be invitation artwork.
+ */
 export function EnvelopeAtelier() {
   const [activeTemplateId, setActiveTemplateId] = useState<string>(
     FEATURED_ENVELOPES[0]?.template.id || TEMPLATES[0].id
   );
-  const activeSpecimen = FEATURED_ENVELOPES.find((item) => item.template.id === activeTemplateId) || FEATURED_ENVELOPES[0];
+  const activeSpecimen =
+    FEATURED_ENVELOPES.find((item) => item.template.id === activeTemplateId) || FEATURED_ENVELOPES[0];
   const template = activeSpecimen?.template || TEMPLATES[0];
 
   const values = useMemo<DraftInvitationValues>(() => ({
@@ -133,25 +118,28 @@ export function EnvelopeAtelier() {
     <section className="ka-atelier" aria-labelledby="ka-atelier-title">
       <div className="ka-atelier__masthead">
         <div>
-          <p className="ka-atelier__eyebrow"><span>02</span> The stationery atelier</p>
-          <h2 id="ka-atelier-title">Before the letter, <em>the moment.</em></h2>
+          <p className="ka-atelier__eyebrow"><span>02</span> A little ceremony</p>
+          <h2 id="ka-atelier-title">The envelope sets <em>the tone.</em></h2>
           <p className="ka-atelier__intro">
-            The envelope is not a loading screen. It is the first piece of the invitation:
-            the paper, the lining, the seal, and the note waiting inside.
+            Paper, lining, seal, and the invitation waiting inside—composed as one thoughtful reveal.
+            Choose a suite, then open the seal in the live preview.
           </p>
         </div>
-        <p className="ka-atelier__side-note"><span>MADE TO BE OPENED</span>Choose a suite. Then press the seal.</p>
+        <p className="ka-atelier__side-note">
+          <span>MADE TO BE OPENED</span>
+          Every detail sets the mood before the first word is read.
+        </p>
       </div>
 
       <div className="ka-atelier__workbench">
-        <aside className="ka-atelier__selection" aria-label="Choose an envelope style">
+        <aside className="ka-atelier__selection" aria-label="Choose a stationery suite">
           <div className="ka-atelier__selection-heading">
-            <span>THE ENVELOPE COLLECTION</span>
-            <span>{String(FEATURED_ENVELOPES.length).padStart(2, '0')} SUITES</span>
+            <span>CHOOSE A SUITE</span>
+            <span>{String(FEATURED_ENVELOPES.length).padStart(2, '0')} EDITIONS</span>
           </div>
-          <div className="ka-atelier__specimens">
+          <div className="ka-suite-list">
             {FEATURED_ENVELOPES.map((specimen) => (
-              <EnvelopeSpecimen
+              <SuiteOption
                 key={specimen.template.id}
                 specimen={specimen}
                 selected={specimen.template.id === template.id}
@@ -159,18 +147,19 @@ export function EnvelopeAtelier() {
               />
             ))}
           </div>
-          <div className="ka-atelier__selected-note">
-            <span className="ka-atelier__selected-name">{template.name}</span>
-            <span className="ka-atelier__selected-detail">{template.liner.name} <span aria-hidden="true">·</span> {template.seal.shape} wax seal</span>
-          </div>
-          <Link href={`/app/events/new?templateId=${encodeURIComponent(template.id)}`} className="ka-atelier__make-link">
+          <Link
+            href={'/app/events/new?templateId=' + encodeURIComponent(template.id)}
+            className="ka-atelier__make-link"
+          >
             Create with this stationery <ArrowUpRight size={16} strokeWidth={1.6} aria-hidden="true" />
           </Link>
-          <Link href="/templates" className="ka-atelier__all-link">Browse the full invitation collection</Link>
+          <Link href="/templates" className="ka-atelier__all-link">Explore all invitations</Link>
         </aside>
 
         <div className="ka-atelier__preview" aria-label="Live envelope and invitation preview">
-          <div className="ka-atelier__preview-topline"><span>LIVE OPENING</span><span>ENVELOPE / LINER / LETTER</span></div>
+          <div className="ka-atelier__preview-topline">
+            <span>LIVE OPENING</span><span>ENVELOPE / LINER / LETTER</span>
+          </div>
           <EnvelopeRenderer
             key={template.id}
             template={template}
