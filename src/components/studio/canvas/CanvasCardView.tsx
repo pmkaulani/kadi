@@ -111,6 +111,8 @@ export function CanvasCardView({
             return (
               <div
                 key={elem.id}
+                data-canvas-element-id={elem.id}
+                data-canvas-element-type={elem.type}
                 data-canvas-effect={hasEntrance ? effect : undefined}
                 className="kadi-canvas-element absolute select-none pointer-events-none"
                 style={{
