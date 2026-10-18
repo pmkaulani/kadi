@@ -36,3 +36,10 @@ test('atelier live preview uses readable ink on its light paper surface', () => 
   assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-opening-title\s*\{[^}]*color:\s*var\(--atelier-ink\)/s);
   assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-eyebrow,\s*\.ka-atelier__preview \.iv-world \.iv-open-instruction,[\s\S]*?\.ka-atelier__preview \.iv-world \.iv-opening-footer\s*\{\s*color:\s*var\(--atelier-muted\)/);
 });
+
+
+test('atelier keeps the closed envelope as the focus without duplicate floating text and atmosphere', () => {
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-opening-copy\s*\{\s*display:none !important;/);
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-tabletop-scene,\s*\.ka-atelier__preview \.iv-botanical,\s*\.ka-atelier__preview \.iv-star-field,\s*\.ka-atelier__preview \.iv-confetti-stage\s*\{\s*display:none !important;/);
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-opening-stage\s*\{\s*justify-content:center;/);
+});

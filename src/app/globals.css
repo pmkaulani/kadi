@@ -3756,6 +3756,15 @@ body:has(.kadi-stationery-sheet),
 .ka-atelier__preview .iv-opening-footer { padding-inline:24px; }
 .ka-atelier__preview .iv-world--revealed .iv-control-rail { position:sticky; top:0; }
 .ka-atelier__preview .iv-control-rail { padding:17px 22px; }
+
+/* In the atelier, the closed envelope is the hero object. The invitation typography belongs
+   on the paper inside it, not floating above it before the guest opens the seal. */
+.ka-atelier__preview .iv-opening-copy { display:none !important; }
+.ka-atelier__preview .iv-tabletop-scene,
+.ka-atelier__preview .iv-botanical,
+.ka-atelier__preview .iv-star-field,
+.ka-atelier__preview .iv-confetti-stage { display:none !important; }
+.ka-atelier__preview .iv-opening-stage { justify-content:center; }
 @media(max-width:1050px) { .ka-atelier__masthead { grid-template-columns:1fr; gap:18px; } .ka-atelier__side-note { justify-self:start; max-width:100%; } .ka-atelier__workbench { grid-template-columns:minmax(250px,.8fr) minmax(0,1.2fr); } .ka-atelier__selection { padding-right:18px; } }
 @media(max-width:760px) {
   .ka-atelier { padding:42px 18px 54px; } .ka-atelier__masthead { margin-bottom:28px; } .ka-atelier__masthead h2 { font-size:clamp(38px,11vw,58px); } .ka-atelier__intro { font-size:14px; }
