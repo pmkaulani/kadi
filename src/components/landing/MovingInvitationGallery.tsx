@@ -604,65 +604,107 @@ export function MovingInvitationGallery() {
         </div>
       )}
 
-      {/* ── TOP BAR: FIXED WITH DYNAMIC BACKGROUND-ADAPTIVE TEXT CONTRAST ── */}
-      <header className="fixed top-0 left-0 right-0 z-30 w-full px-3.5 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between border-b border-white/[0.08] bg-transparent pointer-events-auto">
-        {/* Left: Clean Brand Wordmark (No "Stationery Studio" label) */}
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center group" aria-label="Kadi Home">
-            <span className="font-serif text-xl sm:text-3xl tracking-[0.22em] font-black text-white mix-blend-difference select-none drop-shadow-xs transition-transform group-hover:scale-105">
+      {/* Responsive navigation and invitation discovery controls. */}
+      <header
+        aria-label="Main navigation"
+        className="fixed top-0 left-0 right-0 z-30 flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-white/10 bg-[#284753]/85 px-3.5 py-3 backdrop-blur-md sm:px-8 sm:py-3.5"
+      >
+        <div className="flex shrink-0 items-center">
+          <Link href="/" className="group flex items-center" aria-label="Kadi home">
+            <span className="select-none font-serif text-xl font-black tracking-[0.22em] text-white transition-transform group-hover:scale-105 sm:text-3xl">
               KADI
             </span>
           </Link>
         </div>
 
-        {/* Center: Dynamic Contrast Category Filter Chips */}
-        <div className="hidden lg:flex items-center gap-1.5 bg-transparent border border-white/25 rounded-full p-1 mix-blend-difference">
+        <nav className="hidden items-center gap-1.5 rounded-full border border-white/20 p-1 2xl:flex" aria-label="Invitation categories">
           {CATEGORIES.map((cat) => {
             const isActive = selectedCategory === cat.id;
             return (
               <button
                 key={cat.id}
+                type="button"
+                aria-pressed={isActive}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-                  isActive
-                    ? 'bg-white text-black'
-                    : 'text-white hover:bg-white/20'
+                className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                  isActive ? 'bg-white text-[#284753]' : 'text-white hover:bg-white/15'
                 }`}
               >
                 {cat.label}
               </button>
             );
           })}
-        </div>
+        </nav>
 
-        {/* Center Search for Medium screens */}
-        <div className="hidden sm:flex lg:hidden items-center gap-2 border border-white/25 rounded-full px-3 py-1 bg-transparent w-44 mix-blend-difference">
-          <Search size={12} className="text-white shrink-0" />
+        <div className="hidden w-48 items-center gap-2 rounded-full border border-white/25 bg-black/10 px-3 py-2 2xl:flex">
+          <Search size={14} className="shrink-0 text-white/80" aria-hidden="true" />
           <input
-            type="text"
+            type="search"
+            aria-label="Search invitation designs"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search designs..."
-            className="w-full bg-transparent text-xs text-white placeholder-white/70 focus:outline-none font-bold"
+            placeholder="Search designs"
+            className="w-full bg-transparent text-xs font-medium text-white placeholder-white/65 focus:outline-none"
           />
+          {searchQuery && (
+            <button type="button" onClick={() => setSearchQuery('')} aria-label="Clear search" className="text-white/70 hover:text-white">
+              <X size={13} />
+            </button>
+          )}
         </div>
 
-        {/* Right: Start Blank + Quiet Sign in / Drafts with dynamic contrast */}
-        <div className="flex items-center gap-2 sm:gap-5">
+        <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-5">
           <Link
             href="/app/events/new?blank=true"
-            className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-white mix-blend-difference font-bold px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full border border-white/30 hover:border-white transition-all"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-white/30 px-3 py-1.5 text-[11px] font-semibold text-white transition-colors hover:border-white hover:bg-white/10 sm:text-xs"
           >
-            <Plus size={12} className="text-white" />
-            <span className="hidden sm:inline">Start</span> blank
+            <Plus size={14} aria-hidden="true" />
+            <span className="hidden sm:inline">Start blank</span>
+            <span className="sm:hidden">Create</span>
           </Link>
-
-          <Link
-            href="/login"
-            className="text-[11px] sm:text-xs text-white mix-blend-difference font-bold hover:underline transition-colors px-1"
-          >
+          <Link href="/login" className="px-1 py-2 text-[11px] font-semibold text-white/90 transition-colors hover:text-white hover:underline sm:text-xs">
             Sign in
           </Link>
+        </div>
+
+        {/* These controls stay available at phone, tablet, and laptop widths. */}
+        <div className="flex w-full flex-col gap-2 pb-1 2xl:hidden">
+          <div className="flex min-h-10 items-center gap-2 rounded-full border border-white/25 bg-black/10 px-3">
+            <Search size={15} className="shrink-0 text-white/75" aria-hidden="true" />
+            <input
+              type="search"
+              aria-label="Search invitation designs"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search name, occasion, date, or venue..."
+              className="min-w-0 flex-1 bg-transparent py-2 text-xs text-white placeholder-white/65 focus:outline-none sm:text-sm"
+            />
+            {searchQuery && (
+              <button type="button" onClick={() => setSearchQuery('')} aria-label="Clear search" className="shrink-0 p-1 text-white/75 hover:text-white">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <nav className="flex gap-1.5 overflow-x-auto px-0.5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Filter invitation designs by occasion">
+            {CATEGORIES.map((cat) => {
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                    isActive
+                      ? 'border-white bg-white text-[#284753]'
+                      : 'border-white/30 bg-white/5 text-white hover:bg-white/15'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
       </header>
     </section>
