@@ -14,11 +14,12 @@ test('landing page includes an envelope collection and the real envelope opening
   assert.match(atelierSource, /ENVELOPE_OPTIONS/);
 });
 
-test('suite selector uses editorial typography and material swatches rather than faux envelope drawings', () => {
-  assert.match(atelierSource, /ka-suite-option__palette/);
-  assert.match(atelierSource, /ka-suite-option__name/);
-  assert.match(stylesheet, /\.ka-suite-option\s*\{/);
-  assert.match(stylesheet, /\.ka-suite-option__palette i:nth-child\(1\)/);
+test('suite selector uses Kadi portrait invitation canvases as thumbnails', () => {
+  assert.match(atelierSource, /CanvasCardView/);
+  assert.match(atelierSource, /getTemplateCanvasElements\(template, previewValues\)/);
+  assert.match(atelierSource, /ka-suite-option__thumb/);
+  assert.match(stylesheet, /\.ka-suite-option__thumb\s*\{/);
+  assert.ok(!atelierSource.includes('ka-suite-option__palette'), 'The picker should not be only color dots');
   assert.ok(!atelierSource.includes('ka-specimen__'), 'The landing page should not render simplified CSS envelope mockups');
   assert.ok(!stylesheet.includes('.ka-specimen__'), 'The stylesheet should not retain faux envelope illustration rules');
 });
@@ -43,10 +44,11 @@ test('atelier live preview sits inside the same deep-teal visual world as the mo
 });
 
 
-test('atelier hides only duplicate intro text while preserving the envelope theme choreography', () => {
+test('atelier hides loose background atmosphere but preserves envelope opening choreography', () => {
   assert.match(stylesheet, /\.ka-atelier__preview \.iv-opening-copy\s*\{\s*display:none !important;/);
-  assert.doesNotMatch(stylesheet, /\.ka-atelier__preview \.iv-tabletop-scene[\s\S]{0,220}display:none/);
-  assert.doesNotMatch(stylesheet, /\.ka-atelier__preview \.iv-confetti-stage\s*\{\s*display:none/);
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-tabletop-scene,\s*\.ka-atelier__preview \.iv-botanical,\s*\.ka-atelier__preview \.iv-star-field,\s*\.ka-atelier__preview \.iv-confetti-stage\s*\{\s*display:none !important;/);
+  assert.match(stylesheet, /\.iv-world \.iv-envelope-flap-face--inner\s*\{\s*transform:\s*rotateY\(180deg\);/);
   assert.match(atelierSource, /initialPhase="closed"/);
   assert.match(atelierSource, /<EnvelopeRenderer/);
+  assert.doesNotMatch(stylesheet, /\.ka-atelier__preview \.iv-envelope-hitarea\s*\{[^}]*display:\s*none/s);
 });
