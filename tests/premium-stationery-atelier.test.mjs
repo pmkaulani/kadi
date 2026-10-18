@@ -36,3 +36,22 @@ test('atelier live preview uses readable ink on its light paper surface', () => 
   assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-opening-title\s*\{[^}]*color:\s*var\(--atelier-ink\)/s);
   assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-eyebrow,\s*\.ka-atelier__preview \.iv-world \.iv-open-instruction,[\s\S]*?\.ka-atelier__preview \.iv-world \.iv-opening-footer\s*\{\s*color:\s*var\(--atelier-muted\)/);
 });
+
+const templateCardSource = await readFile(new URL('../src/components/templates/ResponsiveTemplateCard.tsx', import.meta.url), 'utf8');
+const canvasRendererSource = await readFile(new URL('../src/components/studio/canvas/CanvasCardView.tsx', import.meta.url), 'utf8');
+
+test('design library renders the authored portrait canvas rather than a recycled hero image', () => {
+  assert.match(templateCardSource, /getTemplateCanvasElements\(template, previewValues\)/);
+  assert.match(templateCardSource, /<CanvasCardView/);
+  assert.match(templateCardSource, /kadi-template-card__image--canvas/);
+  assert.doesNotMatch(templateCardSource, /<Image\s/);
+  assert.doesNotMatch(templateCardSource, /src=\{template\.sampleData\.heroImage\}/);
+  assert.match(canvasRendererSource, /ARTBOARD_WIDTH = 480/);
+  assert.match(canvasRendererSource, /ARTBOARD_HEIGHT = 680/);
+});
+
+test('canvas card stage keeps paper texture and avoids photo-gallery image cropping', () => {
+  assert.match(stylesheet, /\.kadi-template-card__image--canvas\s*\{[^}]*linear-gradient\(145deg, #F3ECE2, #E2D8C9\)/s);
+  assert.match(stylesheet, /\.kadi-template-card__image--canvas::after\s*\{\s*content:\s*none;/);
+  assert.match(stylesheet, /\.kadi-template-card__image > img\s*\{\s*object-fit:\s*cover;/);
+});
