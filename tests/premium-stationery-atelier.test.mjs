@@ -25,3 +25,13 @@ test('shared Kadi theme uses warm paper and oxblood accents', () => {
   assert.match(stylesheet, /--kadi-accent:\s*#7B3547/);
   assert.match(stylesheet, /--kadi-gold:\s*#B99A62/);
 });
+
+
+test('the inner flap stays attached to the envelope fold during its 3D opening', () => {
+  assert.match(stylesheet, /\.iv-world \.iv-envelope-flap-face\s*\{\s*transform-origin:\s*50%\s+0%;/);
+});
+
+test('atelier live preview uses readable ink on its light paper surface', () => {
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-opening-title\s*\{[^}]*color:\s*var\(--atelier-ink\)/s);
+  assert.match(stylesheet, /\.ka-atelier__preview \.iv-world \.iv-eyebrow,\s*\.ka-atelier__preview \.iv-world \.iv-open-instruction,[\s\S]*?\.ka-atelier__preview \.iv-world \.iv-opening-footer\s*\{\s*color:\s*var\(--atelier-muted\)/);
+});
