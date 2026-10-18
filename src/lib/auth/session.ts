@@ -4,8 +4,18 @@ import { NextRequest, NextResponse } from 'next/server';
 export const SESSION_COOKIE_NAME = 'kadi_session';
 const DEFAULT_EXPIRY_DAYS = 7;
 
+const DEVELOPMENT_SECRET = 'kadi_dev_session_secret_key_minimum_32_characters_long';
+
 function getAuthSecret(): string {
-  return process.env.AUTH_SECRET || 'kadi_dev_session_secret_key_minimum_32_characters_long';
+  const secret = process.env.AUTH_SECRET;
+  if (secret && secret.length >= 32 && secret !== DEVELOPMENT_SECRET) return secret;
+
+  // Never silently sign production sessions with a public, hard-coded key.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('AUTH_SECRET must be configured with a private value of at least 32 characters.');
+  }
+
+  return secret || DEVELOPMENT_SECRET;
 }
 
 export interface SessionUser {
