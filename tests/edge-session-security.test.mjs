@@ -94,3 +94,25 @@ test('edge middleware fails closed in production when AUTH_SECRET is missing', a
     else process.env.NODE_ENV = originalNodeEnv;
   }
 });
+
+test('edge middleware rejects placeholder secrets in production', async () => {
+  process.env.NODE_ENV = 'test';
+  process.env.AUTH_SECRET = 'placeholder_super_secret_session_key_min_32_characters';
+
+  try {
+    const token = createSessionToken({
+      id: 'host-test-placeholder',
+      email: 'host@example.com',
+      name: 'Test Host',
+      role: 'host',
+    });
+
+    process.env.NODE_ENV = 'production';
+    assert.equal(await isEdgeSessionPresent(token), false);
+  } finally {
+    if (originalSecret === undefined) delete process.env.AUTH_SECRET;
+    else process.env.AUTH_SECRET = originalSecret;
+    if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = originalNodeEnv;
+  }
+});
