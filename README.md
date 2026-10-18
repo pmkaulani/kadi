@@ -118,6 +118,7 @@ The root `.env.example` documents the configuration surface. Local development u
 
 - **Database:** `DATABASE_ADAPTER=memory` is for demos and local evaluation. In-memory data is not durable storage and should not be used as the persistence layer for a production multi-user service.
 - **Media storage:** `STORAGE_PROVIDER=mock_local` is a development setting, not a managed production media pipeline.
+- **Remote images:** the optimizer only allows Unsplash and the local development media path by default. Add approved HTTPS CDN hostnames to `KADI_IMAGE_HOSTS` as a comma-separated list; do not use full URLs or wildcard hosts.
 - **Email:** `EMAIL_PROVIDER=mock_console` does not send real transactional email.
 - **WhatsApp:** automated sending is disabled by default. Sharing links are not the same as an approved automated messaging integration.
 - **M-Pesa:** sandbox configuration and an explicit disabled-by-default collection flag do not constitute a live payment integration. A production implementation needs approved provider arrangements, secure credentials, verified callbacks, idempotency, reconciliation, and operational monitoring.
