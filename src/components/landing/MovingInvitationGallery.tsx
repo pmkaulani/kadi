@@ -418,7 +418,7 @@ export function MovingInvitationGallery() {
   // Distribute cards into 7 columns matching kadi-gallery-reference.png with deep scroll coverage
   const columns = useMemo(() => {
     if (hasActiveFilters) return [];
-    if (selectedCategory === 'all') {
+    if (!hasActiveFilters) {
       // 7 distinct columns partitioned into 3 disjoint sets so NO adjacent columns ever share cards
       return [
         // Column 0
