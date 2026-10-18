@@ -1,6 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Lenis from 'lenis';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -405,10 +408,119 @@ const CATEGORIES = [
 
 export function MovingInvitationGallery() {
   const router = useRouter();
+  const experienceRef = useRef<HTMLElement>(null);
+  const tapestryRef = useRef<HTMLDivElement>(null);
+  const heroCopyRef = useRef<HTMLDivElement>(null);
+  const scrollProgressRef = useRef<HTMLDivElement>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const hasActiveFilters = selectedCategory !== 'all' || normalizedQuery.length > 0;
+
+  // Smooth scrolling is limited to the public invitation gallery. The editor and guest
+  // RSVP pages keep native scrolling so forms, nested panels, and touch gestures stay familiar.
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    if (reducedMotion || !finePointer) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const lenis = new Lenis({
+      autoRaf: false,
+      duration: 1.05,
+      smoothWheel: true,
+      syncTouch: false,
+      anchors: true,
+    });
+
+    const updateScrollTrigger = () => ScrollTrigger.update();
+    const tick = (time: number) => lenis.raf(time * 1000);
+    lenis.on('scroll', updateScrollTrigger);
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      lenis.off('scroll', updateScrollTrigger);
+      gsap.ticker.remove(tick);
+      lenis.destroy();
+      // Restore GSAP's default ticker lag smoothing after leaving the landing page.
+      gsap.ticker.lagSmoothing(500, 33);
+    };
+  }, []);
+
+  // Scroll-linked choreography is intentionally restrained: a small entrance stagger,
+  // a gentle hero lift, and a hairline progress cue. The invitation designs remain the focus.
+  useEffect(() => {
+    if (hasActiveFilters || !experienceRef.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const context = gsap.context(() => {
+      const revealElements = heroCopyRef.current?.querySelectorAll<HTMLElement>('[data-kadi-reveal]');
+      if (revealElements?.length) {
+        gsap.from(Array.from(revealElements), {
+          y: 18,
+          autoAlpha: 0,
+          duration: 0.85,
+          stagger: 0.1,
+          ease: 'power3.out',
+          clearProps: 'transform,opacity,visibility',
+        });
+      }
+
+      if (heroCopyRef.current) {
+        gsap.to(heroCopyRef.current, {
+          yPercent: -8,
+          scale: 0.985,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: experienceRef.current,
+            start: 'top top',
+            end: '+=75%',
+            scrub: 0.65,
+          },
+        });
+      }
+
+      if (tapestryRef.current) {
+        gsap.to(tapestryRef.current, {
+          yPercent: -2.5,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: experienceRef.current,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.7,
+          },
+        });
+      }
+
+      if (scrollProgressRef.current) {
+        gsap.fromTo(
+          scrollProgressRef.current,
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            transformOrigin: 'left center',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: experienceRef.current,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: 0.15,
+            },
+          }
+        );
+      }
+    }, experienceRef);
+
+    const refreshFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => {
+      window.cancelAnimationFrame(refreshFrame);
+      context.revert();
+    };
+  }, [hasActiveFilters]);
 
   const filteredCards = useMemo(
     () => filterInvitationGallery(GALLERY_CARDS, selectedCategory, normalizedQuery),
@@ -490,6 +602,7 @@ export function MovingInvitationGallery() {
 
   return (
     <section
+      ref={experienceRef}
       className={`relative w-full text-white select-none overflow-hidden ${hasActiveFilters ? "min-h-screen" : "h-[190vh] sm:h-[220vh]"}`}
       style={{
         background: 'radial-gradient(circle at 50% 35%, #466F7F 0%, #365B6A 50%, #284753 100%)',
@@ -499,6 +612,7 @@ export function MovingInvitationGallery() {
         <>
           {/* Diagonal invitation tapestry: the unfiltered home remains an immersive, slow-moving gallery. */}
           <div
+            ref={tapestryRef}
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[360vw] sm:w-[230vw] h-[360vh] flex flex-row items-center justify-center gap-3.5 sm:gap-6 lg:gap-8 rotate-[11.5deg] pointer-events-auto transform-gpu select-none"
             style={{ willChange: 'transform' }}
           >
@@ -545,17 +659,17 @@ export function MovingInvitationGallery() {
               background: 'radial-gradient(ellipse at center, rgba(40,71,83,0.92) 0%, rgba(40,71,83,0.72) 38%, rgba(40,71,83,0) 76%)',
             }}
           >
-            <div className="mx-auto max-w-4xl text-center">
-              <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#F3E5C8] sm:text-xs">
+            <div ref={heroCopyRef} className="mx-auto max-w-4xl text-center">
+              <p data-kadi-reveal className="mb-5 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#F3E5C8] sm:text-xs">
                 DIGITAL INVITATIONS, THOUGHTFULLY MADE
               </p>
-              <h1 className="font-serif text-4xl font-medium leading-[0.98] tracking-[-0.045em] text-white sm:text-6xl lg:text-7xl">
+              <h1 data-kadi-reveal className="font-serif text-4xl font-medium leading-[0.98] tracking-[-0.045em] text-white sm:text-6xl lg:text-7xl">
                 Invitations, <span className="italic text-[#F3E5C8]">with feeling.</span>
               </h1>
-              <p className="mx-auto mt-5 max-w-2xl text-sm leading-6 text-white/85 sm:mt-6 sm:text-base sm:leading-7">
+              <p data-kadi-reveal className="mx-auto mt-5 max-w-2xl text-sm leading-6 text-white/85 sm:mt-6 sm:text-base sm:leading-7">
                 A little paper-like magic for life’s big moments: considered design, a memorable opening, and an invitation your guests can actually use.
               </p>
-              <div className="pointer-events-auto mt-7 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row">
+              <div data-kadi-reveal className="pointer-events-auto mt-7 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row">
                 <Link
                   href="/templates"
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#F6F2EA] px-6 text-sm font-semibold text-[#284753] shadow-[0_12px_28px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
@@ -724,6 +838,11 @@ export function MovingInvitationGallery() {
             })}
           </nav>
         </div>
+        <div
+          ref={scrollProgressRef}
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 right-0 z-50 h-[2px] origin-left scale-x-0 bg-[#D4AF37]"
+        />
       </header>
     </section>
   );
