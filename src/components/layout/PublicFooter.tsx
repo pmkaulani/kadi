@@ -27,7 +27,7 @@ export function PublicFooter() {
             </div>
           </div>
           <div className="md:col-span-3">
-            <p className="kadi-eyebrow text-[#B99A62] font-semibold tracking-widest uppercase text-xs mb-5">A little help</p>
+            <p className="kadi-eyebrow text-[#D4AF37] font-semibold tracking-widest uppercase text-xs mb-5">A little help</p>
             <div className="flex flex-col gap-3 text-sm text-slate-300">
               <Link href="/about" className="hover:text-white transition-colors">About Kadi</Link>
               <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>

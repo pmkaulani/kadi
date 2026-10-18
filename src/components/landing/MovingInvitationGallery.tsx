@@ -695,7 +695,7 @@ export function MovingInvitationGallery() {
                   setSelectedCategory('all');
                   setSearchQuery('');
                 }}
-                className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-white/60 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-[#2B2025] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-white/60 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-[#284753] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 Clear filters
               </button>
@@ -727,7 +727,7 @@ export function MovingInvitationGallery() {
                 aria-pressed={isActive}
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                  isActive ? 'bg-white text-[#2B2025]' : 'text-white hover:bg-white/15'
+                  isActive ? 'bg-white text-[#284753]' : 'text-white hover:bg-white/15'
                 }`}
               >
                 {cat.label}
@@ -796,7 +796,7 @@ export function MovingInvitationGallery() {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
                     isActive
-                      ? 'border-white bg-white text-[#2B2025]'
+                      ? 'border-white bg-white text-[#284753]'
                       : 'border-white/30 bg-white/5 text-white hover:bg-white/15'
                   }`}
                 >

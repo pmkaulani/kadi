@@ -28,3 +28,12 @@ test('landing still has its moving invitation tapestry and restrained scroll-lin
 test('landing scroll-linked animation does not wrap filtered search, editor or guest RSVP routes', () => {
   assert.match(gallerySource, /if \(hasActiveFilters \|\| !experienceRef\.current\) return/);
 });
+
+test('landing header and footer retain the original teal and gold identity', async () => {
+  const footerSource = await readFile(new URL('../src/components/layout/PublicFooter.tsx', import.meta.url), 'utf8');
+  assert.match(gallerySource, /bg-\[#284753\]\/85/);
+  assert.doesNotMatch(gallerySource, /#2B2025|#3B2930|#6C4450/);
+  assert.match(gallerySource, /text-\[#284753\]/);
+  assert.match(footerSource, /bg-\[#16272F\]/);
+  assert.match(footerSource, /text-\[#D4AF37\]/);
+});
